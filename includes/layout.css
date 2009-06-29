@@ -1,0 +1,100 @@
+/***********************
+ *	General Layout
+***********************/
+
+.newline {
+	clear:left;
+}
+
+/***********************
+ *	Owner Fieldset
+***********************/
+
+#ownerForm {
+	width:925px;
+}
+
+.person {
+	width:7.5%;
+	float:left;
+	text-align:center;
+	font-weight:bold;
+}
+
+.text {
+	width:17.5%;
+	float:left;
+	text-align:center;
+	font-weight:bold;
+}
+
+.widedropdown {
+	width:17.5%;
+	float:left;
+	text-align:center;
+	font-weight:bold;
+}
+
+.narrowdropdown {
+	width:7.5%;
+	float:left;
+	text-align:center;
+	font-weight:bold;
+}
+
+.checkbox {
+	width:7.5%;
+	float:left;
+	text-align:center;
+	font-weight:bold;
+}
+
+/***********************
+ *	Details Fieldset
+***********************/
+#detailsForm {
+	width:600;
+}
+
+.address {
+	width:100%;
+	float:left;
+	text-align:left;
+	font-weight:bold;
+	vertical-align:top;
+}
+
+.city {
+	width:33.3%;
+	float:left;
+	text-align:left;
+	font-weight:bold;
+}
+
+.state {
+	width:33.3%;
+	float:left;
+	text-align:left;
+	font-weight:bold;
+}
+
+.zip {
+	width:33.3%;
+	float:left;
+	text-align:left;
+	font-weight:bold;
+}
+
+.email {
+	width:66.7%;
+	float:left;
+	text-align:left;
+	font-weight:bold;
+}
+
+.phone {
+	width:33.3%;
+	float:left;
+	text-align:left;
+	font-weight:bold;
+}

@@ -1,3 +1,4 @@
+<link rel="stylesheet" type="text/css" href="../includes/layout.css" media="all" />
 <?php
 /**
  * @TODO Get this stuff into config.ini
@@ -33,53 +34,8 @@ while (list($num, $desc) = mysqli_fetch_row($staffR)) {
  * @package CoMET
  */
 ?>
-<style>
-	.form {
-		width:925px;
-	}
-
-	.person {
-		width:7.5%;
-		float:left;
-		text-align:center;
-		font-weight:bold;
-	}
-
-	.text {
-		width:17.5%;
-		float:left;
-		text-align:center;
-		font-weight:bold;
-	}
-
-	.widedropdown {
-		width:17.5%;
-		float:left;
-		text-align:center;
-		font-weight:bold;
-	}
-
-	.narrowdropdown {
-		width:7.5%;
-		float:left;
-		text-align:center;
-		font-weight:bold;
-	}
-
-	.checkbox {
-		width:7.5%;
-		float:left;
-		text-align:center;
-		font-weight:bold;
-	}
-
-	.newline {
-		clear:left;
-	}
-
-</style>
 <?php
-echo '<fieldset class="form">';
+echo '<fieldset id="ownerForm">';
 
 	for ($i = 0; $i <= $_SESSION['houseHoldSize']; $i++) {
 		if ($i == 0) {

@@ -1,3 +1,4 @@
+<link rel="stylesheet" type="text/css" href="../includes/layout.css" media="all" />
 <?php
 /**
  * @TODO Get this stuff into config.ini
@@ -69,61 +70,8 @@ $state_list = array('AL'=>"Alabama",
  * @package CoMET
  */
 ?>
-<style>
-	.form {
-		width:600;
-	}
-
-	.address {
-		width:100%;
-		float:left;
-		text-align:left;
-		font-weight:bold;
-		vertical-align:top;
-	}
-
-	.city {
-		width:33.3%;
-		float:left;
-		text-align:left;
-		font-weight:bold;
-	}
-
-	.state {
-		width:33.3%;
-		float:left;
-		text-align:left;
-		font-weight:bold;
-	}
-
-	.zip {
-		width:33.3%;
-		float:left;
-		text-align:left;
-		font-weight:bold;
-	}
-
-	.email {
-		width:66.7%;
-		float:left;
-		text-align:left;
-		font-weight:bold;
-	}
-	
-	.phone {
-		width:33.3%;
-		float:left;
-		text-align:left;
-		font-weight:bold;
-	}
-
-	.newline {
-		clear:left;
-	}
-
-</style>
 <?php
-echo '<fieldset class="form">';
+echo '<fieldset id="detailsForm">';
 echo '<span class="address">
 		<label for="address">Address </label>
 		<textarea name="address" rows="2" cols="60"></textarea>
