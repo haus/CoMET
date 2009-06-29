@@ -7,14 +7,21 @@ $_SESSION['discounts'] = array(0,2,5,15);
 $_SESSION['is4c'] = array('host' => 'localhost', 'user' => 'root', 'password' => 'lemoncoke', 'database' => 'is4c_op');
 $_SESSION['DB'] = array('host'=>'localhost', 'user'=>'root', 'password'=>'lemoncoke', 'database'=>'comet');
 
-$DBS['is4c'] = mysqli_connect($_SESSION['is4c']['host'], $_SESSION['is4c']['user'], $_SESSION['is4c']['password'], $_SESSION['is4c']['database']) or die('fail!');
-$DBS['comet'] = mysqli_connect($_SESSION['DB']['host'], $_SESSION['DB']['user'], $_SESSION['DB']['password'], $_SESSION['DB']['database']);
+$DBS['is4c'] = mysqli_connect($_SESSION['is4c']['host'], $_SESSION['is4c']['user'], $_SESSION['is4c']['password'], $_SESSION['is4c']['database']) or die('is4c fail!');
+$DBS['comet'] = mysqli_connect($_SESSION['DB']['host'], $_SESSION['DB']['user'], $_SESSION['DB']['password'], $_SESSION['DB']['database']) or die('comet fail!');
 
 $memTypeQ = "SELECT memType, CONCAT(SUBSTR(memdesc, 1, 1), LOWER(SUBSTR(memdesc, 2, LENGTH(memdesc)))) FROM memtype ORDER BY memType ASC";
 $memTypeR = mysqli_query($DBS['is4c'], $memTypeQ);
 
+$staffQ = "SELECT staff, CONCAT(SUBSTR(staffDesc, 1, 1), LOWER(SUBSTR(staffDesc, 2, LENGTH(staffDesc)))) FROM staff ORDER BY staff ASC";
+$staffR = mysqli_query($DBS['is4c'], $staffQ);
+
 while (list($num, $desc) = mysqli_fetch_row($memTypeR)) {
 	$memType[$num] = $desc;
+}
+
+while (list($num, $desc) = mysqli_fetch_row($staffR)) {
+	$staff[$num] = $desc;
 }
 
 /**
@@ -28,7 +35,7 @@ while (list($num, $desc) = mysqli_fetch_row($memTypeR)) {
 ?>
 <style>
 	.form {
-		width:1000px;
+		width:925px;
 	}
 
 	.person {
@@ -99,9 +106,10 @@ echo '<fieldset class="form">';
 			printf('</select>
 				</span>
 				<span class="widedropdown">
-					<select name="staff">
-						<option value="0">Staff Level</option>
-					</select>
+					<select name="staff">');
+			foreach ($staff AS $num => $desc)
+				printf('<option value="%u">%s</option>', $num, $desc);
+			printf('</select>
 				</span>
 				<span class="narrowdropdown">
 					<select name="discount[%u]">', $i);
