@@ -1,21 +1,13 @@
 <link rel="stylesheet" type="text/css" href="../includes/layout.css" media="all" />
 <?php
-/**
- * @TODO Get this stuff into config.ini
- */
-$_SESSION['houseHoldSize'] = 2;
-$_SESSION['discounts'] = array(0,2,5,15);
-$_SESSION['is4c'] = array('host' => 'localhost', 'user' => 'root', 'password' => 'lemoncoke', 'database' => 'is4c_op');
-$_SESSION['DB'] = array('host'=>'localhost', 'user'=>'root', 'password'=>'lemoncoke', 'database'=>'comet');
-
-$DBS['is4c'] = mysqli_connect($_SESSION['is4c']['host'], $_SESSION['is4c']['user'], $_SESSION['is4c']['password'], $_SESSION['is4c']['database']) or die('is4c fail!');
-$DBS['comet'] = mysqli_connect($_SESSION['DB']['host'], $_SESSION['DB']['user'], $_SESSION['DB']['password'], $_SESSION['DB']['database']) or die('comet fail!');
+require_once('../includes/config.php');
+require_once('../includes/mysqli_connect.php');
 
 $memTypeQ = "SELECT memType, CONCAT(SUBSTR(memdesc, 1, 1), LOWER(SUBSTR(memdesc, 2, LENGTH(memdesc)))) FROM memtype ORDER BY memType ASC";
-$memTypeR = mysqli_query($DBS['is4c'], $memTypeQ);
+$memTypeR = mysqli_query($DBS['is4c_op'], $memTypeQ);
 
 $staffQ = "SELECT staff, CONCAT(SUBSTR(staffDesc, 1, 1), LOWER(SUBSTR(staffDesc, 2, LENGTH(staffDesc)))) FROM staff ORDER BY staff ASC";
-$staffR = mysqli_query($DBS['is4c'], $staffQ);
+$staffR = mysqli_query($DBS['is4c_op'], $staffQ);
 
 while (list($num, $desc) = mysqli_fetch_row($memTypeR)) {
 	$memType[$num] = $desc;

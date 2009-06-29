@@ -1,13 +1,7 @@
 <link rel="stylesheet" type="text/css" href="../includes/layout.css" media="all" />
 <?php
-/**
- * @TODO Get this stuff into config.ini
- */
-
-$_SESSION['is4c'] = array('host' => 'localhost', 'user' => 'root', 'password' => 'lemoncoke', 'database' => 'is4c_op');
-$_SESSION['DB'] = array('host'=>'localhost', 'user'=>'root', 'password'=>'lemoncoke', 'database'=>'comet');
-
-$DBS['comet'] = mysqli_connect($_SESSION['DB']['host'], $_SESSION['DB']['user'], $_SESSION['DB']['password'], $_SESSION['DB']['database']) or die('comet fail!');
+require_once('../includes/config.php');
+require_once('../includes/mysqli_connect.php');
 
 $state_list = array('AL'=>"Alabama",
                 'AK'=>"Alaska", 
