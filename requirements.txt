@@ -1,0 +1,22 @@
+Requirements / Desired Features
+
+Interface & integrate nicely with IS4C/Fannie
+Store, edit & view basic member information
+Store, edit & view detailed member information
+Accessible from almost any computer on intranet
+Store, edit & view payments to members
+Track payments to members
+Make threaded notes and replies to notes about members
+Search for members by last name, first name, or member number
+Automatic activation, deactivation of members
+Auto-reminder before & after payment due date
+Mass mailer for list subscribers
+Mailing label printing (Avery standards)
+Phone list printing by various criteria
+Printing folder labels
+Basic & detailed reporting
+Link to Fannie transaction/payment records
+Authentication – basic user levels
+Detail, basic versioning
+Export and import backups
+Automatic nightly backups
