@@ -29,7 +29,7 @@ while (list($num, $desc) = mysqli_fetch_row($staffR)) {
  */
 ?>
 <?php
-echo '<fieldset id="ownerForm">';
+echo '<div id="ownerForm">';
 
 	for ($i = 0; $i <= $_SESSION['houseHoldSize']; $i++) {
 		if ($i == 0) {
@@ -75,6 +75,6 @@ echo '<fieldset id="ownerForm">';
 				</span>', $i, $i);
 		}
 	}
-echo '</fieldset>';
+echo '</div>';
 
 ?>

@@ -22,31 +22,45 @@ div.quadrant {
 
 div#onepoint1 {
 	clear: left;
-	height: 40%;
+	height: 250px;
 	width: 67%;
 }
 
 div#onepoint2 {
-	height: 40%;
-	width: 23%;
+	height: 250px;
+	width: 32%;
 }
 
 div#twopoint1 {
 	clear: left;
+	width: 33%;
+	height: 250px;
 }
 
 div#twopoint2 {
-	
+	float: left;
+	width: 33%;
+	height: 250px;	
+}
+
+div#twopoint3 {
+	float: left;
+	width: 33%;
+	height: 250px;
 }
 
 .newline {
 	clear:left;
 }
 
+.row {
+	float:left;
+	width:98%;
+}
+
 #footer {
 	clear:left;
 	border-bottom: 1px solid #000;
-	border-top: 1px solid #000;
 	margin: 0 25px 0 25px;
 	padding: 10px;
 	text-align: center;
@@ -58,6 +72,8 @@ div#twopoint2 {
 
 #ownerForm {
 	width:925px;
+	margin-top: 15px;
+	padding: 10px 10px 10px 10px;
 }
 
 .person {
@@ -100,6 +116,8 @@ div#twopoint2 {
 ***********************/
 #detailsForm {
 	width:600;
+	margin-top: 100px;
+	padding: 10px 10px 10px 10px;
 }
 
 .address {

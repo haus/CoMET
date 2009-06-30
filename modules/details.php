@@ -67,7 +67,7 @@ $state_list = array('AL'=>"Alabama",
  */
 ?>
 <?php
-echo '<fieldset id="detailsForm">';
+echo '<div id="detailsForm">';
 echo '<span class="address">
 		<label for="address">Address </label>
 		<textarea name="address" rows="2" cols="60"></textarea>
@@ -95,6 +95,6 @@ echo '</select>
 		<label for="email">Email Address </label>
 		<input type="text" name="email" size="30" maxlength="50" value="Email" />
 	</span>
-	</fieldset>';
+	</div>';
 
 ?>

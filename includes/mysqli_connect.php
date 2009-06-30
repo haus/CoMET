@@ -26,14 +26,4 @@ $DBS['comet'] = mysqli_connect(
 	) 
 	or die('comet fail!');
 
-// Data sanitizing function
-if (!function_exists('escape_data')) {	
-	function escape_data(&$connection, $data) {
-		if (function_exists('mysqli_real_escape_string'))
-			return mysqli_real_escape_string($connection, trim($data));
-		else
-			return trim($data);
-	}
-}
-
 ?>
