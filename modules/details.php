@@ -1,7 +1,9 @@
 <?php
-// <link rel="stylesheet" type="text/css" href="../includes/layout.css" media="all" />
-// require_once('../includes/config.php');
-// require_once('../includes/mysqli_connect.php');
+
+if (!function_exists('checkPage'))
+	require_once('../includes/functions.php');
+	
+checkPage('index.php');
 
 $state_list = array('AL'=>"Alabama",
                 'AK'=>"Alaska", 

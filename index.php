@@ -1,6 +1,9 @@
 <?php
 require_once('./includes/header.html');
 ?>
+<noscript>
+	<p>You must have javascript enabled to use this program.</p>
+</noscript>
 <div class="quadrant" id="onepoint1">
 <?php require_once('./modules/owner.php'); ?>
 </div>
