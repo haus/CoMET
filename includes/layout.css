@@ -1,10 +1,18 @@
 /***********************
  *	General/Main Layout
 ***********************/
+#header {
+	margin-top: 10px;
+	border-bottom: solid;
+	border-color: black;
+	border-width: .5px;
+	text-align: center;
+}
+
 div.quadrant {
 	float: left;
 	width: 49%;
-	height: 49%;
+	height: 40%;
 	margin: 0;
 	padding: 0;
 	border-style: solid;
@@ -12,15 +20,36 @@ div.quadrant {
 	border-width: .5px;
 }
 
+div#onepoint1 {
+	clear: left;
+	height: 40%;
+	width: 67%;
+}
+
 div#onepoint2 {
+	height: 40%;
+	width: 23%;
 }
 
 div#twopoint1 {
 	clear: left;
 }
 
+div#twopoint2 {
+	
+}
+
 .newline {
 	clear:left;
+}
+
+#footer {
+	clear:left;
+	border-bottom: 1px solid #000;
+	border-top: 1px solid #000;
+	margin: 0 25px 0 25px;
+	padding: 10px;
+	text-align: center;
 }
 
 /***********************
