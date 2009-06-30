@@ -1,6 +1,23 @@
 /***********************
- *	General Layout
+ *	General/Main Layout
 ***********************/
+div.quadrant {
+	float: left;
+	width: 49%;
+	height: 49%;
+	margin: 0;
+	padding: 0;
+	border-style: solid;
+	border-color: black;
+	border-width: .5px;
+}
+
+div#onepoint2 {
+}
+
+div#twopoint1 {
+	clear: left;
+}
 
 .newline {
 	clear:left;

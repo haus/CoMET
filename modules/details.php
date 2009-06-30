@@ -1,7 +1,7 @@
-<link rel="stylesheet" type="text/css" href="../includes/layout.css" media="all" />
 <?php
-require_once('../includes/config.php');
-require_once('../includes/mysqli_connect.php');
+// <link rel="stylesheet" type="text/css" href="../includes/layout.css" media="all" />
+// require_once('../includes/config.php');
+// require_once('../includes/mysqli_connect.php');
 
 $state_list = array('AL'=>"Alabama",
                 'AK'=>"Alaska", 
