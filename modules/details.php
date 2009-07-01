@@ -66,6 +66,15 @@ $state_list = array('AL'=>"Alabama",
  * @package CoMET
  */
 ?>
+<script src="./includes/javascript/jquery.maskedinput-1.2.2.js" type="text/javascript"></script>
+<script type="text/javascript">
+	$(document).ready(function() 
+		{
+	   		$("#phone").mask("(999) 999-9999");
+			$("#zip").mask("99999?-9999");
+		}
+	);
+</script>
 <?php
 echo '<div id="detailsForm">';
 echo '<span class="address">
@@ -85,11 +94,11 @@ echo '</select>
 	</span>
 	<span class="zip">
 		<label for="zip">Zip Code </label>
-		<input type="text" name="zip" size="10" maxlength="10" value="Zip" />
+		<input type="text" name="zip" id="zip" size="10" maxlength="10" value="12345" />
 	</span>
 	<span class="phone newline">
 		<label for="phone">Phone </label>
-		<input type="text" name="phone" size="15" maxlength="15" value="(111)222-3333" />
+		<input type="text" name="phone" id="phone" size="15" maxlength="15" value="1234567890" />
 	</span>
 	<span class="email">
 		<label for="email">Email Address </label>

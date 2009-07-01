@@ -5,7 +5,7 @@ if (!function_exists('checkPage'))
 	
 checkPage('index.php');
 
-printf('<fieldset>
+printf('<div id="summary">
 		<p>
 			<strong>Card No: </strong>9999<br />
 			<strong>Join Date: </strong>12/12/2008<br />
@@ -15,6 +15,6 @@ printf('<fieldset>
 			<strong>Next Payment Due: </strong>07/30/2010<br />
 			<strong>Last Payment Made: </strong>07/30/2009
 		</p>
-	</fieldset>');
+	</div>');
 
 ?>

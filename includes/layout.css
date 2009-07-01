@@ -2,7 +2,7 @@
  *	General/Main Layout
 ***********************/
 #header {
-	margin-top: 10px;
+	margin-top: 1%;
 	border-bottom: solid;
 	border-color: black;
 	border-width: .5px;
@@ -12,7 +12,7 @@
 div.quadrant {
 	float: left;
 	width: 49%;
-	height: 40%;
+	height: 49%;
 	margin: 0;
 	padding: 0;
 	border-style: solid;
@@ -22,31 +22,31 @@ div.quadrant {
 
 div#onepoint1 {
 	clear: left;
-	height: 250px;
+	height: 49%;
 	width: 67%;
 }
 
 div#onepoint2 {
-	height: 250px;
+	height: 49%;
 	width: 32%;
 }
 
 div#twopoint1 {
 	clear: left;
 	width: 33%;
-	height: 250px;
+	height: 48%;
 }
 
 div#twopoint2 {
 	float: left;
 	width: 33%;
-	height: 250px;	
+	height: 48%;	
 }
 
 div#twopoint3 {
 	float: left;
 	width: 33%;
-	height: 250px;
+	height: 48%;
 }
 
 .newline {
@@ -61,9 +61,17 @@ div#twopoint3 {
 #footer {
 	clear:left;
 	border-bottom: 1px solid #000;
-	margin: 0 25px 0 25px;
+	margin-top: 1%;
+	/*margin: 0 25px 0 25px;*/
 	padding: 10px;
 	text-align: center;
+}
+
+#summary {
+	width:99%;
+	height: 100%;
+	margin-top: 1%;
+	padding: 10px 10px 10px 10px;
 }
 
 /***********************
@@ -71,8 +79,8 @@ div#twopoint3 {
 ***********************/
 
 #ownerForm {
-	width:925px;
-	margin-top: 15px;
+	width:98%;
+	margin-top: 1%;
 	padding: 10px 10px 10px 10px;
 }
 
@@ -115,7 +123,7 @@ div#twopoint3 {
  *	Details Fieldset
 ***********************/
 #detailsForm {
-	width:600;
+	width:99%;
 	margin-top: 100px;
 	padding: 10px 10px 10px 10px;
 }
