@@ -19,13 +19,24 @@
 	    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 ?>
-
+<script type="text/JavaScript">
+	$(document).ready(function() {
+		//alert('working');
+		$('#owner').load('./modules/owner.php');
+		$('#details').load('./modules/details.php');
+		$('#summary').load('./modules/summary.php');
+		//alert('working');
+	});
+</script>
 <div class="quadrant" id="onepoint1">
-<?php require_once('./modules/owner.php'); ?>
-<?php require_once('./modules/details.php'); ?>
+	<div id="owner"></div>
+	<div id="details"></div>
+<?php //require_once('./modules/owner.php'); ?>
+<?php // require_once('./modules/details.php'); ?>
 </div>
 <div class="quadrant" id="onepoint2">
-<?php require_once('./modules/summary.php'); ?>
+	<div id="summary"></div>
+<?php //require_once('./modules/summary.php'); ?>
 </div>
 <div class="quadrant" id="twopoint1">
 Notes
