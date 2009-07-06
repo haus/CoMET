@@ -18,32 +18,21 @@
 	    You should have received a copy of the GNU General Public License
 	    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-/**
- *	Store specific values.
-*/
-
-// Number of people in a household, on a membership.
-$_SESSION['houseHoldSize'] = 2;
-
-// Variety of discounts offered to members & workers.
-$_SESSION['discounts'] = array(0,2,5,15);
-
-// Default share price.
-$_SESSION['sharePrice'] = 180.00;
-
-// Payment plan options.
-$_SESSION['paymentPlans'] = array();
-
-/**
- *	Database Information
-*/
-
-// IS4C Connection Details (Needs select, insert, update on both DBs)
-$_SESSION['is4c_op'] = array('host' => 'localhost', 'user' => 'root', 'password' => 'lemoncoke', 'database' => 'is4c_op');
-$_SESSION['is4c_log'] = array('host' => 'localhost', 'user' => 'root', 'password' => 'lemoncoke', 'database' => 'is4c_op');
-
-// CoMET DB Connection details.
-$_SESSION['DB'] = array('host'=>'localhost', 'user'=>'root', 'password'=>'lemoncoke', 'database'=>'comet');
-
 ?>
+
+<div class="quadrant" id="onepoint1">
+<?php require_once('./modules/owner.php'); ?>
+<?php require_once('./modules/details.php'); ?>
+</div>
+<div class="quadrant" id="onepoint2">
+<?php require_once('./modules/summary.php'); ?>
+</div>
+<div class="quadrant" id="twopoint1">
+Notes
+</div>
+<div class="quadrant" id="twopoint2">
+Payments
+</div>
+<div class="quadrant" id="twopoint3">
+Subscriptions
+</div>

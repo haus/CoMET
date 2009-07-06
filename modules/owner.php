@@ -1,9 +1,26 @@
 <?php
+/*
+		CoMET is a stand-alone member equity tracking application designed to integrate with IS4C and Fannie.
+	    Copyright (C) 2009  Matthaus Litteken
+		
+		This file is part of CoMET.
 
-if (!function_exists('checkPage'))
-	require_once('../includes/functions.php');
-	
-checkPage('index.php');
+	    This program is free software: you can redistribute it and/or modify
+	    it under the terms of the GNU General Public License as published by
+	    the Free Software Foundation, either version 3 of the License, or
+	    (at your option) any later version.
+
+	    This program is distributed in the hope that it will be useful,
+	    but WITHOUT ANY WARRANTY; without even the implied warranty of
+	    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	    GNU General Public License for more details.
+
+	    You should have received a copy of the GNU General Public License
+	    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+require_once('./includes/config.php');
+require_once('./includes/mysqli_connect.php');
 
 $memTypeQ = "SELECT memType, CONCAT(SUBSTR(memdesc, 1, 1), LOWER(SUBSTR(memdesc, 2, LENGTH(memdesc)))) FROM memtype ORDER BY memType ASC";
 $memTypeR = mysqli_query($DBS['is4c_op'], $memTypeQ);
