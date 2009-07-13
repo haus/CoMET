@@ -20,23 +20,26 @@
 */
 ?>
 <script type="text/JavaScript">
-	$(document).ready(function() {
-		//alert('working');
 		$('#owner').load('./modules/owner.php');
 		$('#details').load('./modules/details.php');
 		$('#summary').load('./modules/summary.php');
-		//alert('working');
-	});
 </script>
+<div class="topbar" id="mainNav">
+	<span style="float: left;">
+		<button id="first">&lt;&lt;&lt;</button>
+		<button id="prev">&lt;</button>
+		<button id="next">&gt;</button>
+		<button id="last">&gt;&gt;&gt;</button>
+	</span>
+	<strong>Current Record #1234</strong>
+	<span style="float:right;"><button id="new">New Member</button></span>
+</div>
 <div class="quadrant" id="onepoint1">
 	<div id="owner"></div>
 	<div id="details"></div>
-<?php //require_once('./modules/owner.php'); ?>
-<?php // require_once('./modules/details.php'); ?>
 </div>
 <div class="quadrant" id="onepoint2">
 	<div id="summary"></div>
-<?php //require_once('./modules/summary.php'); ?>
 </div>
 <div class="quadrant" id="twopoint1">
 Notes

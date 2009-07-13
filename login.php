@@ -16,7 +16,7 @@
 		);
 		
 	$a = new Auth("MDB2", $params, 'myLogin');
-	
+
 	// Login bizness...
 	$a->setLoginCallback('myLoginCallback');
 	$a->start();
@@ -28,11 +28,15 @@
 		$a->logout();
 		$a->start();
 		ob_end_clean();
-		header("Location:index.php");
+		?>
+		<script type="text/javascript">
+			$('tabs').tabs('select', 0);
+		</script>
+		<?php
 	}
 	
 	// Add user. Admin only.
-	if ($a->getAuth() && $_SESSION['level'] == 3 && isset($_GET['act'])) {
+	if ($a->getAuth() && isset($_GET['act']) && $_SESSION['level'] == 3) {
 		// Add user stuff...Only for admins (userLevel = 3). Needs to go inside the auth if.
 		if (isset($_POST['register'])) {
 			if ($_POST['username'] && ($_POST['password'] == $_POST['confirm'])) {
@@ -50,12 +54,11 @@
 		}
 	}
 	
-	if (isset($_POST['login'])) {
+	if (isset($_POST['submitted'])) {
 	
 		if ($a->getAuth()) {
 			$_SESSION['user'] = $a->getUsername();
 			$_SESSION['level'] = $a->getAuthData('level');
-			
 			ob_end_clean();
 		} else {
 			// Failed to login...
@@ -64,10 +67,15 @@
 	} // End of $_POST['login']
 	
 	// Logged in?
-	if (isset($_POST['login']) && $a->checkAuth() && isset($_SESSION['user'])) {
+	if (isset($_POST['submitted']) && $a->checkAuth() && isset($_SESSION['user'])) {
 		echo 'TRUE';
-	} elseif (isset($_POST['login'])) {
+	} elseif (isset($_POST['submitted'])) {
 		echo 'FALSE';
+	} elseif ($a->checkAuth() && isset($_SESSION['user'])) {
+		echo '<script type="text/javascript">
+				self.parent.tb_remove();
+				self.parent.getElementById();
+			</script>';
 	}
 	
 	function myLogin() {
@@ -80,76 +88,90 @@
 		<head>
 			<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
 			<title>CoMET - Co-operative Member Equity Tracking</title>
-		<script src="../includes/javascript/jquery-1.3.2.min.js" type="text/javascript"></script>
-		<script src="../includes/javascript/jquery.form.js" type="text/javascript"></script>
+		<script src="./includes/javascript/jquery-1.3.2.min.js" type="text/javascript"></script>
+		<script src="./includes/javascript/jquery.form.js" type="text/javascript"></script>
 		<script type="text/JavaScript">
+			// pre-submit callback 
+			function showRequest(formData, jqForm, options) { 
+			    // formData is an array; here we use $.param to convert it to a string to display it 
+			    // but the form plugin does this for you automatically when it submits the data 
+			    var queryString = $.param(formData); 
+
+			    // jqForm is a jQuery object encapsulating the form element.  To access the 
+			    // DOM element for the form do this: 
+			    // var formElement = jqForm[0]; 
+
+			    alert('About to submit: \n\n' + queryString); 
+
+			    // here we could return false to prevent the form from being submitted; 
+			    // returning anything other than false will allow the form submit to continue 
+			    return false; 
+			}
+		
+			// pre-submit callback 
+			function validate(formData, jqForm, options) {
+			    // formData is an array of objects representing the name and value of each field 
+			    // that will be sent to the server;  it takes the following form: 
+			    // 
+			    // [ 
+			    //     { name:  username, value: valueOfUsernameInput }, 
+			    //     { name:  password, value: valueOfPasswordInput } 
+			    // ] 
+			    // 
+			    // To validate, we can examine the contents of this array to see if the 
+			    // username and password fields have values.  If either value evaluates 
+			    // to false then we return false from this method. 
+			    for (var i=0; i < formData.length; i++) {
+			        if (!formData[i].value) {
+			            alert('Please enter a value for both Username and Password'); 
+			            return false; 
+			        }
+			    }
+			}
+
+			// post-submit callback 
+			function showResponse(responseText, statusText)  { 
+			    // for normal html responses, the first argument to the success callback 
+			    // is the XMLHttpRequest object's responseText property 
+
+			    // if the ajaxSubmit method was passed an Options Object with the dataType 
+			    // property set to 'xml' then the first argument to the success callback 
+			    // is the XMLHttpRequest object's responseXML property 
+
+			    // if the ajaxSubmit method was passed an Options Object with the dataType 
+			    // property set to 'json' then the first argument to the success callback 
+			    // is the json data object returned by the server 
+				if (responseText == 'TRUE') {
+					self.parent.tb_remove();
+				} else {
+					alert('Invalid user name or password. Please try again.');
+				}
+			}
+		</script>
+		<script>
+			
 			//prepare the form when the DOM is ready 
 			$(document).ready(function() { 
-				alert('starting...');
 			    var options = { 
 			        //target:        '#output1',   // target element(s) to be updated with server response 
 			        beforeSubmit:  validate,  // pre-submit callback 
-			        success:       showResponse  // post-submit callback 
+			        success:       showResponse,  // post-submit callback 
 
 			        // other available options: 
-			        //url:       url         // override for form's 'action' attribute 
-			        //type:      type        // 'get' or 'post', override for form's 'method' attribute 
-			        //dataType:  null        // 'xml', 'script', or 'json' (expected server response type) 
+			        url:       'login.php'         // override for form's 'action' attribute 
+			        //type:      'post'        // 'get' or 'post', override for form's 'method' attribute 
+			        //dataType:  'json'        // 'xml', 'script', or 'json' (expected server response type) 
 			        //clearForm: true        // clear all form fields after successful submit 
 			        //resetForm: true        // reset the form after successful submit 
 
 			        // $.ajax options can be used here too, for example: 
 			        //timeout:   3000 
-			    }; 
-
-			    // bind form using 'ajaxForm' 
-			    $('#loginForm').ajaxForm(options); 
-				alert('form is bound...');
-			
-				// pre-submit callback 
-				function validate(formData, jqForm, options) { 
-				    // formData is an array of objects representing the name and value of each field 
-				    // that will be sent to the server;  it takes the following form: 
-				    // 
-				    // [ 
-				    //     { name:  username, value: valueOfUsernameInput }, 
-				    //     { name:  password, value: valueOfPasswordInput } 
-				    // ] 
-				    // 
-				    // To validate, we can examine the contents of this array to see if the 
-				    // username and password fields have values.  If either value evaluates 
-				    // to false then we return false from this method. 
-
-				    for (var i=0; i < formData.length; i++) { 
-				        if (!formData[i].value) { 
-				            alert('Please enter a value for both Username and Password'); 
-				            return false; 
-				        } 
-				    } 
-				    alert('Both fields contain values.'); 
-				}
-
-				// post-submit callback 
-				function showResponse(responseText, statusText)  { 
-				    // for normal html responses, the first argument to the success callback 
-				    // is the XMLHttpRequest object's responseText property 
-
-				    // if the ajaxForm method was passed an Options Object with the dataType 
-				    // property set to 'xml' then the first argument to the success callback 
-				    // is the XMLHttpRequest object's responseXML property 
-
-				    // if the ajaxForm method was passed an Options Object with the dataType 
-				    // property set to 'json' then the first argument to the success callback 
-				    // is the json data object returned by the server 
-					if (responseText == 'TRUE') {
-						alert('success');
-					} else {
-						alert('failure');
-					}
-				    // alert('status: ' + statusText + '\n\nresponseText: \n' + responseText + 
-				    //    '\n\nThe output div should have already been updated with the responseText.'); 
-				}
-				alert('finished');
+			    };
+				// bind to the form's submit event 
+			    $('#loginForm').submit(function() {
+					$(this).ajaxSubmit(options);
+					return false;
+				});
 			});
 		</script>
 		</head>
@@ -157,14 +179,13 @@
 		<?php
 		// The HTML Form
 		printf('
-			<p class="login">
-				<form name="login" id="loginForm" method="post" action="%s">
-					<fieldset>
-						<h2 style="text-align:center;">Log In Here</h2>
-						<p>User Name: <input type="text" id="username" name="username" value="%s" /></p>
-						<p>Password: <input type="password" id="password" name="password" size="10" /></p>
-						<div style="text-align:center;"><input type="submit" name="login" id="login" value="Login" /></div>
-					</fieldset>
+			<p>
+				<form name="loginForm" id="loginForm" method="post" action="%s">
+					<h2 style="text-align:center;">Log In Here</h2>
+					<p>User Name: <input type="text" id="username" name="username" value="%s" /></p>
+					<p>Password: <input type="password" id="password" name="password" size="10" /></p>
+					<input type="hidden" name="submitted" value="TRUE" />
+					<div style="text-align:center;"><input type="submit" name="loginButton" id="loginButton" value="Login" /></div>
 				</form>
 			</p></body></html>', $_SERVER['PHP_SELF'], (isset($_POST['username']) ? $_POST['username'] : NULL));
 	} // End of myLogin()
