@@ -43,7 +43,6 @@ session_start();
 				$(this).ajaxSubmit(options);
 				return false;
 			});
-			$('#config').hide();
 			$('#content').load('main.php');
 			tb_show('Login Here','login.php?TB_iframe=true&modal=true&height=175&width=250');
 
@@ -79,6 +78,10 @@ $params = array(
 	
 $a = new Auth("MDB2", $params, 'myLogin');
 
+if ($a->checkAuth()) {
+	$_SESSION['user'] = $a->getUserName();
+	$_SESSION['level'] = $a->getAuthData('level');
+}
 
 ?>
 <noscript>You need javascript to really enjoy all of this.</noscript>
@@ -92,8 +95,18 @@ $a = new Auth("MDB2", $params, 'myLogin');
 			<li id="logout"><button class="buttonAsLink">Logout</button></li>
 		</form>
 <?php
-	if (isset($_SESSION['level']) && $_SESSION['level'] > 1) {
-
+	if (isset($_SESSION['level']) && $_SESSION['level'] >= 3) {
+		?>
+		<script type="text/javascript">
+			$('#config').show();
+		</script>
+		<?php
+	} else {
+		?>
+		<script type="text/javascript">
+			$('#config').hide();
+		</script>
+		<?php
 	}
 	
 ?>

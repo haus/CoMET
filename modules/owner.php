@@ -56,42 +56,87 @@ echo '<div id="ownerForm">';
 			<span class="widedropdown">Member Type</span>
 			<span class="widedropdown">Staff Level</span>
 			<span class="narrowdropdown">Discount</span>
-			<span class="checkbox">Write Checks?</span>
-			<span class="checkbox">House Charge?</span>';
+			<span class="check">Write Checks?</span>
+			<span class="check charge">House Charge?</span>';
 		} else {
 			printf("\n" . '<span class="person newline">%u</span>
 				<span class="text">
-					<input type="text" name="first[%u]" maxlength="50" size="20" value="First Name" />
+					<input type="text" id="first(%u)" name="first[%u]" maxlength="50" size="20" value="First Name" />
 				</span>
 				<span class="text">
-					<input type="text" name="last[%u]" maxlength="50" size="20" value="Last Name" />
+					<input type="text" id="last(%u)" name="last[%u]" maxlength="50" size="20" value="Last Name" />
 				</span>
 				<span class="widedropdown">
-					<select name="memType[%u]">', $i, $i, $i, $i);
+					<select id="memType(%u)" name="memType[%u]" onChange="updateDiscount(%u);">', $i, $i, $i, $i, $i, $i, $i, $i);
 			foreach ($memType AS $num => $desc)
 				printf('<option value="%u">%s</option>', $num, $desc);
 			printf('</select>
 				</span>
 				<span class="widedropdown">
-					<select name="staff">');
+					<select id="staff(%u)" class="staffDrop" name="staff[%u]" onChange="updateCharge(this, %u);updateDiscount(%u);">', $i, $i, $i, $i);
 			foreach ($staff AS $num => $desc)
 				printf('<option value="%u">%s</option>', $num, $desc);
 			printf('</select>
 				</span>
 				<span class="narrowdropdown">
-					<select name="discount[%u]">', $i);
+					<select id="discount(%u)" name="discount[%u]">', $i, $i);
 			foreach ($_SESSION['discounts'] AS $disc)
 						printf('<option value="%u">%u%%</option>', $disc, $disc);
 			printf('</select>
 				</span>
-				<span class="checkbox">
-					<input type="checkbox" name="checks[%u]" checked="checked" />
+				<span class="check">
+					<input type="checkbox" id="checks(%u)" name="checks[%u]" checked="checked" />
 				</span>
-				<span class="checkbox">
-					<input type="checkbox" name="charge[%u]" checked="checked" />
-				</span>', $i, $i);
+				<span class="check">
+					<input type="checkbox" id="charge(%u)" class="charge chargeCheck" disabled="true" name="charge[%u]" />
+				</span>', $i, $i, $i, $i);
 		}
 	}
 echo '</div>';
-
 ?>
+<script type="text/JavaScript">
+staff = document.getElementByClassName('staffDrop');
+charge = document.getElementByClassName('chargeCheck');
+
+$(document).ready(function() {
+	$('.charge').disabled = true;
+	
+	for (var i = 0; i < staff.length(); i++) {
+		if (staffDrop[i].value == 1 || staffDrop[i].value == 2 || staffDrop[i].value == 5) {
+			charge[i].disabled = false;
+		}
+	}
+	
+});
+
+function updateCharge(select, person) {
+	charge = document.getElementById('charge(' + person + ')');
+	if (select.value == 1 || select.value == 2 || select.value == 5) {
+		charge.disabled = false;
+	} else {
+		charge.disabled = true;
+		charge.checked = false;	
+	}
+}
+
+function updateDiscount(person) {
+	memtype = document.getElementById('memType(' + person + ')');
+	staff = document.getElementById('staff(' + person + ')');
+	discount = document.getElementById('discount(' + person + ')');
+	
+	// Big if. ACG specific. (0,2,5,15)
+	if (staff.value == 1 || staff.value == 4 || staff.value == 5) {
+		discount.selectedIndex = 3;
+	} else if (staff.value == 6) {
+		discount.selectedIndex = 0;
+	} else if (staff.value == 0 || staff.value == 2 || staff.value == 3) {
+		if (memtype.value == 1 || memtype.value == 2 || memtype.value == 6) {
+			discount.selectedIndex = 1;
+		} else {
+			discount.selectedIndex = 0;
+		}
+	} else {
+		discount.selectedIndex = 0;
+	}
+}
+</script>
