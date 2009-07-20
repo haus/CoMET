@@ -59,6 +59,11 @@ echo '<div id="ownerForm">';
 			<span class="check">Write Checks?</span>
 			<span class="check charge">House Charge?</span>';
 		} else {
+			$memQ = "SELECT * FROM owners WHERE cardNo = {$_SESSION['cardNo']} AND personNum = $i LIMIT 1";
+			$memR = mysqli_query($DBS['comet'], $memQ);
+			
+			if (!$memR) printf('Query: %s, Error: %s', $memQ, mysqli_error($DBS['comet']));
+			
 			printf("\n" . '<span class="person newline">%u</span>
 				<span class="text">
 					<input type="text" id="first(%u)" name="first[%u]" maxlength="50" size="20" value="First Name" />

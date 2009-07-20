@@ -18,12 +18,17 @@
 	    You should have received a copy of the GNU General Public License
 	    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+session_start();
+require_once('./includes/config.php');
+require_once('./includes/mysqli_connect.php');
+
+$cardQ = "SELECT MAX(cardNo) FROM details WHERE cardNo < 9999";
+$cardR = mysqli_query($DBS['comet'], $cardQ);
+if (!$cardR) printf('Query: %s, Error: %s', $cardQ, mysqli_error($DBS['comet']));
+list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
+if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 ?>
-<script type="text/JavaScript">
-		$('#owner').load('./modules/owner.php');
-		$('#details').load('./modules/details.php');
-		$('#summary').load('./modules/summary.php');
-</script>
+
 <div class="topbar" id="mainNav">
 	<span style="float: left;">
 		<button id="first">&lt;&lt;&lt;</button>
@@ -31,7 +36,7 @@
 		<button id="next">&gt;</button>
 		<button id="last">&gt;&gt;&gt;</button>
 	</span>
-	<strong>Current Record #1234</strong>
+	<strong>Current Record #<?php echo $_SESSION['cardNo']; ?></strong>
 	<span style="float:right;"><button id="new">New Member</button></span>
 </div>
 <div class="quadrant" id="onepoint1">
@@ -50,3 +55,8 @@ Payments
 <div class="quadrant" id="twopoint3">
 Subscriptions
 </div>
+<script type="text/JavaScript">
+		$('#owner').load('./modules/owner.php');
+		$('#details').load('./modules/details.php');
+		$('#summary').load('./modules/summary.php');
+</script>
