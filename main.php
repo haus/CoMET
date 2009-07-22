@@ -31,13 +31,13 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 
 <div class="topbar" id="mainNav">
 	<span style="float: left;">
-		<button id="first">&lt;&lt;&lt;</button>
-		<button id="prev">&lt;</button>
-		<button id="next">&gt;</button>
-		<button id="last">&gt;&gt;&gt;</button>
+		<input type="submit" id="first" value="&lt;&lt;&lt;" />
+		<input type="submit" id="prev" value="&lt;" />
+		<input type="submit" id="next" value="&gt;" />
+		<input type="submit" id="last" value="&gt;&gt;&gt;" />
 	</span>
 	<strong>Current Record #<?php echo $_SESSION['cardNo']; ?></strong>
-	<span style="float:right;"><button id="new">New Member</button></span>
+	<span style="float:right;"><input type="submit" id="new" value="New Member" /></span>
 </div>
 <div class="quadrant" id="onepoint1">
 	<div id="owner"></div>

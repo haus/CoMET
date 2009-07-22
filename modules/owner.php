@@ -45,6 +45,8 @@ while (list($num, $desc) = mysqli_fetch_row($staffR)) {
  * @package CoMET
  */
 ?>
+<script src="../includes/javascript/jquery-1.3.2.min.js" type="text/javascript"></script>
+
 <?php
 echo '<div id="ownerForm">';
 
@@ -63,51 +65,54 @@ echo '<div id="ownerForm">';
 			$memR = mysqli_query($DBS['comet'], $memQ);
 			
 			if (!$memR) printf('Query: %s, Error: %s', $memQ, mysqli_error($DBS['comet']));
+			else $memRow = mysqli_fetch_array($memR, MYSQLI_ASSOC);
 			
 			printf("\n" . '<span class="person newline">%u</span>
 				<span class="text">
-					<input type="text" id="first(%u)" name="first[%u]" maxlength="50" size="20" value="First Name" />
+					<input type="text" id="first(%u)" name="first[%u]" maxlength="50" size="20" value="%s" />
 				</span>
 				<span class="text">
-					<input type="text" id="last(%u)" name="last[%u]" maxlength="50" size="20" value="Last Name" />
+					<input type="text" id="last(%u)" name="last[%u]" maxlength="50" size="20" value="%s" />
 				</span>
 				<span class="widedropdown">
-					<select id="memType(%u)" name="memType[%u]" onChange="updateDiscount(%u);">', $i, $i, $i, $i, $i, $i, $i, $i);
+					<select id="memType(%u)" name="memType[%u]" onChange="updateDiscount(%u);">', 
+					$i, $i, $i, $memRow['firstName'], $i, $i, $memRow['lastName'], $i, $i, $i);
 			foreach ($memType AS $num => $desc)
-				printf('<option value="%u">%s</option>', $num, $desc);
+				printf('<option value="%u"%s>%s</option>', $num, ($memRow['memType'] == $num ? ' selected="selected"' : ''), $desc);
 			printf('</select>
 				</span>
 				<span class="widedropdown">
 					<select id="staff(%u)" class="staffDrop" name="staff[%u]" onChange="updateCharge(this, %u);updateDiscount(%u);">', $i, $i, $i, $i);
 			foreach ($staff AS $num => $desc)
-				printf('<option value="%u">%s</option>', $num, $desc);
+				printf('<option value="%u"%s>%s</option>', $num, ($memRow['staff'] == $num ? ' selected="selected"' : ''), $desc);
 			printf('</select>
 				</span>
 				<span class="narrowdropdown">
 					<select id="discount(%u)" name="discount[%u]">', $i, $i);
 			foreach ($_SESSION['discounts'] AS $disc)
-						printf('<option value="%u">%u%%</option>', $disc, $disc);
+						printf('<option value="%u"%s>%u%%</option>', $disc, ($memRow['discount'] == $disc ? ' selected="selected"' : ''), $disc);
 			printf('</select>
 				</span>
 				<span class="check">
-					<input type="checkbox" id="checks(%u)" name="checks[%u]" checked="checked" />
+					<input type="checkbox" id="checks(%u)" name="checks[%u]"%s />
 				</span>
 				<span class="check">
-					<input type="checkbox" id="charge(%u)" class="charge chargeCheck" disabled="true" name="charge[%u]" />
-				</span>', $i, $i, $i, $i);
+					<input type="checkbox" id="charge(%u)" class="charge chargeCheck" disabled="true" name="charge[%u]"%s />
+				</span>', 
+				$i, $i, ($memRow['writeChecks'] == 1 ? ' checked="checked"' : ''), $i, $i, ($memRow['chargeOk'] == 1 ? ' checked="checked"' : ''));
 		}
 	}
 echo '</div>';
 ?>
-<script type="text/JavaScript">
-staff = document.getElementByClassName('staffDrop');
-charge = document.getElementByClassName('chargeCheck');
+<script type="text/javascript">
+// This script auto populates discount, and disables house charge appropriately for ACG. Insert store-specific values as needed.
 
-$(document).ready(function() {
+$('#ownerForm').ready(function() {
+	staff = $('.staffDrop');
+	charge = $('.chargeCheck');
 	$('.charge').disabled = true;
-	
-	for (var i = 0; i < staff.length(); i++) {
-		if (staffDrop[i].value == 1 || staffDrop[i].value == 2 || staffDrop[i].value == 5) {
+	for (var i = 0; i < staff.length; i++) {
+		if (staff[i].value == 1 || staff[i].value == 2 || staff[i].value == 5) {
 			charge[i].disabled = false;
 		}
 	}
