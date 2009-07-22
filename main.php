@@ -50,7 +50,7 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 Notes
 </div>
 <div class="quadrant" id="twopoint2">
-Payments
+	<div id="payments"></div>
 </div>
 <div class="quadrant" id="twopoint3">
 Subscriptions
@@ -59,4 +59,5 @@ Subscriptions
 		$('#owner').load('./modules/owner.php');
 		$('#details').load('./modules/details.php');
 		$('#summary').load('./modules/summary.php');
+		$('#payments').load('./modules/payments.php');
 </script>

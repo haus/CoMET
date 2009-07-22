@@ -31,6 +31,10 @@
 	margin-right: auto;
 }
 
+.center {
+	text-align: center;
+}
+
 .headList li {
 	display: 		inline;
 	list-style-type: none;

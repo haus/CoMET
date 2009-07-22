@@ -20,23 +20,28 @@ session_start();
 require_once('../includes/config.php');
 require_once('../includes/mysqli_connect.php');
 
-$payQ = "SELECT SUM(amount), MAX(date), d.nextPayment 
-	FROM payments AS p INNER JOIN details AS d ON (d.cardNo = p.cardNo) 
-	WHERE p.cardNo={$_SESSION['cardNo']}";
-$payR = mysqli_query($DBS['comet'], $payQ);
+$paymentsQ = "SELECT amount, date, memo, paymentID, reference
+	FROM payments WHERE cardNo={$_SESSION['cardNo']} ORDER BY date ASC";
+$paymentsR = mysqli_query($DBS['comet'], $paymentsQ);
 
-if (!$payR) printf('Query: %s, Error: %s', $payQ, mysqli_error($DBS['comet']));
-list($paid, $lastPaid, $nextPayment) = mysqli_fetch_row($payR);
+echo '<h3 class="center">Payments</h3>';
 
-printf('<p>
-			<strong>Card No: </strong>9999<br />
-			<strong>Join Date: </strong>12/12/2008<br />
-			<strong>Share Price: </strong>$180<br />
-			<strong>Total Paid: </strong>$%s<br />
-			<strong>Remaining To Pay: </strong>$%s<br />
-			<strong>Next Payment Due: </strong>%s<br />
-			<strong>Last Payment Made: </strong>%s<br />
-			<strong>Payment Plan: </strong>
-		</p>', number_format($paid,2), number_format($_SESSION['sharePrice']-$paid,2), date('m-d-Y', strtotime($nextPayment)), date('m-d-Y', strtotime($lastPaid)));
+if (!$paymentsR) printf('Query: %s, Error: %s', $paymentsQ, mysqli_error($DBS['comet']));
+if (mysqli_num_rows($paymentsR) > 0) {
+	echo '<table cellpadding="2" cellspacing="2" width="100%">';
+	while (list($amount, $date, $memo, $id, $ref) = mysqli_fetch_row($paymentsR)) {
+
+		printf('<tr class="center">
+				<td>%s</td>
+				<td>$%s</td>
+				<td>%s</td>
+				<td>%s (Thickbox receipt link)</td>
+				</tr>', date('m-d-Y', strtotime($date)), number_format($amount, 2), $memo, $ref);
+		}
+	echo '</table>';
+} else {
+	echo '<p>No Payments Recorded</p>';
+}
+	// Add form.
 
 ?>
