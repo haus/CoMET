@@ -167,6 +167,7 @@
 			        // $.ajax options can be used here too, for example: 
 			        //timeout:   3000 
 			    };
+			
 				// bind to the form's submit event 
 			    $('#loginForm').submit(function() {
 					$(this).ajaxSubmit(options);

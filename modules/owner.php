@@ -108,6 +108,9 @@ echo '</div>';
 // This script auto populates discount, and disables house charge appropriately for ACG. Insert store-specific values as needed.
 
 $('#ownerForm').ready(function() {
+	$('#ownerForm :input').change(function() {
+		triggerChange()
+	});
 	staff = $('.staffDrop');
 	charge = $('.chargeCheck');
 	$('.charge').disabled = true;

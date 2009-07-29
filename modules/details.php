@@ -90,11 +90,11 @@ $state_list = array('AL'=>"Alabama",
 		{
 	   		$("#phone").mask("(999) 999-9999");
 			$("#zip").mask("99999?-9999");
+			$('#detailsForm :input').change(function() {
+				triggerChange();
+				});
 		}
 	);
-	function triggerChange() {
-		$('#changed').val('true');
-	}
 </script>
 <?php
 $memDetailsQ = "SELECT CONCAT(address1, IFNULL(CONCAT('\n', address2), '')) as address, phone, city, state, zip, phone, email
@@ -119,7 +119,7 @@ printf('<span class="address">
 	</span>
 	<span class="state">
 		<label for="state">State </label>
-		<select name="state" onchange="triggerChange();">', $address, $city);
+		<select name="state" id="state">', $address, $city);
 foreach ($state_list AS $abrev => $name)
 	printf('<option value="%s"%s>%s</option>' . "\n", $abrev, ($abrev == $state ? ' selected="selected"' : ''), $name);
 printf('</select>

@@ -28,24 +28,84 @@ if (!$cardR) printf('Query: %s, Error: %s', $cardQ, mysqli_error($DBS['comet']))
 list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
 if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 ?>
+<script type="text/JavaScript">
+	function validate(formData, jqForm, options) {
+		changed = $('#changed').val();
+		//alert(changed);
+		return true;
+	}
+	
+	// post-submit callback 
+	function showResponse(responseText, statusText)  { 
+	    // for normal html responses, the first argument to the success callback 
+	    // is the XMLHttpRequest object's responseText property 
 
-<div class="topbar" id="mainNav">
-	<form id="navForm" method="POST">
+	    // if the ajaxSubmit method was passed an Options Object with the dataType 
+	    // property set to 'xml' then the first argument to the success callback 
+	    // is the XMLHttpRequest object's responseXML property 
+
+	    // if the ajaxSubmit method was passed an Options Object with the dataType 
+	    // property set to 'json' then the first argument to the success callback 
+	    // is the json data object returned by the server 
+		alert(responseText);
+		// alert(statusText);
+	}
+	
+	function triggerChange() {
+		$('#changed').val('true');
+	}
+	
+	$('#navForm').ready(function() {
+		var options = { 
+	        //target:        '#output1',   // target element(s) to be updated with server response 
+	        beforeSubmit:  validate, // pre-submit callback 
+	        success:       showResponse  // post-submit callback 
+
+	        // other available options: 
+	        //url:       './modules/handler.php'         // override for form's 'action' attribute 
+	        //type:      'post'        // 'get' or 'post', override for form's 'method' attribute 
+	        //dataType:  'json'        // 'xml', 'script', or 'json' (expected server response type) 
+	        //clearForm: true        // clear all form fields after successful submit 
+	        //resetForm: true        // reset the form after successful submit 
+
+	        // $.ajax options can be used here too, for example: 
+	        //timeout:   3000 
+	    };
+	
+		// bind to the form's submit event 
+	    $('#navForm').submit(function() {
+			$(this).ajaxSubmit(options);
+			return false;
+		});
+		
+		$('#navForm :button').click(function() {
+			$('#navButton').val(this.id);
+		})
+	
+		$('#owner').load('./modules/owner.php');
+		$('#details').load('./modules/details.php');
+		$('#summary').load('./modules/summary.php');
+		$('#payments').load('./modules/payments.php');
+	});
+</script>
+<form id="navForm" method="POST" name="navForm" action="./modules/handler.php">
+	<div class="topbar" id="mainNav">
 		<span style="float: left;">
-			<input type="submit" id="first" value="&lt;&lt;&lt;" />
-			<input type="submit" id="prev" value="&lt;" />
-			<input type="submit" id="next" value="&gt;" />
-			<input type="submit" id="last" value="&gt;&gt;&gt;" />
+			<button type="submit" name="firstRecord" value="first" id="firstRecord">&lt;&lt;&lt;</button>
+			<button type="submit" name="prevRecord" value="prev" id="prevRecord">&lt;</button>
+			<button type="submit" name="nextRecord" value="next" id="nextRecord">&gt;</button>
+			<button type="submit" name="lastRecord" value="last" id="lastRecord">&gt;&gt;&gt;</button>
 		</span>
 		<strong>Current Record #<?php echo $_SESSION['cardNo']; ?></strong>
 		<input type="hidden" name="changed" value="false" id="changed" />
-		<span style="float:right;"><input type="submit" id="new" value="New Member" /></span>
-	</form>
-</div>
-<div class="quadrant" id="onepoint1">
-	<div id="owner"></div>
-	<div id="details"></div>
-</div>
+		<input type="hidden" name="navButton" value="" id="navButton">
+		<span style="float:right;"><button type="submit" name="new" id="new" value="new">New Member</button></span>
+	</div>
+	<div class="quadrant" id="onepoint1">
+		<div id="owner"></div>
+		<div id="details"></div>
+	</div>
+</form>
 <div class="quadrant" id="onepoint2">
 	<div id="summary"></div>
 </div>
@@ -58,14 +118,3 @@ Notes
 <div class="quadrant" id="twopoint3">
 Subscriptions
 </div>
-<script type="text/JavaScript">
-		$('#navForm').submit(function() {
-			changed = $('#changed').val();
-			alert(changed);
-			return false;
-		})
-		$('#owner').load('./modules/owner.php');
-		$('#details').load('./modules/details.php');
-		$('#summary').load('./modules/summary.php');
-		$('#payments').load('./modules/payments.php');
-</script>
