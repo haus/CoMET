@@ -29,7 +29,7 @@ if (!$payR) printf('Query: %s, Error: %s', $payQ, mysqli_error($DBS['comet']));
 list($paid, $lastPaid, $nextPayment) = mysqli_fetch_row($payR);
 
 printf('<p>
-			<strong>Card No: </strong>9999<br />
+			<strong>Card No: </strong>%u<br />
 			<strong>Join Date: </strong>12/12/2008<br />
 			<strong>Share Price: </strong>$180<br />
 			<strong>Total Paid: </strong>$%s<br />
@@ -37,6 +37,6 @@ printf('<p>
 			<strong>Next Payment Due: </strong>%s<br />
 			<strong>Last Payment Made: </strong>%s<br />
 			<strong>Payment Plan: </strong>
-		</p>', number_format($paid,2), number_format($_SESSION['sharePrice']-$paid,2), date('m-d-Y', strtotime($nextPayment)), date('m-d-Y', strtotime($lastPaid)));
+		</p>', $_SESSION['cardNo'], number_format($paid,2), number_format($_SESSION['sharePrice']-$paid,2), date('m-d-Y', strtotime($nextPayment)), date('m-d-Y', strtotime($lastPaid)));
 
 ?>
