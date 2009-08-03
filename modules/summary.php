@@ -20,23 +20,30 @@ session_start();
 require_once('../includes/config.php');
 require_once('../includes/mysqli_connect.php');
 
-$payQ = "SELECT SUM(amount), MAX(date), d.nextPayment 
+$payQ = "SELECT SUM(amount), MAX(date), d.nextPayment, d.joined 
 	FROM payments AS p INNER JOIN details AS d ON (d.cardNo = p.cardNo) 
 	WHERE p.cardNo={$_SESSION['cardNo']}";
 $payR = mysqli_query($DBS['comet'], $payQ);
 
 if (!$payR) printf('Query: %s, Error: %s', $payQ, mysqli_error($DBS['comet']));
-list($paid, $lastPaid, $nextPayment) = mysqli_fetch_row($payR);
+list($paid, $lastPaid, $nextPayment, $joinDate) = mysqli_fetch_row($payR);
 
 printf('<p>
 			<strong>Card No: </strong>%u<br />
-			<strong>Join Date: </strong>12/12/2008<br />
+			<strong>Join Date: </strong>%s<br />
 			<strong>Share Price: </strong>$180<br />
 			<strong>Total Paid: </strong>$%s<br />
 			<strong>Remaining To Pay: </strong>$%s<br />
 			<strong>Next Payment Due: </strong>%s<br />
 			<strong>Last Payment Made: </strong>%s<br />
 			<strong>Payment Plan: </strong>
-		</p>', $_SESSION['cardNo'], number_format($paid,2), number_format($_SESSION['sharePrice']-$paid,2), date('m-d-Y', strtotime($nextPayment)), date('m-d-Y', strtotime($lastPaid)));
+		</p>', 
+		$_SESSION['cardNo'], 
+		(is_null($joinDate) ? $joinDate : date('m-d-Y', strtotime($joinDate))), 
+		number_format($paid,2), 
+		number_format($_SESSION['sharePrice']-$paid,2), 
+		(is_null($nextPayment) ? $nextPayment : date('m-d-Y', strtotime($nextPayment))), 
+		(is_null($lastPaid) ? $lastPaid : date('m-d-Y', strtotime($lastPaid)))
+		);
 
 ?>

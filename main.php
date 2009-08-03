@@ -48,12 +48,16 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 	    // property set to 'json' then the first argument to the success callback 
 	    // is the json data object returned by the server 
 		// alert(responseText);
-		$('#owner').load('./modules/owner.php');
-		$('#details').load('./modules/details.php');
-		$('#summary').load('./modules/summary.php');
-		$('#payments').load('./modules/payments.php');
-		$('#cardNo').html(responseText);
-		// alert(statusText);
+		if (responseText.message == 'error') {
+			$('#messageSpace').html("There was an error updating that record, please check the entry and try again.");	
+		} else {
+			$('#owner').load('./modules/owner.php');
+			$('#details').load('./modules/details.php');
+			$('#summary').load('./modules/summary.php');
+			$('#payments').load('./modules/payments.php');
+			$('#cardNo').html(responseText.cardNo);
+		}
+		//alert(responseText.cardNo);
 	}
 	
 	function triggerChange() {
@@ -64,12 +68,12 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 		var options = { 
 	        //target:        '#output1',   // target element(s) to be updated with server response 
 	        beforeSubmit:  validate, // pre-submit callback 
-	        success:       showResponse  // post-submit callback 
+	        success:       showResponse,  // post-submit callback 
 
 	        // other available options: 
 	        //url:       './modules/handler.php'         // override for form's 'action' attribute 
 	        //type:      'post'        // 'get' or 'post', override for form's 'method' attribute 
-	        //dataType:  'json'        // 'xml', 'script', or 'json' (expected server response type) 
+	        dataType:  'json'        // 'xml', 'script', or 'json' (expected server response type) 
 	        //clearForm: true        // clear all form fields after successful submit 
 	        //resetForm: true        // reset the form after successful submit 
 
@@ -123,3 +127,5 @@ Notes
 <div class="quadrant" id="twopoint3">
 Subscriptions
 </div>
+<div class="bottombar" id="messageSpace">
+	</div>
