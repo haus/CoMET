@@ -25,6 +25,7 @@ require_once('../includes/mysqli_connect.php');
 // Initializing some variables.
 $details = true;
 $owner = true;
+echo '{ ';
 
 // Process the data, update as needed.
 // If the new data is different from the current data, insert a new row into the appropriate table, update the old end date to today/now,
@@ -48,7 +49,8 @@ for ($i = 1; $i <= $_SESSION['houseHoldSize']; $i++) {
 	
 }
 
-echo '{ first: "' . $_POST['first'][1] . '"},';
+echo ' "first": "' . $_POST['first'][1] . '", ';
+echo ' "test": "stuff", ';
 
 // First check the details row. 
 // Look for any entries with the current cardNo. If none, insert. If they are there, check for differences between the two.
@@ -77,7 +79,7 @@ switch ($_POST['navButton']) {
 		if (mysqli_num_rows($cardR) == 1)
 			list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
 		
-		echo '{ cardNo: "' . $_SESSION['cardNo'] . '"}';
+		echo ' "cardNo": "' . $_SESSION['cardNo'] . '"}';
 	break;
 
 	case 'prevRecord':
@@ -86,35 +88,35 @@ switch ($_POST['navButton']) {
 		if (mysqli_num_rows($cardR) == 1)
 			list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
 			
-		echo '{ cardNo: "' . $_SESSION['cardNo'] . '"}';
+		echo ' "cardNo": "' . $_SESSION['cardNo'] . '"}';
 	break;
 
 	case 'firstRecord':
 		$cardQ = "SELECT MIN(cardNo) FROM details";
 		$cardR = mysqli_query($DBS['comet'], $cardQ);
 		list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
-		echo '{ cardNo: "' . $_SESSION['cardNo'] . '"}';
+		echo ' "cardNo": "' . $_SESSION['cardNo'] . '"}';
 	break;
 
 	case 'lastRecord':
 		$cardQ = "SELECT MAX(cardNo) FROM details";
 		$cardR = mysqli_query($DBS['comet'], $cardQ);
 		list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
-		echo '{ cardNo: "' . $_SESSION['cardNo'] . '"}';
+		echo ' "cardNo": "' . $_SESSION['cardNo'] . '"}';
 	break;
 	
 	case 'new':
 		$cardQ = "SELECT MAX(cardNo)+1 FROM details";
 		$cardR = mysqli_query($DBS['comet'], $cardQ);
 		list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
-		echo '{ cardNo: "' . $_SESSION['cardNo'] . '"}';
+		echo ' "cardNo": "' . $_SESSION['cardNo'] . '"}';
 	break;
 	
 	default:
 		$cardQ = "SELECT MAX(cardNo)+1 FROM details";
 		$cardR = mysqli_query($DBS['comet'], $cardQ);
 		list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
-		echo '{ cardNo: "' . $_SESSION['cardNo'] . '"}';
+		echo ' "cardNo": "' . $_SESSION['cardNo'] . '"}';
 	break;
 		
 }

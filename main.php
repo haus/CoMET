@@ -28,6 +28,7 @@ if (!$cardR) printf('Query: %s, Error: %s', $cardQ, mysqli_error($DBS['comet']))
 list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
 if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 ?>
+
 <script type="text/JavaScript">
 	function validate(formData, jqForm, options) {
 		changed = $('#changed').val();
@@ -38,15 +39,16 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 	// post-submit callback 
 	function showResponse(responseText, statusText)  { 
 	    // for normal html responses, the first argument to the success callback 
-	    // is the XMLHttpRequest object's responseText property 
+	    // is the XMLHttpRequest object's responseText property
 
 	    // if the ajaxSubmit method was passed an Options Object with the dataType 
 	    // property set to 'xml' then the first argument to the success callback 
-	    // is the XMLHttpRequest object's responseXML property 
+	    // is the XMLHttpRequest object's responseXML property
 
 	    // if the ajaxSubmit method was passed an Options Object with the dataType 
 	    // property set to 'json' then the first argument to the success callback 
-	    // is the json data object returned by the server 
+	    // is the json data object returned by the server
+	
 		// alert(responseText);
 		if (responseText.message == 'error') {
 			$('#messageSpace').html("There was an error updating that record, please check the entry and try again.");	
@@ -57,7 +59,7 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 			$('#payments').load('./modules/payments.php');
 			$('#cardNo').html(responseText.cardNo);
 		}
-		//alert(responseText.cardNo);
+		alert(responseText.first);
 	}
 	
 	function triggerChange() {
