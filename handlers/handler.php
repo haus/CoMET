@@ -23,8 +23,9 @@ require_once('../includes/config.php');
 require_once('../includes/mysqli_connect.php');
 
 // Initializing some variables.
-$details = true;
-$owner = true;
+$details = false;
+$owner = false;
+$owners = false;
 echo '{ ';
 
 // Process the data, update as needed.
@@ -35,7 +36,8 @@ if (empty($_POST['address']) && empty($_POST['city']) && empty($_POST['phone']) 
 	// All blank, if 
 	// if it's a new record, skip insert, just move along.
 	$details = false;
-}
+} else
+	$details = true;
 
 if ( empty($_POST['first'][1]) && empty($_POST['last'][1]) ) { // First person is mandatory.
 	$owner = false;
@@ -44,31 +46,50 @@ if ( empty($_POST['first'][1]) && empty($_POST['last'][1]) ) { // First person i
 // Then check each owner row.
 for ($i = 1; $i <= $_SESSION['houseHoldSize']; $i++) {
 	if ( !empty($_POST['first'][$i]) || !empty($_POST['last'][$i]) ) {
-		$owner = true;
+		$owners = true;
 	}
 	
 }
 
-echo ' "first": "' . $_POST['first'][1] . '", ';
-echo ' "test": "stuff", ';
+if ($_POST['changed'] != 'false') {
 
-// First check the details row. 
-// Look for any entries with the current cardNo. If none, insert. If they are there, check for differences between the two.
-// If they are the same, do nothing. If they are different...
-//	- update the old row to have an end date of now/today
-//	- insert a new row with new info and a start date of now today with an end date of null
-$dCheckQ = "SELECT * FROM details WHERE cardNo={$_SESSION['cardNo']}";
-$dCheckR = mysqli_query($DBS['comet'], $dCheckQ);
+	// First check the details row. 
+	// Look for any entries with the current cardNo. If none, insert. If they are there, check for differences between the two.
+	// If they are the same, do nothing. If they are different...
+	//	- update the old row to have an end date of now/today
+	//	- insert a new row with new info and a start date of now today with an end date of null
+	$dCheckQ = "SELECT * FROM details WHERE cardNo={$_SESSION['cardNo']}";
+	$dCheckR = mysqli_query($DBS['comet'], $dCheckQ);
 
-if ($dCheckR) $numRows = mysqli_num_rows($dCheckR);
-else printf("<p>Query: %s</p><p>MySQLi Error: %s</p>\n", $dCheckQ, mysqli_error($DBS['comet']));
+	if ($dCheckR) $numRows = mysqli_num_rows($dCheckR);
+	else printf("<p>Query: %s</p><p>MySQLi Error: %s</p>\n", $dCheckQ, mysqli_error($DBS['comet']));
 
-if ($numRows == 0 && $details && $owner) { // Easy case. Check for data, if it's there, insert a row.
-	echo '{ message: "error" },';
-} elseif ($numRows == 1 && $details && $owner) { // Already existing record...has it changed?
-	//something
-} else {
-	//something
+	if ($numRows == 0) { // Easy case. Check for data, if it's there, insert a row.
+		if (!$details && !$owners) { // Nothing to write.
+			echo ' "message": "Nothing Saved",';	
+		} elseif ($details && $owner) { // Something to write, check for bad secondary owner rows
+			for ($i = 2; $i <= $_SESSION['houseHoldSize']; $i++) {
+				if ( empty($_POST['first'][$i]) XOR empty($_POST['last'][$i]) ) {
+					
+				}
+			}
+		} else { // Partially filled in. Error.
+			echo ' "message": "Partially Filled In", ';
+			exit();
+		}
+	} elseif ($numRows == 1) { // Already existing row. Update or not.
+		if (!$details && !$owners) { // Empty. Error out.
+			echo ' "message": "Record cannot be empty.", ';
+		} elseif ($details && $owner) { // Mostly filled in. Check secondary owner rows.
+			
+		} else { // Partially filled in. Error.
+			echo ' "message": "Partially Filled In", ';
+			exit();
+		}
+	} else {
+		echo ' "message": "More than one record. Database error.", ';
+	}
+
 }
 
 // Read the submit type, adjust the $_SESSION['cardNo'] and let the main.php JS handle updating the divs
