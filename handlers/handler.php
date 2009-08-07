@@ -21,6 +21,7 @@
 session_start();
 require_once('../includes/config.php');
 require_once('../includes/mysqli_connect.php');
+require_once('../includes/functions.php');
 
 // Initializing some variables.
 $details = false;
@@ -36,11 +37,14 @@ if (empty($_POST['address']) && empty($_POST['city']) && empty($_POST['phone']) 
 	// All blank, if 
 	// if it's a new record, skip insert, just move along.
 	$details = false;
-} else
+} else {
 	$details = true;
+}
 
 if ( empty($_POST['first'][1]) && empty($_POST['last'][1]) ) { // First person is mandatory.
 	$owner = false;
+} else {
+	$owner = true;
 }
 
 // Then check each owner row.
@@ -66,24 +70,66 @@ if ($_POST['changed'] != 'false') {
 
 	if ($numRows == 0) { // Easy case. Check for data, if it's there, insert a row.
 		if (!$details && !$owners) { // Nothing to write.
-			echo ' "message": "Nothing Saved",';	
+			echo ' "message": "' . $_SESSION['userID'] . '",';	
 		} elseif ($details && $owner) { // Something to write, check for bad secondary owner rows
 			for ($i = 2; $i <= $_SESSION['houseHoldSize']; $i++) {
 				if ( empty($_POST['first'][$i]) XOR empty($_POST['last'][$i]) ) {
-					
+					echo ' "message": "Partially filled in. Exiting in error." } ';
+					exit();
 				}
 			}
+			echo ' "message": "data written" ';
+			$address = (strpos($_POST['address'], '\n') ? explode('\n', $_POST['address']) : $_POST['address']);
+			
+			// Details then owners.
+			$detailsQ = sprintf(
+				"INSERT INTO raw_details VALUES 
+					(%u, '%s', %s, '%s', '%s', '%s', %u, '%s', NULL, 0, curdate(), %s, curdate(), NULL, '%s', NULL)", 
+					$_SESSION['cardNo'], 
+					escape_data($DBS['comet'], (is_array($address) ? $address[0] : $address)),
+					escape_data($DBS['comet'], (is_array($address) ? "'" . $address[1] . "'" : 'NULL')),
+					escape_data($DBS['comet'], $_POST['phone']),
+					escape_data($DBS['comet'], $_POST['city']),
+					escape_data($DBS['comet'], $_POST['state']),
+					escape_data($DBS['comet'], $_POST['zip']),
+					escape_data($DBS['comet'], $_POST['email']),
+					$_SESSION['sharePrice'],
+					$_SESSION['userID']
+				);
+			$detailsR = mysqli_query($DBS['comet'], $detailsQ);
+				
+			for ($i = 1; $i <= $_SESSION['houseHoldSize']; $i++) {
+				if ( !empty($_POST['first'][$i]) && !empty($_POST['last'][$i]) ) {
+					$ownerQ = sprintf(
+						"INSERT INTO raw_owners VALUES 
+						(%u, %u, '%s', '%s', %u, %u, %u, %u, %u, curdate(), NULL, %u, NULL)", 
+							$_SESSION['cardNo'], 
+							$i,
+							escape_data($DBS['comet'], $_POST['first'][$i]),
+							escape_data($DBS['comet'], $_POST['last'][$i]),
+							escape_data($DBS['comet'], $_POST['discount'][$i]),
+							escape_data($DBS['comet'], $_POST['memType'][$i]),
+							escape_data($DBS['comet'], $_POST['staff'][$i]),
+							(isset($_POST['checks'][$i]) && $_POST['checks'][$i] == 'on' ? 1 : 0),
+							(isset($_POST['charge'][$i]) && $_POST['charge'][$i] == 'on' ? 1 : 0),
+							$_SESSION['userID']
+					);
+					$ownerR = mysqli_query($DBS['comet'], $ownerQ);
+				}
+			}
+			echo ' "message": "data written", ';
 		} else { // Partially filled in. Error.
-			echo ' "message": "Partially Filled In", ';
+			echo ' "message": "Partially Filled In." } ';
 			exit();
 		}
 	} elseif ($numRows == 1) { // Already existing row. Update or not.
 		if (!$details && !$owners) { // Empty. Error out.
-			echo ' "message": "Record cannot be empty.", ';
+			echo ' "message": "Record cannot be empty."} ';
+			exit();
 		} elseif ($details && $owner) { // Mostly filled in. Check secondary owner rows.
 			
 		} else { // Partially filled in. Error.
-			echo ' "message": "Partially Filled In", ';
+			echo ' "message": "Partially Filled In" }';
 			exit();
 		}
 	} else {

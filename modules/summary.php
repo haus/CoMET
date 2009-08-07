@@ -21,8 +21,8 @@ require_once('../includes/config.php');
 require_once('../includes/mysqli_connect.php');
 
 $payQ = "SELECT SUM(amount), MAX(date), d.nextPayment, d.joined 
-	FROM payments AS p INNER JOIN details AS d ON (d.cardNo = p.cardNo) 
-	WHERE p.cardNo={$_SESSION['cardNo']}";
+	FROM payments AS p RIGHT JOIN details AS d ON (d.cardNo = p.cardNo) 
+	WHERE d.cardNo={$_SESSION['cardNo']}";
 $payR = mysqli_query($DBS['comet'], $payQ);
 
 if (!$payR) printf('Query: %s, Error: %s', $payQ, mysqli_error($DBS['comet']));

@@ -59,6 +59,7 @@
 		if ($a->getAuth()) {
 			$_SESSION['user'] = $a->getUsername();
 			$_SESSION['level'] = $a->getAuthData('level');
+			$_SESSION['userID'] = $a->getAuthData('userID');
 			ob_end_clean();
 		} else {
 			// Failed to login...

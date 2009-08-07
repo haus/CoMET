@@ -18,9 +18,6 @@
 	    You should have received a copy of the GNU General Public License
 	    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	
-	if(undefined===window.variablename){
-	window.variablename = [];
-	}
 */
 session_start();
 require_once('./includes/config.php');
@@ -63,8 +60,10 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 			$('#payments').load('./modules/payments.php');
 			$('#cardNo').html(responseText.cardNo);
 		}
+
 		//if (responseText.first != undefined)
 			//alert(responseText.first);
+		// alert(responseText.message);
 		$('#messageSpace').html(responseText.message);
 	}
 	
