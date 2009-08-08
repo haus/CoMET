@@ -61,8 +61,8 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 			$('#cardNo').html(responseText.cardNo);
 		}
 
-		//if (responseText.first != undefined)
-			//alert(responseText.first);
+		//if (responseText.userID != undefined)
+			//alert(responseText.userID);
 		// alert(responseText.message);
 		$('#messageSpace').html(responseText.message);
 	}

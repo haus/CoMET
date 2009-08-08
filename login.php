@@ -1,5 +1,6 @@
 <?php
 	ob_start();
+	session_start();
 	require_once('includes/config.php');
 	require_once('includes/mysqli_connect.php');
 	require_once('PEAR.php');
@@ -59,7 +60,7 @@
 		if ($a->getAuth()) {
 			$_SESSION['user'] = $a->getUsername();
 			$_SESSION['level'] = $a->getAuthData('level');
-			$_SESSION['userID'] = $a->getAuthData('userID');
+			$_SESSION['userID'] = $a->getAuthData('userid');
 			ob_end_clean();
 		} else {
 			// Failed to login...

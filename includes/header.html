@@ -81,6 +81,7 @@ $a = new Auth("MDB2", $params, 'myLogin');
 if ($a->checkAuth()) {
 	$_SESSION['user'] = $a->getUserName();
 	$_SESSION['level'] = $a->getAuthData('level');
+	$_SESSION['userID'] = $a->getAuthData('userid');
 }
 
 ?>

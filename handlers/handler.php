@@ -28,6 +28,7 @@ $details = false;
 $owner = false;
 $owners = false;
 echo '{ ';
+echo ' "userID": "' . $_SESSION['userID'] . '",';
 
 // Process the data, update as needed.
 // If the new data is different from the current data, insert a new row into the appropriate table, update the old end date to today/now,
