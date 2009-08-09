@@ -28,7 +28,7 @@ $details = false;
 $owner = false;
 $owners = false;
 echo '{ ';
-echo ' "userID": "' . $_SESSION['userID'] . '",';
+// echo ' "userID": "' . $_SESSION['userID'] . '",';
 
 // Process the data, update as needed.
 // If the new data is different from the current data, insert a new row into the appropriate table, update the old end date to today/now,
@@ -56,7 +56,7 @@ for ($i = 1; $i <= $_SESSION['houseHoldSize']; $i++) {
 	
 }
 
-if ($_POST['changed'] != 'false') {
+if (isset($_POST['changed']) && $_POST['changed'] != 'false') {
 
 	// First check the details row. 
 	// Look for any entries with the current cardNo. If none, insert. If they are there, check for differences between the two.
@@ -73,15 +73,11 @@ if ($_POST['changed'] != 'false') {
 		if (!$details && !$owners) { // Nothing to write.
 			echo ' "message": "' . $_SESSION['userID'] . '",';	
 		} elseif ($details && $owner) { // Something to write, check for bad secondary owner rows
-			for ($i = 2; $i <= $_SESSION['houseHoldSize']; $i++) {
-				if ( empty($_POST['first'][$i]) XOR empty($_POST['last'][$i]) ) {
-					echo ' "message": "Partially filled in. Exiting in error." } ';
-					exit();
-				}
-			}
+			checkPost();
 			echo ' "message": "data written" ';
 			$address = (strpos($_POST['address'], '\n') ? explode('\n', $_POST['address']) : $_POST['address']);
-			
+			$phone = ereg_replace("[^0-9]", "", escape_data($DBS['comet'], $_POST['phone']));
+			$zip = ereg_replace("[^0-9]", "", escape_data($DBS['comet'], $_POST['zip']));
 			// Details then owners.
 			$detailsQ = sprintf(
 				"INSERT INTO raw_details VALUES 
@@ -89,10 +85,10 @@ if ($_POST['changed'] != 'false') {
 					$_SESSION['cardNo'], 
 					escape_data($DBS['comet'], (is_array($address) ? $address[0] : $address)),
 					escape_data($DBS['comet'], (is_array($address) ? "'" . $address[1] . "'" : 'NULL')),
-					escape_data($DBS['comet'], $_POST['phone']),
+					$phone,
 					escape_data($DBS['comet'], $_POST['city']),
 					escape_data($DBS['comet'], $_POST['state']),
-					escape_data($DBS['comet'], $_POST['zip']),
+					$zip,
 					escape_data($DBS['comet'], $_POST['email']),
 					$_SESSION['sharePrice'],
 					$_SESSION['userID']
@@ -125,9 +121,10 @@ if ($_POST['changed'] != 'false') {
 		}
 	} elseif ($numRows == 1) { // Already existing row. Update or not.
 		if (!$details && !$owners) { // Empty. Error out.
-			echo ' "message": "Record cannot be empty."} ';
+			echo ' "message": "Record cannot be empty." } ';
 			exit();
 		} elseif ($details && $owner) { // Mostly filled in. Check secondary owner rows.
+			checkPost();
 			
 		} else { // Partially filled in. Error.
 			echo ' "message": "Partially Filled In" }';
@@ -140,14 +137,15 @@ if ($_POST['changed'] != 'false') {
 }
 
 // Read the submit type, adjust the $_SESSION['cardNo'] and let the main.php JS handle updating the divs
-switch ($_POST['navButton']) {
+$navButton = (isset($_POST['navButton']) ? escape_data($DBS['comet'], $_POST['navButton']) : NULL);
+switch ($navButton) {
 	case 'nextRecord':
 		$cardQ = "SELECT cardNo FROM details WHERE cardNo > {$_SESSION['cardNo']} ORDER BY cardNo ASC LIMIT 1";
 		$cardR = mysqli_query($DBS['comet'], $cardQ);
 		if (mysqli_num_rows($cardR) == 1)
 			list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
 		
-		echo ' "cardNo": "' . $_SESSION['cardNo'] . '"}';
+		echo ' "cardNo": "' . $_SESSION['cardNo'] . '" }';
 	break;
 
 	case 'prevRecord':
@@ -156,36 +154,45 @@ switch ($_POST['navButton']) {
 		if (mysqli_num_rows($cardR) == 1)
 			list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
 			
-		echo ' "cardNo": "' . $_SESSION['cardNo'] . '"}';
+		echo ' "cardNo": "' . $_SESSION['cardNo'] . '" }';
 	break;
 
 	case 'firstRecord':
 		$cardQ = "SELECT MIN(cardNo) FROM details";
 		$cardR = mysqli_query($DBS['comet'], $cardQ);
 		list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
-		echo ' "cardNo": "' . $_SESSION['cardNo'] . '"}';
+		echo ' "cardNo": "' . $_SESSION['cardNo'] . '" }';
 	break;
 
 	case 'lastRecord':
 		$cardQ = "SELECT MAX(cardNo) FROM details";
 		$cardR = mysqli_query($DBS['comet'], $cardQ);
 		list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
-		echo ' "cardNo": "' . $_SESSION['cardNo'] . '"}';
+		echo ' "cardNo": "' . $_SESSION['cardNo'] . '" }';
 	break;
 	
 	case 'new':
 		$cardQ = "SELECT MAX(cardNo)+1 FROM details";
 		$cardR = mysqli_query($DBS['comet'], $cardQ);
 		list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
-		echo ' "cardNo": "' . $_SESSION['cardNo'] . '"}';
+		echo ' "cardNo": "' . $_SESSION['cardNo'] . '" }';
 	break;
 	
 	default:
 		$cardQ = "SELECT MAX(cardNo)+1 FROM details";
 		$cardR = mysqli_query($DBS['comet'], $cardQ);
 		list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
-		echo ' "cardNo": "' . $_SESSION['cardNo'] . '"}';
+		echo ' "cardNo": "' . $_SESSION['cardNo'] . '" }';
 	break;
 		
+}
+
+function checkPost() {
+	for ($i = 2; $i <= $_SESSION['houseHoldSize']; $i++) {
+		if ( empty($_POST['first'][$i]) XOR empty($_POST['last'][$i]) ) {
+			echo ' "message": "Partially filled in. Exiting in error." } ';
+			exit();
+		}
+	}
 }
 ?>

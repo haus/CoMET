@@ -46,4 +46,13 @@ $_SESSION['is4c_log'] = array('host' => 'localhost', 'user' => 'root', 'password
 // CoMET DB Connection details.
 $_SESSION['DB'] = array('host'=>'localhost', 'user'=>'root', 'password'=>'lemoncoke', 'database'=>'comet');
 
+// Pear Auth Config Info
+$_SESSION['authParams'] = array(
+	"dsn" => "mysqli://" . $_SESSION['DB']['user'] . ":" . $_SESSION['DB']['password'] . "@" . $_SESSION['DB']['host'] . "/" . $_SESSION['DB']['database'],
+	"table" => "users",
+	"usernamecol" => "user",
+	"passwordcol" => "password",
+	"db_fields" => array('user', 'userID', 'level')
+	);
+
 ?>

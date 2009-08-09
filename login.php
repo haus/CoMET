@@ -1,4 +1,24 @@
 <?php
+/*
+		CoMET is a stand-alone member equity tracking application designed to integrate with IS4C and Fannie.
+	    Copyright (C) 2009  Matthaus Litteken
+		
+		This file is part of CoMET.
+
+	    This program is free software: you can redistribute it and/or modify
+	    it under the terms of the GNU General Public License as published by
+	    the Free Software Foundation, either version 3 of the License, or
+	    (at your option) any later version.
+
+	    This program is distributed in the hope that it will be useful,
+	    but WITHOUT ANY WARRANTY; without even the implied warranty of
+	    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	    GNU General Public License for more details.
+
+	    You should have received a copy of the GNU General Public License
+	    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 	ob_start();
 	session_start();
 	require_once('includes/config.php');
@@ -8,26 +28,19 @@
 	require_once('Auth/Auth.php');
 
 //	$_SESSION['DB'] = array('host'=>'localhost', 'user'=>'root', 'password'=>'lemoncoke', 'database'=>'comet');
-	$params = array(
-		"dsn" => "mysqli://" . $_SESSION['DB']['user'] . ":" . $_SESSION['DB']['password'] . "@" . $_SESSION['DB']['host'] . "/" . $_SESSION['DB']['database'],
-		"table" => "users",
-		"usernamecol" => "user",
-		"passwordcol" => "password",
-		"db_fields" => array('user', 'userID', 'level')
-		);
 		
-	$a = new Auth("MDB2", $params, 'myLogin');
+	$_SESSION['authObject'] = new Auth("MDB2", $_SESSION['authParams'], 'myLogin');
 
 	// Login bizness...
-	$a->setLoginCallback('myLoginCallback');
-	$a->start();
+	$_SESSION['authObject']->setLoginCallback('myLoginCallback');
+	$_SESSION['authObject']->start();
 	
 	// Logout...
-	if ($a->getAuth() && isset($_GET['act']) && $_GET['act'] == "logout") {
-		$a->setLogoutCallback('myLogoutCallback');
+	if ($_SESSION['authObject']->getAuth() && isset($_GET['act']) && $_GET['act'] == "logout") {
+		$_SESSION['authObject']->setLogoutCallback('myLogoutCallback');
 		session_unset();
-		$a->logout();
-		$a->start();
+		$_SESSION['authObject']->logout();
+		$_SESSION['authObject']->start();
 		ob_end_clean();
 		?>
 		<script type="text/javascript">
@@ -37,11 +50,11 @@
 	}
 	
 	// Add user. Admin only.
-	if ($a->getAuth() && isset($_GET['act']) && $_SESSION['level'] == 3) {
+	if ($_SESSION['authObject']->getAuth() && isset($_GET['act']) && $_SESSION['level'] == 3) {
 		// Add user stuff...Only for admins (userLevel = 3). Needs to go inside the auth if.
 		if (isset($_POST['register'])) {
 			if ($_POST['username'] && ($_POST['password'] == $_POST['confirm'])) {
-				$err = $a->addUser($_POST['username'], $_POST['password'], array('level' => $_POST['level']));
+				$err = $_SESSION['authObject']->addUser($_POST['username'], $_POST['password'], array('level' => $_POST['level']));
 
 				if ($err != 1) {
 					// Fields not set or don't match.
@@ -57,23 +70,23 @@
 	
 	if (isset($_POST['submitted'])) {
 	
-		if ($a->getAuth()) {
-			$_SESSION['user'] = $a->getUsername();
-			$_SESSION['level'] = $a->getAuthData('level');
-			$_SESSION['userID'] = $a->getAuthData('userid');
+		if ($_SESSION['authObject']->getAuth()) {
+			$_SESSION['user'] = $_SESSION['authObject']->getUsername();
+			$_SESSION['level'] = $_SESSION['authObject']->getAuthData('level');
+			$_SESSION['userID'] = $_SESSION['authObject']->getAuthData('userid');
 			ob_end_clean();
 		} else {
 			// Failed to login...
 			echo '<font color="#990000">Invalid username or password.</font>';
-		} // End of $a->getAuth(); if
+		} // End of $_SESSION['authObject']->getAuth(); if
 	} // End of $_POST['login']
 	
 	// Logged in?
-	if (isset($_POST['submitted']) && $a->checkAuth() && isset($_SESSION['user'])) {
+	if (isset($_POST['submitted']) && $_SESSION['authObject']->checkAuth() && isset($_SESSION['user'])) {
 		echo 'TRUE';
 	} elseif (isset($_POST['submitted'])) {
 		echo 'FALSE';
-	} elseif ($a->checkAuth() && isset($_SESSION['user'])) {
+	} elseif ($_SESSION['authObject']->checkAuth() && isset($_SESSION['user'])) {
 		echo '<script type="text/javascript">
 				self.parent.tb_remove();
 				self.parent.getElementById();
@@ -144,6 +157,7 @@
 			    // property set to 'json' then the first argument to the success callback 
 			    // is the json data object returned by the server 
 				if (responseText == 'TRUE') {
+					self.parent.location.reload();
 					self.parent.tb_remove();
 				} else {
 					alert('Invalid user name or password. Please try again.');

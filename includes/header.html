@@ -43,8 +43,8 @@ session_start();
 				$(this).ajaxSubmit(options);
 				return false;
 			});
-			$('#content').load('main.php');
 			tb_show('Login Here','login.php?TB_iframe=true&modal=true&height=175&width=250');
+			$('#content').load('main.php');
 
 			// prepare the form when the DOM is ready 
 		    var options = { 
@@ -55,6 +55,7 @@ session_start();
 
 		// post-submit callback 
 		function loginForm(responseText, statusText)  { 
+			parent.location.reload();
 			tb_show('Login Here','login.php?TB_iframe=true&modal=true&height=175&width=250');
 		}
 	</script>
@@ -67,23 +68,13 @@ require_once('./includes/functions.php');
 require_once('PEAR.php');
 require_once('MDB2.php');
 require_once('Auth/Auth.php');
-
-$params = array(
-	"dsn" => "mysqli://root:lemoncoke@localhost/CoMET",
-	"table" => "users",
-	"usernamecol" => "user",
-	"passwordcol" => "password",
-	"db_fields" => array('user', 'userID', 'level')
-	);
 	
-$a = new Auth("MDB2", $params, 'myLogin');
+$_SESSION['authObject'] = new Auth("MDB2", $_SESSION['authParams'], 'myLogin');
 
-if ($a->checkAuth()) {
-	$_SESSION['user'] = $a->getUserName();
-	$_SESSION['level'] = $a->getAuthData('level');
-	$_SESSION['userID'] = $a->getAuthData('userid');
-}
-
+if ($_SESSION['authObject']->checkAuth()) {
+	$_SESSION['user'] = $_SESSION['authObject']->getUserName();
+	$_SESSION['level'] = $_SESSION['authObject']->getAuthData('level');
+	$_SESSION['userID'] = $_SESSION['authObject']->getAuthData('userid');
 ?>
 <noscript>You need javascript to really enjoy all of this.</noscript>
 <div id="header">
@@ -114,3 +105,7 @@ if ($a->checkAuth()) {
 	</ul>
 	</div> <!-- end of header div -->
 	<div id="content">
+<?php	}
+if (!isset($_SESSION['userID']))
+	exit();
+	?>
