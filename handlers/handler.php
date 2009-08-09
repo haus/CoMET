@@ -34,29 +34,40 @@ echo '{ ';
 // If the new data is different from the current data, insert a new row into the appropriate table, update the old end date to today/now,
 // make the new start date today/now and the new end date null.
 // If there isn't a matching row, insert it into the appropriate table, set the start date to now/today and the end date to null.
-if (empty($_POST['address']) && empty($_POST['city']) && empty($_POST['phone']) && empty($_POST['zip'])) {
-	// All blank, if 
-	// if it's a new record, skip insert, just move along.
-	$details = false;
-} else {
-	$details = true;
-}
-
-if ( empty($_POST['first'][1]) && empty($_POST['last'][1]) ) { // First person is mandatory.
-	$owner = false;
-} else {
-	$owner = true;
-}
-
-// Then check each owner row.
-for ($i = 1; $i <= $_SESSION['houseHoldSize']; $i++) {
-	if ( !empty($_POST['first'][$i]) || !empty($_POST['last'][$i]) ) {
-		$owners = true;
-	}
-	
-}
 
 if (isset($_POST['changed']) && $_POST['changed'] != 'false') {
+	$_POST['address'] = trim($_POST['address']);
+	$_POST['city'] = trim($_POST['city']);
+	$_POST['phone'] = trim($_POST['phone']);
+	$_POST['zip'] = trim($_POST['zip']);
+	$_POST['email'] = trim($_POST['email']);
+
+	for ($i = 1; $i <= $_SESSION['houseHoldSize']; $i++) {
+		$_POST['first'][$i] = trim($_POST['first'][$i]);
+		$_POST['last'][$i] = trim($_POST['last'][$i]);
+	}
+	
+	if (empty($_POST['address']) && empty($_POST['city']) && empty($_POST['phone']) && empty($_POST['zip'])) {
+		// All blank, if 
+		// if it's a new record, skip insert, just move along.
+		$details = false;
+	} else {
+		$details = true;
+	}
+
+	if ( empty($_POST['first'][1]) && empty($_POST['last'][1]) ) { // First person is mandatory.
+		$owner = false;
+	} else {
+		$owner = true;
+	}
+
+	// Then check each owner row.
+	for ($i = 1; $i <= $_SESSION['houseHoldSize']; $i++) {
+		if ( !empty($_POST['first'][$i]) || !empty($_POST['last'][$i]) ) {
+			$owners = true;
+		}
+	}
+
 
 	// First check the details row. 
 	// Look for any entries with the current cardNo. If none, insert. If they are there, check for differences between the two.
@@ -73,18 +84,16 @@ if (isset($_POST['changed']) && $_POST['changed'] != 'false') {
 		if (!$details && !$owners) { // Nothing to write.
 			echo ' "message": "' . $_SESSION['userID'] . '",';	
 		} elseif ($details && $owner) { // Something to write, check for bad secondary owner rows
-			checkPost();
+			checkPost(); // Will kill the script if there are errors.
 			echo ' "message": "data written" ';
-			$address = (strpos($_POST['address'], '\n') ? explode('\n', $_POST['address']) : $_POST['address']);
 			$phone = ereg_replace("[^0-9]", "", escape_data($DBS['comet'], $_POST['phone']));
 			$zip = ereg_replace("[^0-9]", "", escape_data($DBS['comet'], $_POST['zip']));
 			// Details then owners.
 			$detailsQ = sprintf(
 				"INSERT INTO raw_details VALUES 
-					(%u, '%s', %s, '%s', '%s', '%s', %u, '%s', NULL, 0, curdate(), %s, curdate(), NULL, '%s', NULL)", 
+					(%u, '%s', '%s', '%s', '%s', %u, '%s', NULL, 0, curdate(), %s, curdate(), NULL, '%s', NULL)", 
 					$_SESSION['cardNo'], 
-					escape_data($DBS['comet'], (is_array($address) ? $address[0] : $address)),
-					escape_data($DBS['comet'], (is_array($address) ? "'" . $address[1] . "'" : 'NULL')),
+					escape_data($DBS['comet'], $_POST['address']),
 					$phone,
 					escape_data($DBS['comet'], $_POST['city']),
 					escape_data($DBS['comet'], $_POST['state']),
@@ -107,8 +116,8 @@ if (isset($_POST['changed']) && $_POST['changed'] != 'false') {
 							escape_data($DBS['comet'], $_POST['discount'][$i]),
 							escape_data($DBS['comet'], $_POST['memType'][$i]),
 							escape_data($DBS['comet'], $_POST['staff'][$i]),
-							(isset($_POST['checks'][$i]) && $_POST['checks'][$i] == 'on' ? 1 : 0),
 							(isset($_POST['charge'][$i]) && $_POST['charge'][$i] == 'on' ? 1 : 0),
+							(isset($_POST['checks'][$i]) && $_POST['checks'][$i] == 'on' ? 1 : 0),
 							$_SESSION['userID']
 					);
 					$ownerR = mysqli_query($DBS['comet'], $ownerQ);
@@ -116,15 +125,34 @@ if (isset($_POST['changed']) && $_POST['changed'] != 'false') {
 			}
 			echo ' "message": "data written", ';
 		} else { // Partially filled in. Error.
-			echo ' "message": "Partially Filled In." } ';
+			echo ' "message": "Partially Filled In." }';
 			exit();
 		}
 	} elseif ($numRows == 1) { // Already existing row. Update or not.
 		if (!$details && !$owners) { // Empty. Error out.
-			echo ' "message": "Record cannot be empty." } ';
+			echo ' "message": "Record cannot be empty." }';
 			exit();
 		} elseif ($details && $owner) { // Mostly filled in. Check secondary owner rows.
-			checkPost();
+			checkPost(); // Will kill the script if there are errors.
+			$phone = ereg_replace("[^0-9]", "", escape_data($DBS['comet'], $_POST['phone']));
+			$zip = ereg_replace("[^0-9]", "", escape_data($DBS['comet'], $_POST['zip']));
+			
+			$detailsQ = sprintf( // If this returns a record, there have been no changes.
+				"SELECT * FROM details WHERE cardNo=%u AND address='%s' AND phone='%s' AND city='%s' AND state='%s' AND zip=%u AND email='%s'", 
+					$_SESSION['cardNo'], 
+					escape_data($DBS['comet'], $_POST['address']),
+					$phone,
+					escape_data($DBS['comet'], $_POST['city']),
+					escape_data($DBS['comet'], $_POST['state']),
+					$zip,
+					escape_data($DBS['comet'], $_POST['email'])
+				);
+			$detailsR = mysqli_query($DBS['comet'], $detailsQ);
+			
+			if (mysqli_num_rows($detailsR) == 1) echo ' "message": "No changes", ';
+			else echo ' "message": "Changes", ';
+			
+			
 			
 		} else { // Partially filled in. Error.
 			echo ' "message": "Partially Filled In" }';

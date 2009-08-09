@@ -97,7 +97,7 @@ $state_list = array('AL'=>"Alabama",
 	);
 </script>
 <?php
-$memDetailsQ = "SELECT CONCAT(address1, IFNULL(CONCAT('\n', address2), '')) as address, phone, city, state, zip, phone, email
+$memDetailsQ = "SELECT address, phone, city, state, zip, phone, email
  	FROM details WHERE cardNo = {$_SESSION['cardNo']} LIMIT 1";
 $memDetailsR = mysqli_query($DBS['comet'], $memDetailsQ);
 
