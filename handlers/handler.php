@@ -85,7 +85,7 @@ if (isset($_POST['changed']) && $_POST['changed'] != 'false') {
 			echo ' "message": "' . $_SESSION['userID'] . '",';	
 		} elseif ($details && $owner) { // Something to write, check for bad secondary owner rows
 			checkPost(); // Will kill the script if there are errors.
-			echo ' "message": "data written" ';
+			echo ' "message": "data written", ';
 			$phone = ereg_replace("[^0-9]", "", escape_data($DBS['comet'], $_POST['phone']));
 			$zip = ereg_replace("[^0-9]", "", escape_data($DBS['comet'], $_POST['zip']));
 			// Details then owners.
@@ -150,7 +150,34 @@ if (isset($_POST['changed']) && $_POST['changed'] != 'false') {
 			$detailsR = mysqli_query($DBS['comet'], $detailsQ);
 			
 			if (mysqli_num_rows($detailsR) == 1) echo ' "message": "No changes", ';
-			else echo ' "message": "Changes", ';
+			else {
+				// Updating records. Two queries. One to update the old record, one to insert the new record.
+				$detailsUpdateQ = sprintf(
+					"UPDATE raw_details SET endDate=curdate() WHERE cardNo=%u AND endDate IS NULL",
+					$_SESSION['cardNo']
+					);
+				$detailsUpdateR = mysqli_query($DBS['comet'], $detailsUpdateQ);
+				if ($detailsUpdateR) {
+					$detailsInsertQ = sprintf(
+						"INSERT INTO raw_details VALUES 
+							(%u, '%s', '%s', '%s', '%s', %u, '%s', NULL, 0, curdate(), %s, curdate(), NULL, '%s', NULL)", 
+							$_SESSION['cardNo'], 
+							escape_data($DBS['comet'], $_POST['address']),
+							$phone,
+							escape_data($DBS['comet'], $_POST['city']),
+							escape_data($DBS['comet'], $_POST['state']),
+							$zip,
+							escape_data($DBS['comet'], $_POST['email']),
+							$_SESSION['sharePrice'],
+							$_SESSION['userID']
+						);
+					$detailsInsertR = mysqli_query($DBS['comet'], $detailsInsertQ);
+				}
+				
+				if ($detailsInsertR)
+					echo ' "message": "Changes made, details updated", ';
+				
+			}
 			
 			
 			
