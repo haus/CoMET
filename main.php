@@ -104,7 +104,7 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 		$('#payments').load('./modules/payments.php');
 	});
 </script>
-<form id="navForm" method="POST" name="navForm" action="./handlers/handler.php">
+<form id="navForm" method="POST" name="navForm" action="./handlers/mainHandler.php">
 	<div class="topbar" id="mainNav">
 		<span style="float: left;">
 			<button type="submit" name="firstRecord" value="first" id="firstRecord">&lt;&lt;&lt;</button>
