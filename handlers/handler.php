@@ -179,6 +179,112 @@ if (isset($_POST['changed']) && $_POST['changed'] != 'false') {
 				
 			}
 			
+			for ($i = 1; $i <= $_SESSION['houseHoldSize']; $i++) {
+				/* Four possibilities. 
+					- No changes (numRows1 = 1 and numRows = 1)
+					- Someone being added who wasn't there before (numRows1 = 0, first and last not empty)
+					- Someone being taken away that was there before (numRows1 = 1, numRows = 0, first and last empty)
+					- Someone being updated (numRows1 = 1, numRows = 0, first and last not empty)
+				*/
+				$ownerQ1 = sprintf("SELECT * FROM owners WHERE cardNo=%u AND personNum=%u", $_SESSION['cardNo'], $i);
+				$ownerR1 = mysqli_query($DBS['comet'], $ownerQ1);
+				$ownerNumRows1 = mysqli_num_rows($ownerR1);
+
+				$first = escape_data($DBS['comet'], $_POST['first'][$i]);
+				$last = escape_data($DBS['comet'], $_POST['last'][$i]);
+				
+				$ownerQ = sprintf("SELECT * FROM owners WHERE 
+					cardNo=%u AND 
+					firstName='%s' AND 
+					lastName='%s' AND 
+					personNum=%u AND 
+					discount=%u AND 
+					memType=%u AND 
+					staff=%u AND 
+					chargeOk=%u AND 
+					writeChecks=%u",
+					$_SESSION['cardNo'],
+					$first,
+					$last,
+					$i,
+					escape_data($DBS['comet'], $_POST['discount'][$i]),
+					escape_data($DBS['comet'], $_POST['memType'][$i]),
+					escape_data($DBS['comet'], $_POST['staff'][$i]),
+					(isset($_POST['charge'][$i]) && $_POST['charge'][$i] == 'on' ? 1 : 0),
+					(isset($_POST['checks'][$i]) && $_POST['checks'][$i] == 'on' ? 1 : 0)
+				);
+				
+				$ownerR = mysqli_query($DBS['comet'], $ownerQ);
+				$ownerNumRows = mysqli_num_rows($ownerR);
+				
+				if ($ownerNumRows1 == 0 && !empty($first) && !empty($last)) { // Adding person to card
+					$ownerInsertQ = sprintf("INSERT INTO raw_owners VALUES
+						(%u, %u, '%s', '%s', %u, %u, %u, %u, %u, curdate(), NULL, %u, NULL)",
+						$_SESSION['cardNo'],
+						$i,
+						$first,
+						$last,
+						escape_data($DBS['comet'], $_POST['discount'][$i]),
+						escape_data($DBS['comet'], $_POST['memType'][$i]),
+						escape_data($DBS['comet'], $_POST['staff'][$i]),
+						(isset($_POST['charge'][$i]) && $_POST['charge'][$i] == 'on' ? 1 : 0),
+						(isset($_POST['checks'][$i]) && $_POST['checks'][$i] == 'on' ? 1 : 0),
+						$_SESSION['userID']
+					);
+					$ownerInsertR = mysqli_query($DBS['comet'], $ownerInsertQ);
+					
+					if ($ownerInsertR)
+						echo ' "message": "success ' . $i . ' added ", ';
+					else
+						echo ' "message": "error ' . $i . ' error ", '; 
+				} elseif ($ownerNumRows1 == 1 && $ownerNumRows == 0 && empty($first) && empty($last)) { // Removing person from card
+					$ownerUpdateQ = sprintf("UPDATE raw_owners SET endDate=curdate() WHERE cardNo=%u AND personNum=%u AND endDate IS NULL",
+						$_SESSION['cardNo'],
+						$i
+					);
+					$ownerUpdateR = mysqli_query($DBS['comet'], $ownerUpdateQ);
+					
+					if ($ownerUpdateR)
+						echo ' "message": "success ' . $i . ' removed", ';
+					else
+						echo ' "message": "failure ' . $i . ' removed", ';
+				} elseif ($ownerNumRows1 == 1 && $ownerNumRows == 0 && !empty($first) && !empty($last)) { // Updating person on card
+					// First update the old row.
+					$ownerUpdateQ = sprintf("UPDATE raw_owners SET endDate=curdate() WHERE cardNo=%u AND personNum=%u AND endDate IS NULL",
+						$_SESSION['cardNo'],
+						$i
+					);
+					$ownerUpdateR = mysqli_query($DBS['comet'], $ownerUpdateQ);
+					
+					if ($ownerUpdateR) {
+						// Then insert the new row.
+						echo ' "message": "success ' . $i . ' updated", ';
+						
+						$ownerInsertQ = sprintf("INSERT INTO raw_owners VALUES
+							(%u, %u, '%s', '%s', %u, %u, %u, %u, %u, curdate(), NULL, %u, NULL)",
+							$_SESSION['cardNo'],
+							$i,
+							$first,
+							$last,
+							escape_data($DBS['comet'], $_POST['discount'][$i]),
+							escape_data($DBS['comet'], $_POST['memType'][$i]),
+							escape_data($DBS['comet'], $_POST['staff'][$i]),
+							(isset($_POST['charge'][$i]) && $_POST['charge'][$i] == 'on' ? 1 : 0),
+							(isset($_POST['checks'][$i]) && $_POST['checks'][$i] == 'on' ? 1 : 0),
+							$_SESSION['userID']
+						);
+						$ownerInsertR = mysqli_query($DBS['comet'], $ownerInsertQ);
+						
+						if ($ownerInsertR)
+							echo ' "message": "success ' . $i . ' inserted", ';
+						else
+							echo ' "message": "failure on ' . $i . ' inserted", ';
+							
+					}
+				}
+				
+			}
+			
 			
 			
 		} else { // Partially filled in. Error.

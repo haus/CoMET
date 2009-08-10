@@ -63,7 +63,7 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 
 		//if (responseText.userID != undefined)
 			//alert(responseText.userID);
-		// alert(responseText.message);
+		//alert(responseText.message);
 		$('#messageSpace').html(responseText.message);
 	}
 	
