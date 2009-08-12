@@ -41,7 +41,19 @@ if (isset($_POST['newMain']) && $_POST['newMain'] == "true") {
 				mysqli_error($DBS['comet'])
 			);
 		} else {
-			echo ' { "success": "Note added." } ';
+			$tID = mysqli_insert_id($DBS['comet']);
+			$noteQ = sprintf("UPDATE notes SET parentID=%u WHERE threadID=%u",
+				$tID, $tID
+				);
+			$noteR = mysqli_query($DBS['comet'], $noteQ);
+			if (!$noteR) {
+				printf('{ "errorMsg":"Query: %s, Error: %s" } ',
+					$noteQ, 
+					mysqli_error($DBS['comet'])
+				);
+			} else {
+				echo ' { "success": "Note added." } ';
+			}
 		}
 	} else {
 		echo ' { "errorMsg": "Cannot add an empty note." } ';

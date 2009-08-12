@@ -55,7 +55,7 @@ if (!$notesR) printf('Query: %s, Error: %s', $notesQ, mysqli_error($DBS['comet']
 
 if (mysqli_num_rows($notesR) > 0) {
 	while (list($note, $tID, $pID, $modified, $uID, $name) = mysqli_fetch_row($notesR)) {
-
+		
 		printf('<tr class="center">
 					<td>
 						<input type="submit" value="Reply" id="%s" name="addChild[]" onclick="%s" />
