@@ -23,8 +23,6 @@ require_once('../includes/config.php');
 require_once('../includes/mysqli_connect.php');
 require_once('../includes/functions.php');
 
-//print_r($_POST);
-
 if (isset($_POST['newMain']) && $_POST['newMain'] == "true") {
 	// Validate the note.
 	$mainNote = escape_data($DBS['comet'], $_POST['mainNote']);

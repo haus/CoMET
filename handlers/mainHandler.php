@@ -27,7 +27,8 @@ require_once('../includes/functions.php');
 $details = false;
 $owner = false;
 $owners = false;
-echo '{ ';
+if (!isset($_POST['value']))
+	echo '{ ';
 // echo ' "userID": "' . $_SESSION['userID'] . '",';
 
 // Process the data, update as needed.
@@ -91,7 +92,7 @@ if (isset($_POST['changed']) && $_POST['changed'] != 'false') {
 			// Details then owners.
 			$detailsQ = sprintf(
 				"INSERT INTO raw_details VALUES 
-					(%u, '%s', '%s', '%s', '%s', %u, '%s', NULL, 0, curdate(), %s, curdate(), NULL, '%s', NULL)", 
+					(%u, '%s', '%s', '%s', '%s', %u, '%s', NULL, 1, curdate(), %s, curdate(), NULL, '%s', NULL)", 
 					$_SESSION['cardNo'], 
 					escape_data($DBS['comet'], $_POST['address']),
 					$phone,
@@ -160,7 +161,7 @@ if (isset($_POST['changed']) && $_POST['changed'] != 'false') {
 				if ($detailsUpdateR) {
 					$detailsInsertQ = sprintf(
 						"INSERT INTO raw_details VALUES 
-							(%u, '%s', '%s', '%s', '%s', %u, '%s', NULL, 0, curdate(), %s, curdate(), NULL, '%s', NULL)", 
+							(%u, '%s', '%s', '%s', '%s', %u, '%s', NULL, 1, curdate(), %s, curdate(), NULL, '%s', NULL)", 
 							$_SESSION['cardNo'], 
 							escape_data($DBS['comet'], $_POST['address']),
 							$phone,
@@ -298,8 +299,15 @@ if (isset($_POST['changed']) && $_POST['changed'] != 'false') {
 }
 
 // Read the submit type, adjust the $_SESSION['cardNo'] and let the main.php JS handle updating the divs
-$navButton = (isset($_POST['navButton']) ? escape_data($DBS['comet'], $_POST['navButton']) : NULL);
+$navButton = (isset($_REQUEST['navButton']) ? escape_data($DBS['comet'], $_REQUEST['navButton']) : NULL);
 switch ($navButton) {
+	case 'customRecord':
+		if (is_numeric($_POST['value']) && $_POST['value'] > 0)
+			$_SESSION['cardNo'] = (int) $_POST['value'];
+
+		echo $_SESSION['cardNo'];
+	break;
+	
 	case 'nextRecord':
 		$cardQ = "SELECT cardNo FROM details WHERE cardNo > {$_SESSION['cardNo']} ORDER BY cardNo ASC LIMIT 1";
 		$cardR = mysqli_query($DBS['comet'], $cardQ);
@@ -335,14 +343,22 @@ switch ($navButton) {
 	case 'new':
 		$cardQ = "SELECT MAX(cardNo)+1 FROM details";
 		$cardR = mysqli_query($DBS['comet'], $cardQ);
-		list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
+		
+		if (mysqli_num_rows($cardR) == 1)
+			list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
+		else // Brand new installation case.
+			$_SESSION['cardNo'] = 1;
 		echo ' "cardNo": "' . $_SESSION['cardNo'] . '" }';
 	break;
 	
 	default:
 		$cardQ = "SELECT MAX(cardNo)+1 FROM details";
 		$cardR = mysqli_query($DBS['comet'], $cardQ);
-		list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
+		
+		if (mysqli_num_rows($cardR) == 1)
+			list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
+		else // Brand new installation case.
+			$_SESSION['cardNo'] = 1;
 		echo ' "cardNo": "' . $_SESSION['cardNo'] . '" }';
 	break;
 		

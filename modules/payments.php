@@ -36,6 +36,10 @@ $paymentsQ = "SELECT amount, date, memo, paymentID, reference
 	FROM payments WHERE cardNo={$_SESSION['cardNo']} ORDER BY date ASC";
 $paymentsR = mysqli_query($DBS['comet'], $paymentsQ);
 
+$planQ = "SELECT amount FROM paymentPlans WHERE planID=(SELECT paymentPlan FROM details WHERE cardNo={$_SESSION['cardNo']})";
+$planR = mysqli_query($DBS['comet'], $planQ);
+list($defaultAmount) = mysqli_fetch_row($planR);
+
 echo '<h3 class="center">Payments</h3><br />
 	<input type="hidden" id="removeID" name="removeID" value="false" />';
 echo '<table cellpadding="2" cellspacing="2" width="100%">
@@ -58,7 +62,7 @@ if (mysqli_num_rows($paymentsR) > 0) {
 echo '<tr class="center">
 		<td><input type="image" src="includes/images/plus-8.png" name="pmtSubmit" id="pmtSubmit" /></td>
 		<td><input type="text" name="date" id="pmtDatepicker" size="10" maxlength="10" /></td>
-		<td>$<input type="text" name="amount" id="pmtAmount" size="5" maxlength="6" /></td>
+		<td>$<input type="text" name="amount" id="pmtAmount" size="5" maxlength="6" value="' . number_format($defaultAmount, 2) . '" /></td>
 		<td><input type="text" name="memo" id="pmtMemo" size="35" maxlength="50" /></td>
 		<td><input type="text" name="ref" id="pmtReference" size="10" maxlength="20" /></td>
 	</tr>

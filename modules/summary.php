@@ -17,42 +17,55 @@
 	    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 session_start();
+?>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#editPrice').editable('./handlers/summaryHandler.php',
+			{
+				style: 'display: inline',
+				onblur: 'submit',
+				tooltip: 'Click to edit...'
+			}
+		);
+
+		$('#editPlan').editable('./handlers/summaryHandler.php', 
+			{
+				loadurl: './handlers/summaryHandler.php?plans=true',
+				type: 'select',
+				style: 'display: inline',
+				onblur: 'submit'
+			}
+		);
+	});
+</script>
+
+<?php
 require_once('../includes/config.php');
 require_once('../includes/mysqli_connect.php');
 
-$payQ = "SELECT SUM(amount), MAX(date), d.nextPayment, d.joined, d.sharePrice 
-	FROM payments AS p RIGHT JOIN details AS d ON (d.cardNo = p.cardNo) 
+$payQ = "SELECT SUM(p.amount), MAX(date), d.nextPayment, d.joined, d.sharePrice, d.paymentPlan, pp.frequency, pp.amount 
+	FROM payments AS p 
+		RIGHT JOIN details AS d ON (d.cardNo = p.cardNo) 
+		INNER JOIN paymentPlans AS pp ON (d.paymentPlan = pp.planID)
 	WHERE d.cardNo={$_SESSION['cardNo']}";
 $payR = mysqli_query($DBS['comet'], $payQ);
 
 if (!$payR) printf('Query: %s, Error: %s', $payQ, mysqli_error($DBS['comet']));
-list($paid, $lastPaid, $nextPayment, $joinDate, $sharePrice) = mysqli_fetch_row($payR);
+list($paid, $lastPaid, $nextPayment, $joinDate, $sharePrice, $pmtPlan, $freq, $amount) = mysqli_fetch_row($payR);
 
-// Get the payments plans and populate a drop-down menu.
-
-$planQ = "SELECT * FROM paymentPlans ORDER BY planID ASC";
-$planR = mysqli_query($DBS['comet'], $planQ);
-if (!$planR) printf('Query: %s, Error: %s', $planQ, mysqli_error($DBS['comet']));
-
-$plan = '<select name="plan">';
-while (list($planID, $freq, $amount) = mysqli_fetch_row($planR)) {
-	$plan .= sprintf('<option value="%u">%s</option>',
-		$planID,
-		($freq > 1 ? '$' . $amount . ", $freq times per year" : '$' . $amount . " annually")
-	);
-}
-
-$plan .= '</select>';
+$plan = ($pmtPlan > 0 ? 
+			($freq > 1 ? '$' . $amount . ", $freq times per year" : '$' . $amount . " annually")
+			: "$45 annually");
 
 printf('<p>
 			<strong>Card No: </strong>%u<br />
 			<strong>Join Date: </strong>%s<br />
-			<strong>Share Price: </strong>$%s<br />
+			<strong>Share Price: </strong>$<span name="sharePrice" id="editPrice">%s</span><br />
 			<strong>Total Paid: </strong>$%s<br />
 			<strong>Remaining To Pay: </strong>$%s<br />
 			<strong>Next Payment Due: </strong>%s<br />
 			<strong>Last Payment Made: </strong>%s<br />
-			<strong>Payment Plan: %s</strong>
+			<strong>Payment Plan: </strong><span name="paymentPlan" id="editPlan">%s</span>
 		</p>', 
 		$_SESSION['cardNo'], 
 		(is_null($joinDate) ? $joinDate : date('m-d-Y', strtotime($joinDate))), 

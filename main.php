@@ -95,9 +95,24 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 			return false;
 		});
 		
+		$('#cardNo').editable('./handlers/mainHandler.php?navButton=customRecord', {
+			width: 40,
+			style: 'display: inline',
+			onblur: 'submit',
+			tooltip: 'Click to browse by number...',
+			callback: function(value, settings) {
+				$('#owner').load('./modules/owner.php');
+				$('#details').load('./modules/details.php');
+				$('#summary').load('./modules/summary.php');
+				$('#payments').load('./modules/payments.php');
+				$('#notes').load('./modules/notes.php');
+				$('#cardNo').html(value);
+			}
+		});
+		
 		$('#navForm :button').click(function() {
 			$('#navButton').val(this.id);
-		})
+		});
 	
 		$('#owner').load('./modules/owner.php');
 		$('#details').load('./modules/details.php');
