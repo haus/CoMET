@@ -23,48 +23,65 @@ require_once('../includes/config.php');
 require_once('../includes/mysqli_connect.php');
 require_once('../includes/functions.php');
 
-// Sanitize the data.
-if (isset($_POST['date'])) $date = escape_data($DBS['comet'], $_POST['date']);
-if (isset($_POST['memo'])) $memo = escape_data($DBS['comet'], $_POST['memo']);
-if (isset($_POST['reference'])) $reference = escape_data($DBS['comet'], $_POST['reference']);
-if (isset($_POST['amount'])) $amount = escape_data($DBS['comet'], $_POST['amount']);
+//print_r($_POST);
 
-// Validate the data a bit.
-if (isset($_POST['removeID']) && is_numeric($_POST['removeID'])) {
-	$paymentQ = sprintf("DELETE FROM payments WHERE paymentID=%u LIMIT 1",
-		escape_data($DBS['comet'], $_POST['removeID'])
-	);
+if (isset($_POST['newMain']) && $_POST['newMain'] == "true") {
+	// Validate the note.
+	$mainNote = escape_data($DBS['comet'], $_POST['mainNote']);
 	
-	$paymentR = mysqli_query($DBS['comet'], $paymentQ);
-	if (!$paymentR) {
-		printf('{ "errorMsg":"Query: %s, Error: %s" }',
-			$paymentQ, 
-			mysqli_error($DBS['comet'])
-		);
+	if (!empty($mainNote)) {
+		$noteQ = sprintf("INSERT INTO notes VALUES ('%s', NULL, NULL, %u, now(), %u)",
+			$mainNote, $_SESSION['cardNo'], $_SESSION['userID']
+			);
+		$noteR = mysqli_query($DBS['comet'], $noteQ);
+		
+		if (!$noteR) {
+			printf('{ "errorMsg":"Query: %s, Error: %s" } ',
+				$noteQ, 
+				mysqli_error($DBS['comet'])
+			);
+		} else {
+			echo ' { "success": "Note added." } ';
+		}
 	} else {
-		echo '{ "success": "success!" }';
+		echo ' { "errorMsg": "Cannot add an empty note." } ';
 	}
-} elseif (!empty($date) && !empty($amount) && is_numeric($amount) && checkdate(substr($date, 5, 2), substr($date, 8, 2), substr($date, 0, 4))) { // Non empty, numeric amount, non empty actual date.
-	$paymentQ = sprintf("INSERT INTO payments VALUES (NULL, %s, %f, '%s', %s, %u, %u)",
-		(empty($memo) ? 'NULL' : "'" . $memo . "'"),
-		$amount,
-		$date,
-		(empty($reference) ? 'NULL' : "'" . $reference . "'"),
-		$_SESSION['userID'],
-		$_SESSION['cardNo']
-	);
+} elseif (isset($_POST['noteID']) && is_numeric($_POST['noteID'])) {
+	$parent = (int) $_POST['noteID'];
+	$note = escape_data($DBS['comet'], $_POST['note'][$parent]);
 	
-	$paymentR = mysqli_query($DBS['comet'], $paymentQ);
-	if (!$paymentR) {
-		printf('{ "errorMsg":"Query: %s, Error: %s" }',
-			$dateQ, 
-			mysqli_error($DBS['comet'])
-		);
+	if (!empty($note)) {
+		$noteQ = sprintf("INSERT INTO notes VALUES ('%s', NULL, %u, %u, now(), %u)",
+			$note, $parent, $_SESSION['cardNo'], $_SESSION['userID']
+			);
+		$noteR = mysqli_query($DBS['comet'], $noteQ);
+		
+		if (!$noteR) {
+			printf('{ "errorMsg":"Query: %s, Error: %s" } ',
+				$noteQ, 
+				mysqli_error($DBS['comet'])
+			);
+		} else {
+			echo ' { "success": "Reply added." } ';
+		}
 	} else {
-		echo '{ "success": "success!" }';
+		echo ' { "errorMsg": "Cannot add an empty note." } ';
 	}
-} else {
-	echo '{ "errorMsg":"The amount must be a number and the date a date." }';
-}
+	
+} elseif (isset($_POST['removeID']) && is_numeric($_POST['removeID'])) {
+		$noteQ = sprintf("DELETE FROM notes WHERE threadID=%u LIMIT 1",
+			escape_data($DBS['comet'], $_POST['removeID'])
+		);
+
+		$noteR = mysqli_query($DBS['comet'], $noteQ);
+		if (!$noteR) {
+			printf('{ "errorMsg":"Query: %s, Error: %s" }',
+				$noteQ, 
+				mysqli_error($DBS['comet'])
+			);
+		} else {
+			echo '{ "success": "success!" }';
+		}
+	}
 
 ?>

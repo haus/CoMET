@@ -20,48 +20,79 @@ session_start();
 ?>
 
 <script type="text/javascript">
-	$(document).ready(function() {
-		$('#pmtDatepicker').datepicker({ dateFormat: 'yy-mm-dd' });
-	});
-	
 	function updateRemoveID(id) {
 		$('#removeID').val(id);
+	}
+	
+	function showRow(id) {
+		$('#' + id).show();
+		$('#button' + id).hide();
+	}
+	
+	function newNote() {
+		$('#newMain').val(true);
+	}
+	
+	function addChild(id) {
+		$('#noteID').val(id);
 	}
 </script>
 <?php
 require_once('../includes/config.php');
 require_once('../includes/mysqli_connect.php');
 
-$paymentsQ = "SELECT amount, date, memo, paymentID, reference
-	FROM payments WHERE cardNo={$_SESSION['cardNo']} ORDER BY date ASC";
-$paymentsR = mysqli_query($DBS['comet'], $paymentsQ);
+$notesQ = "SELECT note, threadID, parentID, DATE(modified), notes.userID, u.user
+	FROM notes INNER JOIN users AS u ON (notes.userID = u.userID) WHERE cardNo={$_SESSION['cardNo']}";
+$notesR = mysqli_query($DBS['comet'], $notesQ);
 
-echo '<h3 class="center">Payments</h3><br />
-	<input type="hidden" id="removeID" name="removeID" value="false" />';
-echo '<table cellpadding="2" cellspacing="2" width="100%">
-	<tr><th>&nbsp;</th><th>Date</th><th>Amount</th><th>Memo</th><th>Reference</th></tr>';
+echo '<h3 class="center">Notes</h3><br />
+	<input type="hidden" id="removeID" name="removeID" value="false" />
+	<input type="hidden" id="newMain" name="newMain" value="false" />
+	<input type="hidden" id="noteID" name="noteID" value="false" />';
+echo '<table cellpadding="2" cellspacing="2" width="100%">';
 
-if (!$paymentsR) printf('Query: %s, Error: %s', $paymentsQ, mysqli_error($DBS['comet']));
+if (!$notesR) printf('Query: %s, Error: %s', $notesQ, mysqli_error($DBS['comet']));
 
-if (mysqli_num_rows($paymentsR) > 0) {
-	while (list($amount, $date, $memo, $id, $ref) = mysqli_fetch_row($paymentsR)) {
+if (mysqli_num_rows($notesR) > 0) {
+	while (list($note, $tID, $pID, $modified, $uID, $name) = mysqli_fetch_row($notesR)) {
 
 		printf('<tr class="center">
-				<td><input type="image" src="includes/images/minus-8.png" name="pmtRemove[]" onclick="%s" /></td>
-				<td>%s</td>
-				<td>$%s</td>
-				<td>%s</td>
-				<td>%s (Thickbox receipt link)</td>
-				</tr>', 'updateRemoveID(' . $id . ');', date('m-d-Y', strtotime($date)), number_format($amount, 2), $memo, $ref);
+					<td>
+						<input type="submit" value="Reply" id="%s" name="addChild[]" onclick="%s" />
+						<input type="image" src="includes/images/minus-8.png" name="pmtRemove[]" onclick="%s" />
+					</td>
+					<td>%s</td>
+					<td>%s</td>
+					<td>%s</td>
+				</tr>
+				<tr id="%u" style="display:none" class="center">
+					<td>
+						<input type="submit" value="Add Reply" name="addNote[]" onclick="%s" />
+					</td>
+					<td colspan="3">
+						<input type="text" name="note[%u]" size="50" maxlength="100" />
+					</td>
+				</tr>',
+				'button' . $tID,
+				'showRow(' . $tID . ');	return false;', 
+				'updateRemoveID(' . $tID . ');', 
+				date('m-d-Y', strtotime($modified)), 
+				$note, 
+				$name,
+				$tID,
+				'addChild(' . $tID . ');',
+				$tID
+			);
 		}
 }
-echo '<tr class="center">
-		<td><input type="image" src="includes/images/plus-8.png" name="pmtSubmit" id="pmtSubmit" /></td>
-		<td><input type="text" name="date" id="pmtDatepicker" size="10" maxlength="10" /></td>
-		<td>$<input type="text" name="amount" id="pmtAmount" size="5" maxlength="6" /></td>
-		<td><input type="text" name="memo" id="pmtMemo" size="35" maxlength="50" /></td>
-		<td><input type="text" name="ref" id="pmtReference" size="10" maxlength="20" /></td>
-	</tr>
-	</table><br />';
+printf('<tr class="center">
+		<td>
+			<input type="submit" value="Add Note" name="addMainNote" onclick="%s"/>
+		</td>
+		<td colspan="3">
+			<input type="text" name="mainNote" size="50" maxlength="100" />
+		</td>
+		</tr>
+	</table><br />', 'newNote();');
 
 ?>

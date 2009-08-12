@@ -26,7 +26,7 @@ $payQ = "SELECT SUM(amount), MAX(date), d.nextPayment, d.joined, d.sharePrice
 $payR = mysqli_query($DBS['comet'], $payQ);
 
 if (!$payR) printf('Query: %s, Error: %s', $payQ, mysqli_error($DBS['comet']));
-list($paid, $lastPaid, $sharePrice, $nextPayment, $joinDate) = mysqli_fetch_row($payR);
+list($paid, $lastPaid, $nextPayment, $joinDate, $sharePrice) = mysqli_fetch_row($payR);
 
 // Get the payments plans and populate a drop-down menu.
 
