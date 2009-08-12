@@ -94,29 +94,34 @@ div#onepoint1 {
 	clear: left;
 	height: 49%;
 	width: 67%;
+	padding: 5px;
 }
 
 div#onepoint2 {
 	height: 49%;
-	width: 32%;
+	width: 30%;
+	padding: 5px;
 }
 
 div#twopoint1 {
 	clear: left;
-	width: 33%;
+	width: 40%;
 	height: 48%;
+	padding: 5px;
 }
 
 div#twopoint2 {
 	float: left;
-	width: 33%;
-	height: 48%;	
+	width: 42%;
+	height: 48%;
+	padding: 5px;	
 }
 
 div#twopoint3 {
 	float: left;
-	width: 33%;
+	width: 15%;
 	height: 48%;
+	padding: 5px;
 }
 
 .newline {

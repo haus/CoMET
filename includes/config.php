@@ -32,9 +32,6 @@ $_SESSION['discounts'] = array(0,2,5,15);
 // Default share price.
 $_SESSION['sharePrice'] = 180.00;
 
-// Payment plan options.
-$_SESSION['paymentPlans'] = array();
-
 /**
  *	Database Information
 */

@@ -102,6 +102,7 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 		$('#details').load('./modules/details.php');
 		$('#summary').load('./modules/summary.php');
 		$('#payments').load('./modules/payments.php');
+		$('#notes').load('./modules/notes.php');
 	});
 	
 	function validatePayment(formData, jqForm, options) {
@@ -152,17 +153,6 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 			$(this).ajaxSubmit(options);
 			return false;
 		});
-		/*
-		$('#navForm :button').click(function() {
-			$('#navButton').val(this.id);
-		})
-		*/
-		/*
-		$('#owner').load('./modules/owner.php');
-		$('#details').load('./modules/details.php');
-		$('#summary').load('./modules/summary.php');
-		$('#payments').load('./modules/payments.php');
-		*/
 	});
 </script>
 <form id="navForm" method="POST" name="navForm" action="./handlers/mainHandler.php">
@@ -187,7 +177,9 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 	<div id="summary"></div>
 </div>
 <div class="quadrant" id="twopoint1">
-Notes
+	<div id="notes">
+		<h3 class="center">Notes</h3>
+	</div>
 </div>
 <div class="quadrant" id="twopoint2">
 	<form id="paymentForm" method="POST" name="paymentForm" action="./handlers/paymentHandler.php">
@@ -195,7 +187,14 @@ Notes
 	</form>	
 </div>
 <div class="quadrant" id="twopoint3">
-Subscriptions
-</div>
-<div class="bottombar" id="messageSpace">
+	<div id="subscriptions">
+		<h3  class="center">Mailing Lists</h3>
+		<br />
+		<ul style="padding: 35px;">
+			<li><input type="checkbox" name="listOne" /> List One</li>
+			<li><input type="checkbox" name="listTwo" /> List Two</li>
+			<li><input type="checkbox" name="listThree" /> List Three</li>
+		</ul>
+		<br />
 	</div>
+</div>
