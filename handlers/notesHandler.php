@@ -30,7 +30,7 @@ if (isset($_POST['newMain']) && $_POST['newMain'] == "true") {
 	$mainNote = escape_data($DBS['comet'], $_POST['mainNote']);
 	
 	if (!empty($mainNote)) {
-		$noteQ = sprintf("INSERT INTO notes VALUES ('%s', NULL, NULL, %u, now(), %u)",
+		$noteQ = sprintf("INSERT INTO notes VALUES ('%s', NULL, 0, %u, now(), %u)",
 			$mainNote, $_SESSION['cardNo'], $_SESSION['userID']
 			);
 		$noteR = mysqli_query($DBS['comet'], $noteQ);
@@ -41,19 +41,7 @@ if (isset($_POST['newMain']) && $_POST['newMain'] == "true") {
 				mysqli_error($DBS['comet'])
 			);
 		} else {
-			$tID = mysqli_insert_id($DBS['comet']);
-			$noteQ = sprintf("UPDATE notes SET parentID=%u WHERE threadID=%u",
-				$tID, $tID
-				);
-			$noteR = mysqli_query($DBS['comet'], $noteQ);
-			if (!$noteR) {
-				printf('{ "errorMsg":"Query: %s, Error: %s" } ',
-					$noteQ, 
-					mysqli_error($DBS['comet'])
-				);
-			} else {
-				echo ' { "success": "Note added." } ';
-			}
+			echo ' { "success": "Note added." } ';
 		}
 	} else {
 		echo ' { "errorMsg": "Cannot add an empty note." } ';

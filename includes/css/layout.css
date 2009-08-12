@@ -68,6 +68,14 @@
 	width:             100px;
 }
 
+#notesForm div {
+	margin-left: 35px;
+}
+
+#notesForm li ul {
+	padding-left: 15px;
+}
+
 
 #mainNav {
 	margin-top: 1%;
