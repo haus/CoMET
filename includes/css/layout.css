@@ -23,6 +23,7 @@
 ***********************/
 #header {
 	margin-top: 1%;
+	width: 99%;
 	border-bottom: solid;
 	border-color: black;
 	border-width: .5px;
@@ -52,6 +53,7 @@
 
 .headList form {
 	display: inline;
+	width: 99%;
 }
 
 .buttonAsLink {
@@ -133,6 +135,7 @@ div#twopoint3 {
 	/*margin: 0 25px 0 25px;*/
 	padding: 10px;
 	text-align: center;
+	width: 98%;
 }
 
 #summary {

@@ -17,6 +17,18 @@
 	    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 session_start();
+?>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#pmtDatepicker').datepicker({ dateFormat: 'yy-mm-dd' });
+	});
+	
+	function updateRemoveID(id) {
+		$('#removeID').val(id);
+	}
+</script>
+<?php
 require_once('../includes/config.php');
 require_once('../includes/mysqli_connect.php');
 
@@ -24,24 +36,32 @@ $paymentsQ = "SELECT amount, date, memo, paymentID, reference
 	FROM payments WHERE cardNo={$_SESSION['cardNo']} ORDER BY date ASC";
 $paymentsR = mysqli_query($DBS['comet'], $paymentsQ);
 
-echo '<h3 class="center">Payments</h3>';
+echo '<h3 class="center">Payments</h3>
+	<input type="hidden" id="removeID" name="removeID" value="false" />';
+echo '<table cellpadding="2" cellspacing="2" width="100%">
+	<tr><th>&nbsp;</th><th>Date</th><th>Amount</th><th>Memo</th><th>Reference</th></tr>';
 
 if (!$paymentsR) printf('Query: %s, Error: %s', $paymentsQ, mysqli_error($DBS['comet']));
+
 if (mysqli_num_rows($paymentsR) > 0) {
-	echo '<table cellpadding="2" cellspacing="2" width="100%">';
 	while (list($amount, $date, $memo, $id, $ref) = mysqli_fetch_row($paymentsR)) {
 
 		printf('<tr class="center">
+				<td><input type="image" src="includes/images/minus-8.png" name="pmtRemove[]" onclick="%s" /></td>
 				<td>%s</td>
 				<td>$%s</td>
 				<td>%s</td>
 				<td>%s (Thickbox receipt link)</td>
-				</tr>', date('m-d-Y', strtotime($date)), number_format($amount, 2), $memo, $ref);
+				</tr>', 'updateRemoveID(' . $id . '); this.submit();', date('m-d-Y', strtotime($date)), number_format($amount, 2), $memo, $ref);
 		}
-	echo '</table>';
-} else {
-	echo '<p>No Payments Recorded</p>';
 }
-	// Add form.
+echo '<tr class="center">
+		<td><input type="image" src="includes/images/plus-8.png" name="pmtSubmit" id="pmtSubmit" /></td>
+		<td><input type="text" name="date" id="pmtDatepicker" size="10" maxlength="10" /></td>
+		<td>$<input type="text" name="amount" id="pmtAmount" size="5" maxlength="6" /></td>
+		<td><input type="text" name="memo" id="pmtMemo" size="10" maxlength="50" /></td>
+		<td><input type="text" name="ref" id="pmtReference" size="10" maxlength="20" /></td>
+	</tr>
+	</table><br />';
 
 ?>

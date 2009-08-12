@@ -103,6 +103,67 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 		$('#summary').load('./modules/summary.php');
 		$('#payments').load('./modules/payments.php');
 	});
+	
+	function validatePayment(formData, jqForm, options) {
+		if ($('#pmtDatepicker').val().length > 0 && $('#pmtAmount').val().length > 0) {
+			
+		} else if ($('#removeID').val() != 'false') {
+			var answer = confirm("Delete selected payment?")
+		    if (answer) {
+				return true;
+		    }
+		    return false;
+		} else {
+			alert('You need to fill in the date and amount before submitting.');
+			return false;
+		}
+	}
+	
+	function paymentResponse(responseText, statusText) {
+		if (responseText.errorMsg != undefined) {
+			alert(responseText.errorMsg);
+		}
+		
+		if (responseText.success != undefined) {
+			$('#summary').load('./modules/summary.php');
+			$('#payments').load('./modules/payments.php');
+		}
+	}
+	
+	$('#paymentForm').ready(function() {
+		var options = { 
+	        //target:        '#output1',   // target element(s) to be updated with server response 
+	        beforeSubmit:  validatePayment, // pre-submit callback 
+	        success:       paymentResponse,  // post-submit callback 
+
+	        // other available options: 
+	        //url:       './modules/handler.php'         // override for form's 'action' attribute 
+	        //type:      'post'        // 'get' or 'post', override for form's 'method' attribute 
+	        dataType:  'json'        // 'xml', 'script', or 'json' (expected server response type) 
+	        //clearForm: true        // clear all form fields after successful submit 
+	        //resetForm: true        // reset the form after successful submit 
+
+	        // $.ajax options can be used here too, for example: 
+	        //timeout:   3000 
+	    };
+	
+		// bind to the form's submit event 
+	    $('#paymentForm').submit(function() {
+			$(this).ajaxSubmit(options);
+			return false;
+		});
+		/*
+		$('#navForm :button').click(function() {
+			$('#navButton').val(this.id);
+		})
+		*/
+		/*
+		$('#owner').load('./modules/owner.php');
+		$('#details').load('./modules/details.php');
+		$('#summary').load('./modules/summary.php');
+		$('#payments').load('./modules/payments.php');
+		*/
+	});
 </script>
 <form id="navForm" method="POST" name="navForm" action="./handlers/mainHandler.php">
 	<div class="topbar" id="mainNav">
@@ -129,7 +190,9 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 Notes
 </div>
 <div class="quadrant" id="twopoint2">
-	<div id="payments"></div>
+	<form id="paymentForm" method="POST" name="paymentForm" action="./handlers/paymentHandler.php">
+		<div id="payments"></div>
+	</form>	
 </div>
 <div class="quadrant" id="twopoint3">
 Subscriptions
