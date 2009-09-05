@@ -40,17 +40,20 @@ session_start();
 				$('#content').load(this.href);
 				return false;
 			});
+			
 			$('#logoutForm').submit(function() {
 				$(this).ajaxSubmit(options);
 				return false;
 			});
+			
 			tb_show('Login Here','login.php?TB_iframe=true&modal=true&height=175&width=250');
+			
 			$('#content').load('main.php');
 
 			// prepare the form when the DOM is ready 
 		    var options = { 
-		        success:       loginForm,  // post-submit callback 
-		        url:       'login.php?act=logout'         // override for form's 'action' attribute 
+		        success:	loginForm,  // post-submit callback 
+		        url:		'login.php?act=logout'         // override for form's 'action' attribute 
 		    };
 		});
 
@@ -106,7 +109,9 @@ if ($_SESSION['authObject']->checkAuth()) {
 	</ul>
 	</div> <!-- end of header div -->
 	<div id="content">
-<?php	}
+<?php	
+}
+
 if (!isset($_SESSION['userID']))
 	exit();
 	?>

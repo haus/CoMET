@@ -28,7 +28,7 @@ $DBS['is4c_op'] = mysqli_connect(
 		$_SESSION['is4c_op']['password'], 
 		$_SESSION['is4c_op']['database']
 	) 
-	or die('is4c_op fail!');
+	or die('is4c_op fail! ' . "<br />Error: " . mysqli_connect_error());
 
 $DBS['is4c_log'] = mysqli_connect(
 		$_SESSION['is4c_log']['host'], 

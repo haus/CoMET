@@ -19,52 +19,56 @@
 	    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 session_start();
-require_once('../includes/config.php');
-require_once('../includes/mysqli_connect.php');
-require_once('../includes/functions.php');
 
-// Sanitize the data.
-if (isset($_POST['date'])) $date = escape_data($DBS['comet'], $_POST['date']);
-if (isset($_POST['memo'])) $memo = escape_data($DBS['comet'], $_POST['memo']);
-if (isset($_POST['reference'])) $reference = escape_data($DBS['comet'], $_POST['reference']);
-if (isset($_POST['amount'])) $amount = escape_data($DBS['comet'], $_POST['amount']);
+if (isset($_SESSION['level'])) {
+	require_once('../includes/config.php');
+	require_once('../includes/mysqli_connect.php');
+	require_once('../includes/functions.php');
 
-// Validate the data a bit.
-if (isset($_POST['removeID']) && is_numeric($_POST['removeID'])) {
-	$paymentQ = sprintf("DELETE FROM payments WHERE paymentID=%u LIMIT 1",
-		escape_data($DBS['comet'], $_POST['removeID'])
-	);
-	
-	$paymentR = mysqli_query($DBS['comet'], $paymentQ);
-	if (!$paymentR) {
-		printf('{ "errorMsg":"Query: %s, Error: %s" }',
-			$paymentQ, 
-			mysqli_error($DBS['comet'])
+	// Sanitize the data.
+	if (isset($_POST['date'])) $date = escape_data($DBS['comet'], $_POST['date']);
+	if (isset($_POST['memo'])) $memo = escape_data($DBS['comet'], $_POST['memo']);
+	if (isset($_POST['reference'])) $reference = escape_data($DBS['comet'], $_POST['reference']);
+	if (isset($_POST['amount'])) $amount = escape_data($DBS['comet'], $_POST['amount']);
+
+	// Validate the data a bit.
+	if (isset($_POST['removeID']) && is_numeric($_POST['removeID'])) {
+		$paymentQ = sprintf("DELETE FROM payments WHERE paymentID=%u LIMIT 1",
+			escape_data($DBS['comet'], $_POST['removeID'])
 		);
-	} else {
-		echo '{ "success": "success!" }';
-	}
-} elseif (!empty($date) && !empty($amount) && is_numeric($amount) && checkdate(substr($date, 5, 2), substr($date, 8, 2), substr($date, 0, 4))) { // Non empty, numeric amount, non empty actual date.
-	$paymentQ = sprintf("INSERT INTO payments VALUES (NULL, %s, %f, '%s', %s, %u, %u)",
-		(empty($memo) ? 'NULL' : "'" . $memo . "'"),
-		$amount,
-		$date,
-		(empty($reference) ? 'NULL' : "'" . $reference . "'"),
-		$_SESSION['userID'],
-		$_SESSION['cardNo']
-	);
 	
-	$paymentR = mysqli_query($DBS['comet'], $paymentQ);
-	if (!$paymentR) {
-		printf('{ "errorMsg":"Query: %s, Error: %s" }',
-			$dateQ, 
-			mysqli_error($DBS['comet'])
+		$paymentR = mysqli_query($DBS['comet'], $paymentQ);
+		if (!$paymentR) {
+			printf('{ "errorMsg":"Query: %s, Error: %s" }',
+				$paymentQ, 
+				mysqli_error($DBS['comet'])
+			);
+		} else {
+			echo '{ "success": "success!" }';
+		}
+	} elseif (!empty($date) && !empty($amount) && is_numeric($amount) && checkdate(substr($date, 5, 2), substr($date, 8, 2), substr($date, 0, 4))) { // Non empty, numeric amount, non empty actual date.
+		$paymentQ = sprintf("INSERT INTO payments VALUES (NULL, %s, %f, '%s', %s, %u, %u)",
+			(empty($memo) ? 'NULL' : "'" . $memo . "'"),
+			$amount,
+			$date,
+			(empty($reference) ? 'NULL' : "'" . $reference . "'"),
+			$_SESSION['userID'],
+			$_SESSION['cardNo']
 		);
+	
+		$paymentR = mysqli_query($DBS['comet'], $paymentQ);
+		if (!$paymentR) {
+			printf('{ "errorMsg":"Query: %s, Error: %s" }',
+				$dateQ, 
+				mysqli_error($DBS['comet'])
+			);
+		} else {
+			echo '{ "success": "success!" }';
+		}
 	} else {
-		echo '{ "success": "success!" }';
+		echo '{ "errorMsg":"The amount must be a number and the date a date." }';
 	}
 } else {
-	echo '{ "errorMsg":"The amount must be a number and the date a date." }';
+	header('Location: ../index.php');
 }
-
 ?>

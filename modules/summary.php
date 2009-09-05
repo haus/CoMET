@@ -40,41 +40,45 @@ session_start();
 </script>
 
 <?php
-require_once('../includes/config.php');
-require_once('../includes/mysqli_connect.php');
+if (isset($_SESSION['level'])) {
 
-$payQ = "SELECT SUM(p.amount), MAX(date), d.nextPayment, d.joined, d.sharePrice, d.paymentPlan, pp.frequency, pp.amount 
-	FROM payments AS p 
-		RIGHT JOIN details AS d ON (d.cardNo = p.cardNo) 
-		INNER JOIN paymentPlans AS pp ON (d.paymentPlan = pp.planID)
-	WHERE d.cardNo={$_SESSION['cardNo']}";
-$payR = mysqli_query($DBS['comet'], $payQ);
+	require_once('../includes/config.php');
+	require_once('../includes/mysqli_connect.php');
 
-if (!$payR) printf('Query: %s, Error: %s', $payQ, mysqli_error($DBS['comet']));
-list($paid, $lastPaid, $nextPayment, $joinDate, $sharePrice, $pmtPlan, $freq, $amount) = mysqli_fetch_row($payR);
+	$payQ = "SELECT SUM(p.amount), MAX(date), d.nextPayment, d.joined, d.sharePrice, d.paymentPlan, pp.frequency, pp.amount 
+		FROM payments AS p 
+			RIGHT JOIN details AS d ON (d.cardNo = p.cardNo) 
+			INNER JOIN paymentPlans AS pp ON (d.paymentPlan = pp.planID)
+		WHERE d.cardNo={$_SESSION['cardNo']}";
+	$payR = mysqli_query($DBS['comet'], $payQ);
 
-$plan = ($pmtPlan > 0 ? 
-			($freq > 1 ? '$' . $amount . ", $freq times per year" : '$' . $amount . " annually")
-			: "$45 annually");
+	if (!$payR) printf('Query: %s, Error: %s', $payQ, mysqli_error($DBS['comet']));
+	list($paid, $lastPaid, $nextPayment, $joinDate, $sharePrice, $pmtPlan, $freq, $amount) = mysqli_fetch_row($payR);
 
-printf('<p>
-			<strong>Card No: </strong>%u<br />
-			<strong>Join Date: </strong>%s<br />
-			<strong>Share Price: </strong>$<span name="sharePrice" id="editPrice">%s</span><br />
-			<strong>Total Paid: </strong>$%s<br />
-			<strong>Remaining To Pay: </strong>$%s<br />
-			<strong>Next Payment Due: </strong>%s<br />
-			<strong>Last Payment Made: </strong>%s<br />
-			<strong>Payment Plan: </strong><span name="paymentPlan" id="editPlan">%s</span>
-		</p>', 
-		$_SESSION['cardNo'], 
-		(is_null($joinDate) ? $joinDate : date('m-d-Y', strtotime($joinDate))), 
-		number_format((is_null($sharePrice) ? $_SESSION['sharePrice'] : $sharePrice), 2),
-		number_format($paid,2), 
-		number_format($_SESSION['sharePrice']-$paid,2), 
-		(is_null($nextPayment) ? $nextPayment : date('m-d-Y', strtotime($nextPayment))), 
-		(is_null($lastPaid) ? $lastPaid : date('m-d-Y', strtotime($lastPaid))),
-		$plan
-		);
+	$plan = ($pmtPlan > 0 ? 
+				($freq > 1 ? '$' . $amount . ", $freq times per year" : '$' . $amount . " annually")
+				: "$45 annually");
 
+	printf('<p>
+				<strong>Card No: </strong>%u<br />
+				<strong>Join Date: </strong>%s<br />
+				<strong>Share Price: </strong>$<span name="sharePrice" id="editPrice">%s</span><br />
+				<strong>Total Paid: </strong>$%s<br />
+				<strong>Remaining To Pay: </strong>$%s<br />
+				<strong>Next Payment Due: </strong>%s<br />
+				<strong>Last Payment Made: </strong>%s<br />
+				<strong>Payment Plan: </strong><span name="paymentPlan" id="editPlan">%s</span>
+			</p>', 
+			$_SESSION['cardNo'], 
+			(is_null($joinDate) ? $joinDate : date('m-d-Y', strtotime($joinDate))), 
+			number_format((is_null($sharePrice) ? $_SESSION['sharePrice'] : $sharePrice), 2),
+			number_format($paid,2), 
+			number_format($_SESSION['sharePrice']-$paid,2), 
+			(is_null($nextPayment) ? $nextPayment : date('m-d-Y', strtotime($nextPayment))), 
+			(is_null($lastPaid) ? $lastPaid : date('m-d-Y', strtotime($lastPaid))),
+			$plan
+			);
+} else {
+	header('Location: ../index.php');
+}
 ?>

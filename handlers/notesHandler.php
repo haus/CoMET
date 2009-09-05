@@ -19,67 +19,71 @@
 	    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 session_start();
-require_once('../includes/config.php');
-require_once('../includes/mysqli_connect.php');
-require_once('../includes/functions.php');
 
-if (isset($_POST['newMain']) && $_POST['newMain'] == "true") {
-	// Validate the note.
-	$mainNote = escape_data($DBS['comet'], $_POST['mainNote']);
+if (isset($_SESSION['level'])) {
+	require_once('../includes/config.php');
+	require_once('../includes/mysqli_connect.php');
+	require_once('../includes/functions.php');
+
+	if (isset($_POST['newMain']) && $_POST['newMain'] == "true") {
+		// Validate the note.
+		$mainNote = escape_data($DBS['comet'], $_POST['mainNote']);
 	
-	if (!empty($mainNote)) {
-		$noteQ = sprintf("INSERT INTO notes VALUES ('%s', NULL, 0, %u, now(), %u)",
-			$mainNote, $_SESSION['cardNo'], $_SESSION['userID']
-			);
-		$noteR = mysqli_query($DBS['comet'], $noteQ);
+		if (!empty($mainNote)) {
+			$noteQ = sprintf("INSERT INTO notes VALUES ('%s', NULL, 0, %u, now(), %u)",
+				$mainNote, $_SESSION['cardNo'], $_SESSION['userID']
+				);
+			$noteR = mysqli_query($DBS['comet'], $noteQ);
 		
-		if (!$noteR) {
-			printf('{ "errorMsg":"Query: %s, Error: %s" } ',
-				$noteQ, 
-				mysqli_error($DBS['comet'])
-			);
+			if (!$noteR) {
+				printf('{ "errorMsg":"Query: %s, Error: %s" } ',
+					$noteQ, 
+					mysqli_error($DBS['comet'])
+				);
+			} else {
+				echo ' { "success": "Note added." } ';
+			}
 		} else {
-			echo ' { "success": "Note added." } ';
+			echo ' { "errorMsg": "Cannot add an empty note." } ';
 		}
-	} else {
-		echo ' { "errorMsg": "Cannot add an empty note." } ';
-	}
-} elseif (isset($_POST['noteID']) && is_numeric($_POST['noteID'])) {
-	$parent = (int) $_POST['noteID'];
-	$note = escape_data($DBS['comet'], $_POST['note'][$parent]);
+	} elseif (isset($_POST['noteID']) && is_numeric($_POST['noteID'])) {
+		$parent = (int) $_POST['noteID'];
+		$note = escape_data($DBS['comet'], $_POST['note'][$parent]);
 	
-	if (!empty($note)) {
-		$noteQ = sprintf("INSERT INTO notes VALUES ('%s', NULL, %u, %u, now(), %u)",
-			$note, $parent, $_SESSION['cardNo'], $_SESSION['userID']
-			);
-		$noteR = mysqli_query($DBS['comet'], $noteQ);
+		if (!empty($note)) {
+			$noteQ = sprintf("INSERT INTO notes VALUES ('%s', NULL, %u, %u, now(), %u)",
+				$note, $parent, $_SESSION['cardNo'], $_SESSION['userID']
+				);
+			$noteR = mysqli_query($DBS['comet'], $noteQ);
 		
-		if (!$noteR) {
-			printf('{ "errorMsg":"Query: %s, Error: %s" } ',
-				$noteQ, 
-				mysqli_error($DBS['comet'])
-			);
+			if (!$noteR) {
+				printf('{ "errorMsg":"Query: %s, Error: %s" } ',
+					$noteQ, 
+					mysqli_error($DBS['comet'])
+				);
+			} else {
+				echo ' { "success": "Reply added." } ';
+			}
 		} else {
-			echo ' { "success": "Reply added." } ';
+			echo ' { "errorMsg": "Cannot add an empty note." } ';
 		}
-	} else {
-		echo ' { "errorMsg": "Cannot add an empty note." } ';
-	}
 	
-} elseif (isset($_POST['removeID']) && is_numeric($_POST['removeID'])) {
-		$noteQ = sprintf("DELETE FROM notes WHERE threadID=%u LIMIT 1",
-			escape_data($DBS['comet'], $_POST['removeID'])
-		);
-
-		$noteR = mysqli_query($DBS['comet'], $noteQ);
-		if (!$noteR) {
-			printf('{ "errorMsg":"Query: %s, Error: %s" }',
-				$noteQ, 
-				mysqli_error($DBS['comet'])
+	} elseif (isset($_POST['removeID']) && is_numeric($_POST['removeID'])) {
+			$noteQ = sprintf("DELETE FROM notes WHERE threadID=%u LIMIT 1",
+				escape_data($DBS['comet'], $_POST['removeID'])
 			);
-		} else {
-			echo '{ "success": "success!" }';
-		}
-	}
 
+			$noteR = mysqli_query($DBS['comet'], $noteQ);
+			if (!$noteR) {
+				printf('{ "errorMsg":"Query: %s, Error: %s" }',
+					$noteQ, 
+					mysqli_error($DBS['comet'])
+				);
+			} else {
+				echo '{ "success": "success!" }';
+			}
+		}
+} else {
+	header('Location: ../index.php');
+}
 ?>
