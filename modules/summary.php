@@ -51,33 +51,79 @@ if (isset($_SESSION['level'])) {
 			INNER JOIN paymentPlans AS pp ON (d.paymentPlan = pp.planID)
 		WHERE d.cardNo={$_SESSION['cardNo']}";
 	$payR = mysqli_query($DBS['comet'], $payQ);
+	
+	// TODO: Check for rows, if 0 display more obvious form elements.
 
 	if (!$payR) printf('Query: %s, Error: %s', $payQ, mysqli_error($DBS['comet']));
 	list($paid, $lastPaid, $nextPayment, $joinDate, $sharePrice, $pmtPlan, $freq, $amount) = mysqli_fetch_row($payR);
+	
+	if (!is_null($joinDate)) {
+		$plan = ($pmtPlan > 0 ? 
+					($freq > 1 ? '$' . $amount . ", $freq times per year" : '$' . $amount . " annually")
+					: "$45 annually");
 
-	$plan = ($pmtPlan > 0 ? 
-				($freq > 1 ? '$' . $amount . ", $freq times per year" : '$' . $amount . " annually")
-				: "$45 annually");
-
-	printf('<p>
-				<strong>Card No: </strong>%u<br />
-				<strong>Join Date: </strong>%s<br />
-				<strong>Share Price: </strong>$<span name="sharePrice" id="editPrice">%s</span><br />
-				<strong>Total Paid: </strong>$%s<br />
-				<strong>Remaining To Pay: </strong>$%s<br />
-				<strong>Next Payment Due: </strong>%s<br />
-				<strong>Last Payment Made: </strong>%s<br />
-				<strong>Payment Plan: </strong><span name="paymentPlan" id="editPlan">%s</span>
-			</p>', 
-			$_SESSION['cardNo'], 
-			(is_null($joinDate) ? $joinDate : date('m-d-Y', strtotime($joinDate))), 
-			number_format((is_null($sharePrice) ? $_SESSION['sharePrice'] : $sharePrice), 2),
-			number_format($paid,2), 
-			number_format($_SESSION['sharePrice']-$paid,2), 
-			(is_null($nextPayment) ? $nextPayment : date('m-d-Y', strtotime($nextPayment))), 
-			(is_null($lastPaid) ? $lastPaid : date('m-d-Y', strtotime($lastPaid))),
-			$plan
-			);
+		printf('<p>
+					<strong>Card No: </strong>%u<br />
+					<strong>Join Date: </strong>%s<br />
+					<strong>Share Price: </strong>$<span name="sharePrice" id="editPrice">%s</span><br />
+					<strong>Total Paid: </strong>$%s<br />
+					<strong>Remaining To Pay: </strong>$%s<br />
+					<strong>Next Payment Due: </strong>%s<br />
+					<strong>Last Payment Made: </strong>%s<br />
+					<strong>Payment Plan: </strong><span name="paymentPlan" id="editPlan">%s</span>
+				</p>', 
+				$_SESSION['cardNo'], 
+				(is_null($joinDate) ? $joinDate : date('m-d-Y', strtotime($joinDate))), 
+				number_format((is_null($sharePrice) ? $_SESSION['sharePrice'] : $sharePrice), 2),
+				number_format($paid,2), 
+				number_format($_SESSION['sharePrice']-$paid,2), 
+				(is_null($nextPayment) ? $nextPayment : date('m-d-Y', strtotime($nextPayment))), 
+				(is_null($lastPaid) ? $lastPaid : date('m-d-Y', strtotime($lastPaid))),
+				$plan
+				);
+	} else {
+?>
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$('#datepicker').datepicker({ dateFormat: 'yy-mm-dd' });
+			});
+		</script>
+<?php
+		$planQ = "SELECT planID, frequency, amount
+			FROM paymentPlans
+			ORDER BY planID";
+		$planR = mysqli_query($DBS['comet'], $planQ);
+		
+		$plan = '<select name="plan">';
+		
+		while (list($planID, $freq, $amount) = mysqli_fetch_row($planR)) {
+			$plan .= sprintf('<option value="%s">%s</option>',
+					$planID,
+					($freq > 1 ? '$' . $amount . ", $freq times per year" : '$' . $amount . " annually")
+				);
+		}
+		
+		$plan .= "</select>";
+		
+		printf('<p>
+					<strong>Card No: </strong>%u<br />
+					<strong>Join Date: </strong><input type="text" name="joinDate" id="datepicker" size="10" maxlength="10" value="%s"/><br />
+					<strong>Share Price: </strong>$<input type="text" name="sharePrice" size="7" maxlength="7" value="%s" /><br />
+					<strong>Total Paid: </strong>$0<br />
+					<strong>Remaining To Pay: </strong>$%s<br />
+					<strong>Next Payment Due: </strong>%s<br />
+					<strong>Last Payment Made: </strong>%s<br />
+					<strong>Payment Plan: </strong>%s
+				</p>', 
+				$_SESSION['cardNo'], 
+				date('Y-m-d'), 
+				number_format($_SESSION['sharePrice'], 2), 
+				number_format($_SESSION['sharePrice'], 2), 
+				'N/A',
+				'N/A',
+				$plan
+				);
+	}
 } else {
 	header('Location: ../index.php');
 }

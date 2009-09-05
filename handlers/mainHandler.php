@@ -366,15 +366,16 @@ if (isset($_SESSION['level'])) {
 		
 	}
 
-	function checkPost() {
-		for ($i = 2; $i <= $_SESSION['houseHoldSize']; $i++) {
-			if ( empty($_POST['first'][$i]) XOR empty($_POST['last'][$i]) ) {
-				echo ' "message": "Partially filled in. Exiting in error." } ';
-				exit();
-			}
-		}
-	}
 } else {
 	header('Location: ../index.php');
+}
+
+function checkPost() {
+	for ($i = 2; $i <= $_SESSION['houseHoldSize']; $i++) {
+		if ( empty($_POST['first'][$i]) XOR empty($_POST['last'][$i]) ) {
+			echo ' "message": "Partially filled in. Exiting in error." } ';
+			exit();
+		}
+	}
 }
 ?>

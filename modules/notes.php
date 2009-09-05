@@ -78,60 +78,61 @@ if (isset($_SESSION['level'])) {
 			</tr>
 		</table><br />', 'newNote();'
 		);
-	
-	function printNotes($parent) {
-		// Need the main $tasks array:
-			global $notes;
-			global $details;
-
-			// Start an ordered list:
-			echo '<ul>';
-
-			// Loop through each subarray:
-			foreach ($parent as $threadID => $noteText) {
-
-				// Display the item:
-				//echo "<li>$noteText\n";
-				//echo "(written by %s on %s)";
-				printf('<li>
-							<input type="submit" value="Reply" id="%s" name="addChild[]" onclick="%s" />
-							<!--<input type="image" src="includes/images/minus-8.png" name="pmtRemove[]" onclick="%s" />-->
-							%s
-							<small>(written by %s on %s at %s)</small>
-						<br /><p id="%u" style="display:none">
-								<input type="submit" value="Add Reply" name="addNote[]" onclick="%s" />
-								<input type="text" name="note[%u]" size="50" maxlength="100" />
-						</p>',
-						'button' . $threadID,
-						'showRow(' . $threadID . ');	return false;', 
-						'updateRemoveID(' . $threadID . ');', 
-						$noteText . "\n",
-						$details[$threadID]['author'],
-						date('m-d-Y', strtotime($details[$threadID]['date'])), 
-						$details[$threadID]['time'], 
-						$threadID,
-						'addChild(' . $threadID . ');',
-						$threadID
-					);
-		
-				// Check for subtasks:
-				if (isset($notes[$threadID])) { 
-
-					// Call this function:
-					printNotes($notes[$threadID]);
-
-				}
-
-				// Complete the list item:
-				echo '</li>';
-
-			} // End of FOREACH loop.
-
-			// Close the ordered list:
-			echo '</ul>';
-	}
 } else {
 	header('Location: ../index.php');
 }
+	
+function printNotes($parent) {
+	// Need the main $tasks array:
+		global $notes;
+		global $details;
+
+		// Start an ordered list:
+		echo '<ul>';
+
+		// Loop through each subarray:
+		foreach ($parent as $threadID => $noteText) {
+
+			// Display the item:
+			//echo "<li>$noteText\n";
+			//echo "(written by %s on %s)";
+			printf('<li>
+						<input type="submit" value="Reply" id="%s" name="addChild[]" onclick="%s" />
+						<!--<input type="image" src="includes/images/minus-8.png" name="pmtRemove[]" onclick="%s" />-->
+						%s
+						<small>(written by %s on %s at %s)</small>
+					<br /><p id="%u" style="display:none">
+							<input type="submit" value="Add Reply" name="addNote[]" onclick="%s" />
+							<input type="text" name="note[%u]" size="50" maxlength="100" />
+					</p>',
+					'button' . $threadID,
+					'showRow(' . $threadID . ');	return false;', 
+					'updateRemoveID(' . $threadID . ');', 
+					$noteText . "\n",
+					$details[$threadID]['author'],
+					date('m-d-Y', strtotime($details[$threadID]['date'])), 
+					$details[$threadID]['time'], 
+					$threadID,
+					'addChild(' . $threadID . ');',
+					$threadID
+				);
+	
+			// Check for subtasks:
+			if (isset($notes[$threadID])) { 
+
+				// Call this function:
+				printNotes($notes[$threadID]);
+
+			}
+
+			// Complete the list item:
+			echo '</li>';
+
+		} // End of FOREACH loop.
+
+		// Close the ordered list:
+		echo '</ul>';
+}
+
 
 ?>

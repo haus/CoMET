@@ -51,6 +51,7 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 	    // is the json data object returned by the server
 	
 		// alert(responseText);
+		//alert(responseText.message);
 		if (responseText.message == 'error') {
 			$('#messageSpace').html("There was an error updating that record, please check the entry and try again.");	
 		} else {
