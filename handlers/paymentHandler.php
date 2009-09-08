@@ -47,23 +47,38 @@ if (isset($_SESSION['level'])) {
 			echo '{ "success": "success!" }';
 		}
 	} elseif (!empty($date) && !empty($amount) && is_numeric($amount) && checkdate(substr($date, 5, 2), substr($date, 8, 2), substr($date, 0, 4))) { // Non empty, numeric amount, non empty actual date.
-		$paymentQ = sprintf("INSERT INTO payments VALUES (NULL, %s, %f, '%s', %s, %u, %u)",
-			(empty($memo) ? 'NULL' : "'" . $memo . "'"),
-			$amount,
-			$date,
-			(empty($reference) ? 'NULL' : "'" . $reference . "'"),
-			$_SESSION['userID'],
-			$_SESSION['cardNo']
-		);
-	
-		$paymentR = mysqli_query($DBS['comet'], $paymentQ);
-		if (!$paymentR) {
-			printf('{ "errorMsg":"Query: %s, Error: %s" }',
-				$dateQ, 
-				mysqli_error($DBS['comet'])
+		$checkQ = "SELECT SUM(p.amount), MAX(date), d.nextPayment, d.joined, d.sharePrice, d.paymentPlan, pp.frequency, pp.amount 
+			FROM payments AS p 
+				RIGHT JOIN details AS d ON (d.cardNo = p.cardNo) 
+				INNER JOIN paymentPlans AS pp ON (d.paymentPlan = pp.planID)
+			WHERE d.cardNo={$_SESSION['cardNo']}";
+		$checkR = mysqli_query($DBS['comet'], $checkQ);
+		
+		list($total, $last, $next, $trash, $sPrice, $pPlan, $pFreq, $pAmount) = mysqli_fetch_row($checkR);
+		$total = (is_null($total) ? 0 : $total);
+		$sPrice = (is_null($sPrice) ? $_SESSION['sharePrice'] : $sPrice);
+		
+		if (($sPrice - $total) >= $amount) { // The payment won't overpay the share. Good to go.
+			$paymentQ = sprintf("INSERT INTO payments VALUES (NULL, %s, %f, '%s', %s, %u, %u)",
+				(empty($memo) ? 'NULL' : "'" . $memo . "'"),
+				$amount,
+				$date,
+				(empty($reference) ? 'NULL' : "'" . $reference . "'"),
+				$_SESSION['userID'],
+				$_SESSION['cardNo']
 			);
+	
+			$paymentR = mysqli_query($DBS['comet'], $paymentQ);
+			if (!$paymentR) {
+				printf('{ "errorMsg":"Query: %s, Error: %s" }',
+					$dateQ, 
+					mysqli_error($DBS['comet'])
+				);
+			} else { // Update next payment date, member status, etc. Logic goes here.
+				echo '{ "success": "success!" }';
+			}
 		} else {
-			echo '{ "success": "success!" }';
+			echo '{ "errorMsg":"That payment amount would overpay the current share price." }';
 		}
 	} else {
 		echo '{ "errorMsg":"The amount must be a number and the date a date." }';
