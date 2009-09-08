@@ -19,14 +19,14 @@
 session_start();
 ?>
 
-<script type="text/javascript">
-	$(document).ready(function() {
-		$('#pmtDatepicker').datepicker({ dateFormat: 'yy-mm-dd' });
-	});
-	
+<script type="text/JavaScript">
 	function updateRemoveID(id) {
 		$('#removeID').val(id);
 	}
+
+	$(document).ready(function() {
+		$('#pmtDatepicker').datepicker({ dateFormat: 'yy-mm-dd', maxDate: 0 });
+	});
 </script>
 <?php
 if (isset($_SESSION['level'])) {
@@ -42,7 +42,7 @@ if (isset($_SESSION['level'])) {
 	list($defaultAmount) = mysqli_fetch_row($planR);
 
 	echo '<h3 class="center">Payments</h3><br />
-		<input type="hidden" id="removeID" name="removeID" value="false" />';
+		<input type="hidden" id="removeID" name="removeID" value="false" />' . "\n";
 	echo '<table cellpadding="2" cellspacing="2" width="100%">
 		<tr><th>&nbsp;</th><th>Date</th><th>Amount</th><th>Memo</th><th>Reference</th></tr>';
 
@@ -52,7 +52,7 @@ if (isset($_SESSION['level'])) {
 		while (list($amount, $date, $memo, $id, $ref) = mysqli_fetch_row($paymentsR)) {
 
 			printf('<tr class="center">
-					<td><input type="image" src="includes/images/minus-8.png" name="pmtRemove[]" onclick="%s" /></td>
+					<td><input type="image" name="pmtRemove[]" src="includes/images/minus-8.png" onclick="%s" /></td>
 					<td>%s</td>
 					<td>$%s</td>
 					<td>%s</td>

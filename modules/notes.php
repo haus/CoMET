@@ -20,10 +20,6 @@ session_start();
 ?>
 
 <script type="text/javascript">
-	function updateRemoveID(id) {
-		$('#removeID').val(id);
-	}
-	
 	function showRow(id) {
 		$('#' + id).show();
 		$('#button' + id).hide();
@@ -48,7 +44,6 @@ if (isset($_SESSION['level'])) {
 	$notesR = mysqli_query($DBS['comet'], $notesQ);
 
 	echo '<h3 class="center">Notes</h3><br />
-		<input type="hidden" id="removeID" name="removeID" value="false" />
 		<input type="hidden" id="newMain" name="newMain" value="false" />
 		<input type="hidden" id="noteID" name="noteID" value="false" />';
 

@@ -126,7 +126,7 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 		if ($('#pmtDatepicker').val().length > 0 && $('#pmtAmount').val().length > 0) {
 			
 		} else if ($('#removeID').val() != 'false') {
-			var answer = confirm("Delete selected payment?")
+			var answer = confirm("Delete selected payment?");
 		    if (answer) {
 				return true;
 		    }
