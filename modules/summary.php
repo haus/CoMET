@@ -85,7 +85,7 @@ if (isset($_SESSION['level'])) {
 ?>
 		<script type="text/javascript">
 			$(document).ready(function() {
-				$('#datepicker').datepicker({ dateFormat: 'yy-mm-dd' });
+				$('#datepicker').datepicker({ dateFormat: 'yy-mm-dd', maxDate: 0 });
 			});
 		</script>
 <?php
