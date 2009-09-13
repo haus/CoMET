@@ -26,6 +26,19 @@ session_start();
 
 	$(document).ready(function() {
 		$('#pmtDatepicker').datepicker({ dateFormat: 'yy-mm-dd', maxDate: 0 });
+		$("#paymentForm :input").keypress(function (e) {
+				if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+					// $('#pmtSubmit').click();
+					$('#paymentForm').ajaxSubmit({
+						beforeSubmit: validatePayment,
+			        	success: paymentResponse,
+						dataType:  'json'}
+						);
+					return false;
+				} else {
+					return true;
+				}
+		    });
 	});
 </script>
 <?php
@@ -69,7 +82,7 @@ if (isset($_SESSION['level'])) {
 			}
 	}
 	
-	if ($total != $sPrice) {
+	if (($total != $sPrice) || (is_null($total) || is_null($sPrice))) {
 		echo '<tr class="center">
 				<td><input type="image" src="includes/images/plus-8.png" name="pmtSubmit" id="pmtSubmit" /></td>
 				<td><input type="text" name="date" id="pmtDatepicker" size="10" maxlength="10" /></td>

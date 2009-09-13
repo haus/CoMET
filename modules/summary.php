@@ -107,7 +107,7 @@ if (isset($_SESSION['level'])) {
 		
 		printf('<p>
 					<strong>Card No: </strong>%u<br />
-					<strong>Join Date: </strong><input type="text" name="joinDate" id="datepicker" size="10" maxlength="10" value="%s"/><br />
+					<strong>Join Date: </strong><input type="text" name="joinDate" id="datepicker" size="10" maxlength="10" value="%s" /><br />
 					<strong>Share Price: </strong>$<input type="text" name="sharePrice" size="7" maxlength="7" value="%s" /><br />
 					<strong>Total Paid: </strong>$0<br />
 					<strong>Remaining To Pay: </strong>$%s<br />

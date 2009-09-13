@@ -233,10 +233,10 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 		<div id="owner"></div>
 		<div id="details"></div>
 	</div>
+	<div class="quadrant" id="onepoint2">
+		<div id="summary"></div>
+	</div>
 </form>
-<div class="quadrant" id="onepoint2">
-	<div id="summary"></div>
-</div>
 <div class="quadrant" id="twopoint1">
 	<form id="notesForm" method="POST" name="notesForm" action="./handlers/notesHandler.php">
 		<div id="notes"></div>
@@ -246,16 +246,4 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 	<form id="paymentForm" method="POST" name="paymentForm" action="./handlers/paymentHandler.php">
 		<div id="payments"></div>
 	</form>	
-</div>
-<div class="quadrant" id="twopoint3">
-	<div id="subscriptions">
-		<h3  class="center">Mailing Lists</h3>
-		<br />
-		<ul style="padding: 35px;">
-			<li><input type="checkbox" name="listOne" /> List One</li>
-			<li><input type="checkbox" name="listTwo" /> List Two</li>
-			<li><input type="checkbox" name="listThree" /> List Three</li>
-		</ul>
-		<br />
-	</div>
 </div>
