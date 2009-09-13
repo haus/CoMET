@@ -52,7 +52,10 @@ if (isset($_SESSION['level'])) {
 					SELECT cardNo, address, phone, city, state, zip, email, nextPayment, paymentPlan, joined, $newPrice, curdate(), 
 						NULL, {$_SESSION['userID']}, NULL 
 						FROM raw_details 
-						WHERE cardNo={$_SESSION['cardNo']} AND DATE(endDate) = curdate() GROUP BY cardNo HAVING MAX(endDate))";
+						WHERE cardNo={$_SESSION['cardNo']} 
+							AND DATE(endDate) = curdate() 
+							AND id=(SELECT MAX(id) FROM raw_details WHERE cardNo={$_SESSION['cardNo']}) 
+						GROUP BY cardNo HAVING MAX(endDate))";
 				$insertR = mysqli_query($DBS['comet'], $insertQ);
 				if ($insertR)
 					echo number_format($newPrice, 2);
@@ -72,13 +75,16 @@ if (isset($_SESSION['level'])) {
 				$newPlan = (int)$_POST['value'];
 				$updateQ = "UPDATE raw_details SET endDate=curdate() WHERE cardNo={$_SESSION['cardNo']} AND endDate IS NULL";
 				$updateR = mysqli_query($DBS['comet'], $updateQ);
-	
+
 				if ($updateR && mysqli_affected_rows($DBS['comet']) == 1) {
 					$insertQ = "INSERT INTO raw_details (
 						SELECT cardNo, address, phone, city, state, zip, email, nextPayment, $newPlan, joined, sharePrice, curdate(), 
 							NULL, {$_SESSION['userID']}, NULL 
 							FROM raw_details 
-							WHERE cardNo={$_SESSION['cardNo']} AND DATE(endDate) = curdate() GROUP BY cardNo HAVING MAX(endDate))";
+							WHERE cardNo={$_SESSION['cardNo']} 
+								AND DATE(endDate) = curdate() 
+								AND id=(SELECT MAX(id) FROM raw_details WHERE cardNo={$_SESSION['cardNo']}) 
+							GROUP BY cardNo HAVING MAX(endDate))";
 					$insertR = mysqli_query($DBS['comet'], $insertQ);
 					if ($insertR)
 						echo $plan[$newPlan];
@@ -112,7 +118,10 @@ if (isset($_SESSION['level'])) {
 					SELECT cardNo, address, phone, city, state, zip, email, nextPayment, paymentPlan, '$newDate', sharePrice, curdate(), 
 						NULL, {$_SESSION['userID']}, NULL 
 						FROM raw_details 
-						WHERE cardNo={$_SESSION['cardNo']} AND DATE(endDate) = curdate() GROUP BY cardNo HAVING MAX(endDate))";
+						WHERE cardNo={$_SESSION['cardNo']} 
+							AND DATE(endDate) = curdate() 
+							AND id=(SELECT MAX(id) FROM raw_details WHERE cardNo={$_SESSION['cardNo']}) 
+						GROUP BY cardNo HAVING MAX(endDate))";
 				$insertR = mysqli_query($DBS['comet'], $insertQ);
 				if ($insertR)
 					echo date('m/d/Y', strtotime($newDate));

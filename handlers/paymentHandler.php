@@ -83,30 +83,98 @@ if (isset($_SESSION['level'])) {
 				);
 			} else { // Update next payment date, member status, etc. Logic goes here.
 				// ACG Specific Algorithm: Member status updates.
-				// If now fully paid, update to Shareholder, set next pay date to null. Owners first.
-				if (($total + $amount) == $sPrice) {
-					$selectQ = "SELECT personNum, memType, staff
-						FROM owners
-						WHERE cardNo = {$_SESSION['cardNo']}";
-					$selectR = mysqli_query($DBS['comet'], $selectQ);
-					while (list($personNum, $memType, $staff) = mysqli_fetch_row($selectR)) {
-						if ($memType == 1) {
-							if ($staff == 0 || $staff == 2 || $staff == 3 || $staff == 6) {
-								$newDisc = 2;
+				if (($total + $amount) == $sPrice) { // If fully paid, shareholder.
+					$newMemType = 2;
+				} else { // If not fully paid, subscriber
+					$newMemType = 1;
+				}
+					
+				$selectQ = "SELECT personNum, memType, staff
+					FROM owners
+					WHERE cardNo = {$_SESSION['cardNo']}";
+				$selectR = mysqli_query($DBS['comet'], $selectQ);
+
+				while (list($personNum, $memType, $staff) = mysqli_fetch_row($selectR)) {
+					if ($memType == 1 || $memType == 5) {
+						if ($staff == 0 || $staff == 2 || $staff == 3 || $staff == 6) {
+							$newDisc = 2;
+						} elseif ($staff == 1 || $staff == 4 || $staff == 5) {
+							$newDisc = 15;
+						}
+						
+						// First update the old row.
+						$ownerUpdateQ = sprintf("UPDATE raw_owners SET endDate=curdate() WHERE cardNo=%u AND personNum=%u AND endDate IS NULL",
+							$_SESSION['cardNo'],
+							$personNum
+						);
+						$ownerUpdateR = mysqli_query($DBS['comet'], $ownerUpdateQ);
+
+						if ($ownerUpdateR) {
+							// Then insert the new row.
+							
+							$ownerInsertQ = sprintf("INSERT INTO raw_owners (
+								SELECT cardNo, personNum, firstName, lastName, %u, %u, staff, chargeOk, writeChecks, curdate(), NULL, %u, NULL
+									FROM raw_owners
+									WHERE cardNo=%u AND DATE(endDate) = curdate() AND personNum = %u GROUP BY cardNo, personNum HAVING MAX(endDate))",
+									$newDisc, $newMemType, $_SESSION['userID'], $_SESSION['cardNo'], $personNum
+							);
+							$ownerInsertR = mysqli_query($DBS['comet'], $ownerInsertQ);
+
+							if ($ownerInsertR) {
+								
+							} else {
+								echo '{ "errorMsg": "failure on ' . $personNum . ' inserted" }';
 							}
 						}
 					}
-					
 				}
 				
-				// If was On Hold, update to Subscriber
-				
+				// Then update the details.
 				// Next Payment Logic
-				// If before or on next due, next due = next due + period
+				// If paid up fully, next due = null
+				if (($total + $amount) == $sPrice) { // If fully paid, shareholder.
+					$nextDue = 'NULL';
+
+				// Okay this part requires PHP 5.3 or greater. Date Time work.
+				// If after next due or null, next due = payment date + (12/period)
+				} elseif (is_null($next) || (strtotime($date) > strtotime($next))) {
+					$period = (int)(12 / $pFreq);
+					$nextDue = date_create($date);
+					$nextDue = date_add($nextDue, new DateInterval("P" . $period . "M"));
+					$nextDue = "'" . date_format($nextDue, 'Y-m-d') . "'";
+					/*echo '{ "errorMsg": "Adding to pmtdate. ' . "\n" . 'PmtDate: ' . strtotime($date) . '. ' . "\n" . 'NextDue: ' . strtotime($next) . '." }';
+					exit();*/
+				// If before or on next due, next due = next due + (12/period)	
+				} elseif (strtotime($date) <= strtotime($next)) {
+					$period = (int)(12 / $pFreq);
+					$nextDue = date_create($next);
+					$nextDue = date_add($nextDue, new DateInterval("P" . $period . "M"));
+					$nextDue = "'" . date_format($nextDue, 'Y-m-d') . "'";
+					/*echo '{ "errorMsg": "Adding to pmtdate. ' . "\n" . 'PmtDate: ' . strtotime($date) . '. ' . "\n" . 'NextDue: ' . strtotime($next) . '." }';
+					exit();*/
+
+				}
+
+				$updateQ = "UPDATE raw_details SET endDate=curdate() WHERE cardNo={$_SESSION['cardNo']} AND endDate IS NULL";
+				$updateR = mysqli_query($DBS['comet'], $updateQ);
 				
-				// If after next due or null, next due = payment date + period
+				if ($updateR && mysqli_affected_rows($DBS['comet']) == 1) {
+					$insertQ = sprintf("INSERT INTO raw_details (
+						SELECT cardNo, address, phone, city, state, zip, email, %s, paymentPlan, joined, sharePrice, curdate(), 
+							NULL, %u, NULL 
+							FROM raw_details
+							WHERE cardNo=%u 
+								AND DATE(endDate) = curdate() 
+								AND id=(SELECT MAX(id) FROM raw_details WHERE cardNo={$_SESSION['cardNo']}) 
+							GROUP BY cardNo HAVING MAX(endDate))", 
+							$nextDue, $_SESSION['userID'], $_SESSION['cardNo']);
+					$insertR = mysqli_query($DBS['comet'], $insertQ);
 				
-				echo '{ "success": "success!" }';
+				if ($insertR)
+					echo '{ "success": "success!" }';
+				else
+					echo '{ "errorMsg":"Query: ' . $insertQ . ', MySQL Error: ' . mysqli_error($DBS['comet']) . '" }';
+				}
 			}
 		} else {
 			echo '{ "errorMsg":"That payment amount would overpay the current share price." }';

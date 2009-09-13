@@ -140,11 +140,13 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 	}
 	
 	function paymentResponse(responseText, statusText) {
+		//alert(responseText);
 		if (responseText.errorMsg != undefined) {
 			alert(responseText.errorMsg);
 		}
 		
 		if (responseText.success != undefined) {
+			$('#owner').load('./modules/owner.php');
 			$('#summary').load('./modules/summary.php');
 			$('#payments').load('./modules/payments.php');
 		}

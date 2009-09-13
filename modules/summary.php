@@ -102,7 +102,7 @@ if (isset($_SESSION['level'])) {
 				number_format((is_null($sharePrice) ? $_SESSION['sharePrice'] : $sharePrice), 2),
 				number_format($paid,2), 
 				number_format($_SESSION['sharePrice']-$paid,2), 
-				(is_null($nextPayment) ? $nextPayment : date('m/d/Y', strtotime($nextPayment))), 
+				(is_null($nextPayment) ? ($paid == $sharePrice ? 'Paid off' : $nextPayment) : date('m/d/Y', strtotime($nextPayment))), 
 				(is_null($lastPaid) ? $lastPaid : date('m/d/Y', strtotime($lastPaid))),
 				$plan
 				);
