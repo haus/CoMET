@@ -25,7 +25,7 @@ session_start();
 	}
 
 	$(document).ready(function() {
-		$('#pmtDatepicker').datepicker({ dateFormat: 'yy-mm-dd', maxDate: 0 });
+		$('#pmtDatepicker').datepicker({ dateFormat: 'mm/dd/yy', maxDate: 0 });
 		$("#paymentForm :input").keypress(function (e) {
 				if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
 					// $('#pmtSubmit').click();
@@ -78,7 +78,7 @@ if (isset($_SESSION['level'])) {
 					<td>$%s</td>
 					<td>%s</td>
 					<td>%s (Thickbox receipt link)</td>
-					</tr>', 'updateRemoveID(' . $id . ');', date('m-d-Y', strtotime($date)), number_format($amount, 2), $memo, $ref);
+					</tr>', 'updateRemoveID(' . $id . ');', date('m/d/Y', strtotime($date)), number_format($amount, 2), $memo, $ref);
 			}
 	}
 	

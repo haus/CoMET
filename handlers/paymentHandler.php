@@ -46,7 +46,12 @@ if (isset($_SESSION['level'])) {
 		} else {
 			echo '{ "success": "success!" }';
 		}
-	} elseif (!empty($date) && !empty($amount) && is_numeric($amount) && checkdate(substr($date, 5, 2), substr($date, 8, 2), substr($date, 0, 4))) { // Non empty, numeric amount, non empty actual date.
+	} elseif (!empty($date) && !empty($amount) && is_numeric($amount) && checkdate(substr($date, 0, 2), substr($date, 3, 2), substr($date, 6, 4))) { // Non empty, numeric amount, non empty actual date.
+		$year = substr($date, 6, 4);
+		$month = substr($date, 0, 2);
+		$day = substr($date, 3, 2);
+		$date = "$year-$month-$day";
+		
 		$checkQ = "SELECT SUM(p.amount), MAX(date), d.nextPayment, d.joined, d.sharePrice, d.paymentPlan, pp.frequency, pp.amount 
 			FROM payments AS p 
 				RIGHT JOIN details AS d ON (d.cardNo = p.cardNo) 

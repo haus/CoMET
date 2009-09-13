@@ -19,6 +19,21 @@
 session_start();
 ?>
 <script type="text/javascript">
+	$.editable.addInputType("datepicker", {
+		element:  function(settings, original) {
+			var input = $("<input type=\"text\" name=\"value\" />");
+			$(this).append(input);
+			return(input);
+		},
+		plugin:  function(settings, original) {
+			var form = this;
+			$("input", this).filter(":text").datepicker({
+				maxDate: 0,
+				onSelect: function(dateText) { $(this).hide(); $(form).trigger("submit"); }
+			});
+		}
+	});
+
 	$(document).ready(function() {
 		$('#editPrice').editable('./handlers/summaryHandler.php',
 			{
@@ -34,6 +49,16 @@ session_start();
 				type: 'select',
 				style: 'display: inline',
 				onblur: 'submit'
+			}
+		);
+		
+		$('#editDate').editable('./handlers/summaryHandler.php',
+			{
+				type: 'datepicker',
+				tooltip: 'Click to edit...',
+				cancel: 'Cancel',
+				width: '100px',
+				onblur: 'ignore'
 			}
 		);
 	});
@@ -64,7 +89,7 @@ if (isset($_SESSION['level'])) {
 
 		printf('<p>
 					<strong>Card No: </strong>%u<br />
-					<strong>Join Date: </strong>%s<br />
+					<strong>Join Date: </strong><span name="joinDate" id="editDate">%s</span><br />
 					<strong>Share Price: </strong>$<span name="sharePrice" id="editPrice">%s</span><br />
 					<strong>Total Paid: </strong>$%s<br />
 					<strong>Remaining To Pay: </strong>$%s<br />
@@ -73,12 +98,12 @@ if (isset($_SESSION['level'])) {
 					<strong>Payment Plan: </strong><span name="paymentPlan" id="editPlan">%s</span>
 				</p>', 
 				$_SESSION['cardNo'], 
-				(is_null($joinDate) ? $joinDate : date('m-d-Y', strtotime($joinDate))), 
+				(is_null($joinDate) ? $joinDate : date('m/d/Y', strtotime($joinDate))), 
 				number_format((is_null($sharePrice) ? $_SESSION['sharePrice'] : $sharePrice), 2),
 				number_format($paid,2), 
 				number_format($_SESSION['sharePrice']-$paid,2), 
-				(is_null($nextPayment) ? $nextPayment : date('m-d-Y', strtotime($nextPayment))), 
-				(is_null($lastPaid) ? $lastPaid : date('m-d-Y', strtotime($lastPaid))),
+				(is_null($nextPayment) ? $nextPayment : date('m/d/Y', strtotime($nextPayment))), 
+				(is_null($lastPaid) ? $lastPaid : date('m/d/Y', strtotime($lastPaid))),
 				$plan
 				);
 	} else {
@@ -116,7 +141,7 @@ if (isset($_SESSION['level'])) {
 					<strong>Payment Plan: </strong>%s
 				</p>', 
 				$_SESSION['cardNo'], 
-				date('Y-m-d'), 
+				date('m/d/Y'), 
 				number_format($_SESSION['sharePrice'], 2), 
 				number_format($_SESSION['sharePrice'], 2), 
 				'N/A',

@@ -105,7 +105,7 @@ function printNotes($parent) {
 					'updateRemoveID(' . $threadID . ');', 
 					$noteText . "\n",
 					$details[$threadID]['author'],
-					date('m-d-Y', strtotime($details[$threadID]['date'])), 
+					date('m/d/Y', strtotime($details[$threadID]['date'])), 
 					$details[$threadID]['time'], 
 					$threadID,
 					'addChild(' . $threadID . ');',
