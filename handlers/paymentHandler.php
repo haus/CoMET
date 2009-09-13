@@ -82,6 +82,30 @@ if (isset($_SESSION['level'])) {
 					mysqli_error($DBS['comet'])
 				);
 			} else { // Update next payment date, member status, etc. Logic goes here.
+				// ACG Specific Algorithm: Member status updates.
+				// If now fully paid, update to Shareholder, set next pay date to null. Owners first.
+				if (($total + $amount) == $sPrice) {
+					$selectQ = "SELECT personNum, memType, staff
+						FROM owners
+						WHERE cardNo = {$_SESSION['cardNo']}";
+					$selectR = mysqli_query($DBS['comet'], $selectQ);
+					while (list($personNum, $memType, $staff) = mysqli_fetch_row($selectR)) {
+						if ($memType == 1) {
+							if ($staff == 0 || $staff == 2 || $staff == 3 || $staff == 6) {
+								$newDisc = 2;
+							}
+						}
+					}
+					
+				}
+				
+				// If was On Hold, update to Subscriber
+				
+				// Next Payment Logic
+				// If before or on next due, next due = next due + period
+				
+				// If after next due or null, next due = payment date + period
+				
 				echo '{ "success": "success!" }';
 			}
 		} else {
