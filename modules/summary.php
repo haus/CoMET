@@ -72,17 +72,18 @@ if (isset($_SESSION['level'])) {
 	require_once('../includes/config.php');
 	require_once('../includes/mysqli_connect.php');
 
-	$payQ = "SELECT SUM(p.amount), MAX(date), d.nextPayment, d.joined, d.sharePrice, d.paymentPlan, pp.frequency, pp.amount 
+	$payQ = "SELECT SUM(p.amount), MAX(date), d.nextPayment, d.joined, d.sharePrice, d.paymentPlan, pp.frequency, pp.amount, d.startDate, u.user 
 		FROM payments AS p 
 			RIGHT JOIN details AS d ON (d.cardNo = p.cardNo) 
 			INNER JOIN paymentPlans AS pp ON (d.paymentPlan = pp.planID)
+			INNER JOIN users AS u ON (d.userID = u.userID)
 		WHERE d.cardNo={$_SESSION['cardNo']}";
 	$payR = mysqli_query($DBS['comet'], $payQ);
 	
 	// TODO: Check for rows, if 0 display more obvious form elements.
 
 	if (!$payR) printf('Query: %s, Error: %s', $payQ, mysqli_error($DBS['comet']));
-	list($paid, $lastPaid, $nextPayment, $joinDate, $sharePrice, $pmtPlan, $freq, $amount) = mysqli_fetch_row($payR);
+	list($paid, $lastPaid, $nextPayment, $joinDate, $sharePrice, $pmtPlan, $freq, $amount, $modified, $user) = mysqli_fetch_row($payR);
 	
 	if (!is_null($joinDate)) {
 		$plan = ($pmtPlan > 0 ? 
@@ -97,7 +98,8 @@ if (isset($_SESSION['level'])) {
 					<strong>Remaining To Pay: </strong>$%s<br />
 					<strong>Next Payment Due: </strong>%s<br />
 					<strong>Last Payment Made: </strong>%s<br />
-					<strong>Payment Plan: </strong><span name="paymentPlan" id="editPlan">%s</span>
+					<strong>Payment Plan: </strong><span name="paymentPlan" id="editPlan">%s</span><br />
+					<strong>Last Modified By: </strong>%s on %s
 				</p>', 
 				$_SESSION['cardNo'], 
 				(is_null($joinDate) ? $joinDate : date('m/d/Y', strtotime($joinDate))), 
@@ -108,7 +110,9 @@ if (isset($_SESSION['level'])) {
 					($paid == $sharePrice ? 'Paid off' : $nextPayment) : 
 					'<span name="nextDue" class="editDate" id="editNext">' . date('m/d/Y', strtotime($nextPayment)) . '</span>'), 
 				(is_null($lastPaid) ? $lastPaid : date('m/d/Y', strtotime($lastPaid))),
-				$plan
+				$plan,
+				$user,
+				date('m/d/Y', strtotime($modified))
 				);
 	} else {
 ?>
