@@ -97,7 +97,7 @@ if (isset($_SESSION['level'])) {
 		} else {
 			echo $plan[$_SESSION['defaultPlan']];
 		}
-	} elseif (isset($_POST['id']) && $_POST['id'] == 'editDate') {
+	} elseif (isset($_POST['id']) && $_POST['id'] == 'editJoined') {
 		$dateQ = "SELECT joined FROM details WHERE cardNo={$_SESSION['cardNo']}";
 		$dateR = mysqli_query($DBS['comet'], $dateQ);
 		
@@ -129,8 +129,39 @@ if (isset($_SESSION['level'])) {
 					echo date('m/d/Y', strtotime($oldDate));
 			}
 		}
-		
-	}
+	} elseif (isset($_POST['id']) && $_POST['id'] == 'editNext') {
+			$dateQ = "SELECT nextPayment FROM details WHERE cardNo={$_SESSION['cardNo']}";
+			$dateR = mysqli_query($DBS['comet'], $dateQ);
+
+			list($oldDate) = mysqli_fetch_row($dateR);
+
+			$newYear = (int) substr($_POST['value'], 6, 4);
+			$newMonth = str_pad((int) substr($_POST['value'], 0, 2), 2, 0, STR_PAD_LEFT);
+			$newDay = str_pad((int) substr($_POST['value'], 3, 2), 2, 0, STR_PAD_LEFT);
+
+			$newDate = (checkdate($newMonth,$newDay,$newYear) ? "$newYear-$newMonth-$newDay" : FALSE);
+
+			if ($newDate) {
+				$updateQ = "UPDATE raw_details SET endDate=curdate() WHERE cardNo={$_SESSION['cardNo']} AND endDate IS NULL";
+				$updateR = mysqli_query($DBS['comet'], $updateQ);
+
+				if ($updateR && mysqli_affected_rows($DBS['comet']) == 1) {
+					$insertQ = "INSERT INTO raw_details (
+						SELECT cardNo, address, phone, city, state, zip, email, '$newDate', paymentPlan, joined, sharePrice, curdate(), 
+							NULL, {$_SESSION['userID']}, NULL 
+							FROM raw_details 
+							WHERE cardNo={$_SESSION['cardNo']} 
+								AND DATE(endDate) = curdate() 
+								AND id=(SELECT MAX(id) FROM raw_details WHERE cardNo={$_SESSION['cardNo']}) 
+							GROUP BY cardNo HAVING MAX(endDate))";
+					$insertR = mysqli_query($DBS['comet'], $insertQ);
+					if ($insertR)
+						echo date('m/d/Y', strtotime($newDate));
+					else
+						echo date('m/d/Y', strtotime($oldDate));
+				}
+			}
+		}
 
 	if (isset($_GET['plans'])) {
 		print json_encode($plan);

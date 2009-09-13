@@ -28,7 +28,6 @@ session_start();
 		plugin:  function(settings, original) {
 			var form = this;
 			$("input", this).filter(":text").datepicker({
-				maxDate: 0,
 				onSelect: function(dateText) { $(this).hide(); $(form).trigger("submit"); }
 			});
 		}
@@ -52,7 +51,7 @@ session_start();
 			}
 		);
 		
-		$('#editDate').editable('./handlers/summaryHandler.php',
+		$('.editDate').editable('./handlers/summaryHandler.php',
 			{
 				type: 'datepicker',
 				tooltip: 'Click to edit...',
@@ -89,7 +88,7 @@ if (isset($_SESSION['level'])) {
 
 		printf('<p>
 					<strong>Card No: </strong>%u<br />
-					<strong>Join Date: </strong><span name="joinDate" id="editDate">%s</span><br />
+					<strong>Join Date: </strong><span name="joinDate" class="editDate" id="editJoined">%s</span><br />
 					<strong>Share Price: </strong>$<span name="sharePrice" id="editPrice">%s</span><br />
 					<strong>Total Paid: </strong>$%s<br />
 					<strong>Remaining To Pay: </strong>$%s<br />
@@ -102,7 +101,9 @@ if (isset($_SESSION['level'])) {
 				number_format((is_null($sharePrice) ? $_SESSION['sharePrice'] : $sharePrice), 2),
 				number_format($paid,2), 
 				number_format($_SESSION['sharePrice']-$paid,2), 
-				(is_null($nextPayment) ? ($paid == $sharePrice ? 'Paid off' : $nextPayment) : date('m/d/Y', strtotime($nextPayment))), 
+				(is_null($nextPayment) ? 
+					($paid == $sharePrice ? 'Paid off' : $nextPayment) : 
+					'<span name="nextDue" class="editDate" id="editNext">' . date('m/d/Y', strtotime($nextPayment)) . '</span>'), 
 				(is_null($lastPaid) ? $lastPaid : date('m/d/Y', strtotime($lastPaid))),
 				$plan
 				);
