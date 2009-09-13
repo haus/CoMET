@@ -42,7 +42,7 @@ if (isset($_SESSION['level'])) {
 		$sharePriceR = mysqli_query($DBS['comet'], $sharePriceQ);
 		list($sharePrice) = mysqli_fetch_row($sharePriceR);
 	
-		if (is_numeric($_POST['value']) && $_POST['value'] != $sharePrice) {
+		if (is_numeric($_POST['value']) && $_POST['value'] != $sharePrice && $_POST['value'] >= 0) {
 			$newPrice = (double)$_POST['value'];
 			$updateQ = "UPDATE raw_details SET endDate=curdate() WHERE cardNo={$_SESSION['cardNo']} AND endDate IS NULL";
 			$updateR = mysqli_query($DBS['comet'], $updateQ);

@@ -75,6 +75,10 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 		$('#changed').val('true');
 	}
 	
+	function reload() {
+		$('#summary').load('./modules/summary.php');
+	}
+	
 	$('#navForm').ready(function() {
 		var options = { 
 	        //target:        '#output1',   // target element(s) to be updated with server response 

@@ -38,7 +38,8 @@ session_start();
 			{
 				style: 'display: inline',
 				onblur: 'submit',
-				tooltip: 'Click to edit...'
+				tooltip: 'Click to edit...',
+				callback: reload
 			}
 		);
 
@@ -47,7 +48,8 @@ session_start();
 				loadurl: './handlers/summaryHandler.php?plans=true',
 				type: 'select',
 				style: 'display: inline',
-				onblur: 'submit'
+				onblur: 'submit',
+				callback: reload
 			}
 		);
 		
@@ -57,7 +59,8 @@ session_start();
 				tooltip: 'Click to edit...',
 				cancel: 'Cancel',
 				width: '100px',
-				onblur: 'ignore'
+				onblur: 'ignore',
+				callback: reload
 			}
 		);
 	});
@@ -100,7 +103,7 @@ if (isset($_SESSION['level'])) {
 				(is_null($joinDate) ? $joinDate : date('m/d/Y', strtotime($joinDate))), 
 				number_format((is_null($sharePrice) ? $_SESSION['sharePrice'] : $sharePrice), 2),
 				number_format($paid,2), 
-				number_format($_SESSION['sharePrice']-$paid,2), 
+				number_format((is_null($sharePrice) ? $_SESSION['sharePrice'] : $sharePrice)-$paid,2), 
 				(is_null($nextPayment) ? 
 					($paid == $sharePrice ? 'Paid off' : $nextPayment) : 
 					'<span name="nextDue" class="editDate" id="editNext">' . date('m/d/Y', strtotime($nextPayment)) . '</span>'), 
