@@ -91,10 +91,24 @@ if (isset($_SESSION['level'])) {
 				echo ' "message": "data written", ';
 				$phone = ereg_replace("[^0-9]", "", escape_data($DBS['comet'], $_POST['phone']));
 				$zip = ereg_replace("[^0-9]", "", escape_data($DBS['comet'], $_POST['zip']));
+				
+				// Join Date Validation
+				$joinMonth = (isset($_POST['joinDate']) ? (int) substr($_POST['joinDate'], 5, 2) : 0);
+				$joinDay = (isset($_POST['joinDate']) ? (int) substr($_POST['joinDate'], 8, 2) : 0);
+				$joinYear = (isset($_POST['joinDate']) ? (int) substr($_POST['joinDate'], 0, 4) : 0);
+				$joinDate = (checkdate($joinMonth, $joinDay, $joinYear) ? "$joinYear-$joinMonth-$joinDay" : date('Y-m-d'));
+				
+				// Share price validation
+				$sharePrice = ((isset($_POST['sharePrice']) && is_numeric($_POST['sharePrice']) && $_POST['sharePrice'] >= 0) ? 
+					(int) $_POST['sharePrice'] : $_SESSION['sharePrice']);
+				
+				// Plan validation
+				$plan = ((isset($_POST['plan']) && is_numeric($_POST['plan']) && $_POST['plan'] > 0) ? (int) $_POST['plan'] : 1);
+				
 				// Details then owners.
 				$detailsQ = sprintf(
 					"INSERT INTO raw_details VALUES 
-						(%u, '%s', '%s', '%s', '%s', %u, '%s', NULL, 1, curdate(), %s, curdate(), NULL, '%s', NULL)", 
+						(%u, '%s', '%s', '%s', '%s', %u, '%s', NULL, %u, '%s', %s, curdate(), NULL, '%s', NULL)", 
 						$_SESSION['cardNo'], 
 						escape_data($DBS['comet'], $_POST['address']),
 						$phone,
@@ -102,7 +116,9 @@ if (isset($_SESSION['level'])) {
 						escape_data($DBS['comet'], $_POST['state']),
 						$zip,
 						escape_data($DBS['comet'], $_POST['email']),
-						$_SESSION['sharePrice'],
+						$plan,
+						$joinDate,
+						$sharePrice,
 						$_SESSION['userID']
 					);
 				$detailsR = mysqli_query($DBS['comet'], $detailsQ);
