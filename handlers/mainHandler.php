@@ -315,9 +315,16 @@ if (isset($_SESSION['level'])) {
 		}
 
 	}
+	
+	if (isset($_POST['firstSearch']) && !empty($_POST['firstSearch'])) {
+		$_REQUEST['navButton'] = 'firstSearch';
+	} elseif (isset($_POST['lastSearch']) && !empty($_POST['lastSearch'])) {
+		$_REQUEST['navButton'] = 'lastSearch';
+	}
 
 	// Read the submit type, adjust the $_SESSION['cardNo'] and let the main.php JS handle updating the divs
 	$navButton = (isset($_REQUEST['navButton']) ? escape_data($DBS['comet'], $_REQUEST['navButton']) : NULL);
+	//echo '"errorMsg": "' . $navButton . '", ';
 	switch ($navButton) {
 		case 'customRecord':
 			if (is_numeric($_POST['value']) && $_POST['value'] > 0)
@@ -366,6 +373,31 @@ if (isset($_SESSION['level'])) {
 				list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
 			else // Brand new installation case.
 				$_SESSION['cardNo'] = 1;
+			echo ' "cardNo": "' . $_SESSION['cardNo'] . '" }';
+		break;
+		
+		case 'firstSearch':
+			$name = explode(' ', escape_data($DBS['comet'], $_POST['firstSearch']));
+			$first = $name[0];
+			$last = $name[1];
+			$cardQ = "SELECT cardNo FROM owners
+				WHERE firstName='$first'
+				AND lastName='$last'";
+			$cardR = mysqli_query($DBS['comet'], $cardQ);
+			list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
+			// echo '"errorMsg": "' . $cardQ . '", ';
+			echo ' "cardNo": "' . $_SESSION['cardNo'] . '" }';
+		break;
+		
+		case 'lastSearch':
+			$name = explode(', ', escape_data($DBS['comet'], $_POST['lastSearch']));
+			$first = $name[1];
+			$last = $name[0];
+			$cardQ = "SELECT cardNo FROM owners
+				WHERE firstName='$first'
+				AND lastName='$last'";
+			$cardR = mysqli_query($DBS['comet'], $cardQ);
+			list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
 			echo ' "cardNo": "' . $_SESSION['cardNo'] . '" }';
 		break;
 	

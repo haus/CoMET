@@ -33,7 +33,7 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 <script type="text/JavaScript">
 	function validate(formData, jqForm, options) {
 		changed = $('#changed').val();
-		//alert(changed);
+
 		return true;
 	}
 	
@@ -50,7 +50,7 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 	    // property set to 'json' then the first argument to the success callback 
 	    // is the json data object returned by the server
 	
-		// alert(responseText);
+		//alert(responseText);
 		//alert(responseText.message);
 		if (responseText.message == 'error') {
 			$('#messageSpace').html("There was an error updating that record, please check the entry and try again.");	
@@ -62,6 +62,8 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 			$('#summary').load('./modules/summary.php');
 			$('#payments').load('./modules/payments.php');
 			$('#notes').load('./modules/notes.php');
+			$('#firstSearch').val('');
+			$('#lastSearch').val('');
 			$('#cardNo').html(responseText.cardNo);
 		}
 
@@ -69,6 +71,10 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 			//alert(responseText.userID);
 		//alert(responseText.message);
 		$('#messageSpace').html(responseText.message);
+	}
+	
+	function searchSubmit() {
+		$('#navForm').submit();
 	}
 	
 	function triggerChange() {
@@ -96,6 +102,18 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 	        //timeout:   3000 
 	    };
 	
+		$('#firstSearch').autocomplete('handlers/searchHandler.php', { mustMatch: 1, extraParams: {search: 'first'}});
+		
+		$('#firstSearch').focus(function() {
+			$('#lastSearch').val('');
+		});
+		
+		$('#lastSearch').autocomplete('handlers/searchHandler.php', { mustMatch: 1, extraParams: {search: 'last'}});
+		
+		$('#lastSearch').focus(function() {
+			$('#firstSearch').val('');
+		});
+		
 		// bind to the form's submit event 
 	    $('#navForm').submit(function() {
 			$(this).ajaxSubmit(options);
@@ -120,6 +138,8 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 		$('#navForm :button').click(function() {
 			$('#navButton').val(this.id);
 		});
+		
+		// $('.search').change
 	
 		$('#owner').load('./modules/owner.php');
 		$('#details').load('./modules/details.php');
@@ -230,9 +250,9 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 			<strong>Current Record #<span id="cardNo"><?php echo $_SESSION['cardNo']; ?></span></strong>
 		</span>
 		<span style="float:right;">
-			<strong>Search By First Name: </strong><input type="text" name="firstSearch" id="firstSearch" />
+			<strong>Search By First Name: </strong><input type="text" class="search" name="firstSearch" id="firstSearch" />
 			&nbsp;
-			<strong>Search By Last Name: </strong><input type="text" name="lastSearch" id="lastSearch" />
+			<strong>Search By Last Name: </strong><input type="text" class="search" name="lastSearch" id="lastSearch" />
 		</span>
 		<br style="clear:left;" />
 		<span style="float:left;padding:5px;clear:right;">
