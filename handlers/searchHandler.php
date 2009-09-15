@@ -16,14 +16,14 @@ if (isset($_GET['search'])) {
 if (isset($searchBy)) {
 	switch ($searchBy) {
 		case 'first':
-			$searchQ = "SELECT CONCAT(firstName, ' ', lastName) 
+			$searchQ = "SELECT CONCAT(firstName, ' ', lastName, ' [', cardNo, ']') 
 				FROM owners 
 				WHERE firstName LIKE '$searchFor%' 
 				ORDER BY firstName ASC";
 			break;
 			
 		case 'last':
-			$searchQ = "SELECT CONCAT(lastName, ', ', firstName) 
+			$searchQ = "SELECT CONCAT(lastName, ', ', firstName, ' [', cardNo, ']') 
 				FROM owners 
 				WHERE lastName LIKE '$searchFor%' 
 				ORDER BY lastName ASC";

@@ -77,6 +77,14 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 		$('#navForm').submit();
 	}
 	
+	function focusFirst() {
+		$('#firstSearch').focus();
+	}
+	
+	function focusLast() {
+		$('#lastSearch').focus();
+	}
+	
 	function triggerChange() {
 		$('#changed').val('true');
 	}
@@ -102,13 +110,13 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 	        //timeout:   3000 
 	    };
 	
-		$('#firstSearch').autocomplete('handlers/searchHandler.php', { mustMatch: 1, extraParams: {search: 'first'}});
+		$('#firstSearch').autocomplete('handlers/searchHandler.php', { mustMatch: 1, onItemSelect: focusFirst, extraParams: {search: 'first'}});
 		
 		$('#firstSearch').focus(function() {
 			$('#lastSearch').val('');
 		});
 		
-		$('#lastSearch').autocomplete('handlers/searchHandler.php', { mustMatch: 1, extraParams: {search: 'last'}});
+		$('#lastSearch').autocomplete('handlers/searchHandler.php', { mustMatch: 1, onItemSelect: focusLast, extraParams: {search: 'last'}});
 		
 		$('#lastSearch').focus(function() {
 			$('#firstSearch').val('');

@@ -317,15 +317,30 @@ if (isset($_SESSION['level'])) {
 	}
 	
 	if (isset($_POST['firstSearch']) && !empty($_POST['firstSearch'])) {
-		$_REQUEST['navButton'] = 'firstSearch';
+		$_REQUEST['navButton'] = 'search';
+		$search = explode(' ', escape_data($DBS['comet'], $_POST['firstSearch']));
+		$count = count($search);
+		$_POST['value'] = trim($search[$count-1], '[');
+		$_POST['value'] = trim($_POST['value'], ']');
 	} elseif (isset($_POST['lastSearch']) && !empty($_POST['lastSearch'])) {
-		$_REQUEST['navButton'] = 'lastSearch';
+		$_REQUEST['navButton'] = 'search';
+		$search = explode(' ', escape_data($DBS['comet'], $_POST['lastSearch']));
+		$count = count($search);
+		$_POST['value'] = trim($search[$count-1], '[');
+		$_POST['value'] = trim($_POST['value'], ']');
 	}
 
 	// Read the submit type, adjust the $_SESSION['cardNo'] and let the main.php JS handle updating the divs
 	$navButton = (isset($_REQUEST['navButton']) ? escape_data($DBS['comet'], $_REQUEST['navButton']) : NULL);
 	//echo '"errorMsg": "' . $navButton . '", ';
 	switch ($navButton) {
+		case 'search':
+			if (is_numeric($_POST['value']) && $_POST['value'] > 0)
+				$_SESSION['cardNo'] = (int) $_POST['value'];
+
+			echo ' "cardNo": "' . $_SESSION['cardNo'] . '" }';
+		break;
+				
 		case 'customRecord':
 			if (is_numeric($_POST['value']) && $_POST['value'] > 0)
 				$_SESSION['cardNo'] = (int) $_POST['value'];
@@ -376,7 +391,7 @@ if (isset($_SESSION['level'])) {
 			echo ' "cardNo": "' . $_SESSION['cardNo'] . '" }';
 		break;
 		
-		case 'firstSearch':
+		/*case 'firstSearch':
 			$name = explode(' ', escape_data($DBS['comet'], $_POST['firstSearch']));
 			$first = $name[0];
 			$last = $name[1];
@@ -400,7 +415,8 @@ if (isset($_SESSION['level'])) {
 			list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
 			echo ' "cardNo": "' . $_SESSION['cardNo'] . '" }';
 		break;
-	
+		*/
+		
 		default:
 			$cardQ = "SELECT MAX(cardNo)+1 FROM details";
 			$cardR = mysqli_query($DBS['comet'], $cardQ);
