@@ -226,16 +226,26 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 </script>
 <form id="navForm" method="POST" name="navForm" action="./handlers/mainHandler.php">
 	<div class="topbar" id="mainNav">
-		<span style="float: left;">
+		<span style="float:left;">
+			<strong>Current Record #<span id="cardNo"><?php echo $_SESSION['cardNo']; ?></span></strong>
+		</span>
+		<span style="float:right;">
+			<strong>Search By First Name: </strong><input type="text" name="firstSearch" id="firstSearch" />
+			&nbsp;
+			<strong>Search By Last Name: </strong><input type="text" name="lastSearch" id="lastSearch" />
+		</span>
+		<br style="clear:left;" />
+		<span style="float:left;padding:5px;clear:right;">
 			<button type="submit" name="firstRecord" value="first" id="firstRecord">&lt;&lt;&lt;</button>
 			<button type="submit" name="prevRecord" value="prev" id="prevRecord">&lt;</button>
 			<button type="submit" name="nextRecord" value="next" id="nextRecord">&gt;</button>
 			<button type="submit" name="lastRecord" value="last" id="lastRecord">&gt;&gt;&gt;</button>
 		</span>
-		<strong>Current Record #<span id="cardNo"><?php echo $_SESSION['cardNo']; ?></span></strong>
+		<span style="float:right;padding:5px;">
+			<button type="submit" name="new" id="new" value="new">New Member</button>
+		</span>
 		<input type="hidden" name="changed" value="false" id="changed" />
 		<input type="hidden" name="navButton" value="" id="navButton">
-		<span style="float:right;"><button type="submit" name="new" id="new" value="new">New Member</button></span>
 	</div>
 	<div class="quadrant" id="onepoint1">
 		<div id="owner"></div>
