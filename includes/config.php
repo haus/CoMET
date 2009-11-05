@@ -52,6 +52,7 @@ $_SESSION['authParams'] = array(
 	"table" => "users",
 	"usernamecol" => "user",
 	"passwordcol" => "password",
+	"cryptType" => "md5",
 	"db_fields" => array('user', 'userID', 'level')
 	);
 

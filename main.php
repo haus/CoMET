@@ -79,10 +79,12 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 	
 	function focusFirst() {
 		$('#firstSearch').focus();
+		//$('#navForm').submit();
 	}
 	
 	function focusLast() {
 		$('#lastSearch').focus();
+		//$('#navForm').submit();
 	}
 	
 	function triggerChange() {
