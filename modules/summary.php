@@ -1,6 +1,6 @@
 <?php
 /*
-		CoMET is a stand-alone member equity tracking application designed to integrate with IS4C and Fannie.
+	    CoMET is a stand-alone member equity tracking application designed to integrate with IS4C and Fannie.
 	    Copyright (C) 2009  Matthaus Litteken
 
 	    This program is free software: you can redistribute it and/or modify
@@ -43,7 +43,7 @@ session_start();
 			}
 		);
 
-		$('#editPlan').editable('./handlers/summaryHandler.php', 
+		$('#editPlan').editable('./handlers/summaryHandler.php',
 			{
 				loadurl: './handlers/summaryHandler.php?plans=true',
 				type: 'select',
@@ -52,7 +52,7 @@ session_start();
 				callback: reload
 			}
 		);
-		
+
 		$('.editDate').editable('./handlers/summaryHandler.php',
 			{
 				type: 'datepicker',
@@ -72,21 +72,22 @@ if (isset($_SESSION['level'])) {
 	require_once('../includes/config.php');
 	require_once('../includes/mysqli_connect.php');
 
-	$payQ = "SELECT SUM(p.amount), MAX(date), d.nextPayment, d.joined, d.sharePrice, d.paymentPlan, pp.frequency, pp.amount, d.startDate, u.user 
-		FROM payments AS p 
-			RIGHT JOIN details AS d ON (d.cardNo = p.cardNo) 
+	$payQ = "SELECT SUM(p.amount), MAX(date), d.nextPayment, d.joined, d.sharePrice, d.paymentPlan, pp.frequency, pp.amount, d.startDate, u.user
+		FROM payments AS p
+			RIGHT JOIN details AS d ON (d.cardNo = p.cardNo)
 			INNER JOIN paymentPlans AS pp ON (d.paymentPlan = pp.planID)
 			INNER JOIN users AS u ON (d.userID = u.userID)
-		WHERE d.cardNo={$_SESSION['cardNo']}";
+		WHERE d.cardNo={$_SESSION['cardNo']}
+		GROUP BY d.cardNo";
 	$payR = mysqli_query($DBS['comet'], $payQ);
-	
+
 	// TODO: Check for rows, if 0 display more obvious form elements.
 
 	if (!$payR) printf('Query: %s, Error: %s', $payQ, mysqli_error($DBS['comet']));
 	list($paid, $lastPaid, $nextPayment, $joinDate, $sharePrice, $pmtPlan, $freq, $amount, $modified, $user) = mysqli_fetch_row($payR);
-	
+
 	if (!is_null($joinDate)) {
-		$plan = ($pmtPlan > 0 ? 
+		$plan = ($pmtPlan > 0 ?
 					($freq > 1 ? '$' . $amount . ", $freq times per year" : '$' . $amount . " annually")
 					: "$45 annually");
 
@@ -100,15 +101,15 @@ if (isset($_SESSION['level'])) {
 					<strong>Last Payment Made: </strong>%s<br />
 					<strong>Payment Plan: </strong><span name="paymentPlan" id="editPlan">%s</span><br />
 					<strong>Last Modified By: </strong>%s on %s
-				</p>', 
-				$_SESSION['cardNo'], 
-				(is_null($joinDate) ? $joinDate : date('m/d/Y', strtotime($joinDate))), 
+				</p>',
+				$_SESSION['cardNo'],
+				(is_null($joinDate) ? $joinDate : date('m/d/Y', strtotime($joinDate))),
 				number_format((is_null($sharePrice) ? $_SESSION['sharePrice'] : $sharePrice), 2),
-				number_format($paid,2), 
-				number_format((is_null($sharePrice) ? $_SESSION['sharePrice'] : $sharePrice)-$paid,2), 
-				(is_null($nextPayment) ? 
-					($paid == $sharePrice ? 'Paid off' : $nextPayment) : 
-					'<span name="nextDue" class="editDate" id="editNext">' . date('m/d/Y', strtotime($nextPayment)) . '</span>'), 
+				number_format($paid,2),
+				number_format((is_null($sharePrice) ? $_SESSION['sharePrice'] : $sharePrice)-$paid,2),
+				(is_null($nextPayment) ?
+					($paid == $sharePrice ? 'Paid off' : $nextPayment) :
+					'<span name="nextDue" class="editDate" id="editNext">' . date('m/d/Y', strtotime($nextPayment)) . '</span>'),
 				(is_null($lastPaid) ? $lastPaid : date('m/d/Y', strtotime($lastPaid))),
 				$plan,
 				$user,
@@ -126,18 +127,18 @@ if (isset($_SESSION['level'])) {
 			FROM paymentPlans
 			ORDER BY planID";
 		$planR = mysqli_query($DBS['comet'], $planQ);
-		
+
 		$plan = '<select name="plan">';
-		
+
 		while (list($planID, $freq, $amount) = mysqli_fetch_row($planR)) {
 			$plan .= sprintf('<option value="%s">%s</option>',
 					$planID,
 					($freq > 1 ? '$' . $amount . ", $freq times per year" : '$' . $amount . " annually")
 				);
 		}
-		
+
 		$plan .= "</select>";
-		
+
 		printf('<p>
 					<strong>Card No: </strong>%u<br />
 					<strong>Join Date: </strong><input type="text" name="joinDate" id="datepicker" size="10" maxlength="10" value="%s" /><br />
@@ -147,11 +148,11 @@ if (isset($_SESSION['level'])) {
 					<strong>Next Payment Due: </strong>%s<br />
 					<strong>Last Payment Made: </strong>%s<br />
 					<strong>Payment Plan: </strong>%s
-				</p>', 
-				$_SESSION['cardNo'], 
-				date('m/d/Y'), 
-				number_format($_SESSION['sharePrice'], 2), 
-				number_format($_SESSION['sharePrice'], 2), 
+				</p>',
+				$_SESSION['cardNo'],
+				date('m/d/Y'),
+				number_format($_SESSION['sharePrice'], 2),
+				number_format($_SESSION['sharePrice'], 2),
 				'N/A',
 				'N/A',
 				$plan

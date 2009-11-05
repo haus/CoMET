@@ -2,7 +2,7 @@
 /*
 		CoMET is a stand-alone member equity tracking application designed to integrate with IS4C and Fannie.
 	    Copyright (C) 2009  Matthaus Litteken
-		
+
 		This file is part of CoMET.
 
 	    This program is free software: you can redistribute it and/or modify
@@ -28,7 +28,7 @@ if (isset($_SESSION['level'])) {
 	$memTypeQ = "SELECT memType, CONCAT(SUBSTR(memdesc, 1, 1), LOWER(SUBSTR(memdesc, 2, LENGTH(memdesc)))) FROM memtype ORDER BY memType ASC";
 	$memTypeR = mysqli_query($DBS['is4c_op'], $memTypeQ);
 
-	$staffQ = "SELECT staff, CONCAT(SUBSTR(staffDesc, 1, 1), LOWER(SUBSTR(staffDesc, 2, LENGTH(staffDesc)))) FROM staff ORDER BY staff ASC";
+	$staffQ = "SELECT staff_no, CONCAT(SUBSTR(staff_desc, 1, 1), LOWER(SUBSTR(staff_desc, 2, LENGTH(staff_desc)))) FROM staff ORDER BY staff_no ASC";
 	$staffR = mysqli_query($DBS['is4c_op'], $staffQ);
 
 	while (list($num, $desc) = mysqli_fetch_row($memTypeR)) {
@@ -66,10 +66,10 @@ if (isset($_SESSION['level'])) {
 			} else {
 				$memQ = "SELECT * FROM owners WHERE cardNo = {$_SESSION['cardNo']} AND personNum = $i LIMIT 1";
 				$memR = mysqli_query($DBS['comet'], $memQ);
-			
+
 				if (!$memR) printf('Query: %s, Error: %s', $memQ, mysqli_error($DBS['comet']));
 				else $memRow = mysqli_fetch_array($memR, MYSQLI_ASSOC);
-			
+
 				printf("\n" . '<span class="person newline">%u</span>
 					<span class="text">
 						<input type="text" id="first(%u)" name="first[%u]" maxlength="50" size="20" value="%s" />
@@ -78,7 +78,7 @@ if (isset($_SESSION['level'])) {
 						<input type="text" id="last(%u)" name="last[%u]" maxlength="50" size="20" value="%s" />
 					</span>
 					<span class="widedropdown">
-						<select id="memType(%u)" name="memType[%u]" onChange="updateDiscount(%u);">', 
+						<select id="memType(%u)" name="memType[%u]" onChange="updateDiscount(%u);">',
 						$i, $i, $i, $memRow['firstName'], $i, $i, $memRow['lastName'], $i, $i, $i);
 				foreach ($memType AS $num => $desc)
 					printf('<option value="%u"%s>%s</option>', $num, ($memRow['memType'] == $num ? ' selected="selected"' : ''), $desc);
@@ -101,7 +101,7 @@ if (isset($_SESSION['level'])) {
 					</span>
 					<span class="check">
 						<input type="checkbox" id="charge(%u)" class="charge chargeCheck" disabled="true" name="charge[%u]"%s />
-					</span>', 
+					</span>',
 					$i, $i, ($memRow['writeChecks'] == 1 ? ' checked="checked"' : ''), $i, $i, ($memRow['chargeOk'] == 1 ? ' checked="checked"' : ''));
 			}
 		}
@@ -134,7 +134,7 @@ function updateCharge(select, person) {
 		charge.disabled = false;
 	} else {
 		charge.disabled = true;
-		charge.checked = false;	
+		charge.checked = false;
 	}
 }
 

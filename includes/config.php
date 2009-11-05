@@ -2,7 +2,7 @@
 /*
 		CoMET is a stand-alone member equity tracking application designed to integrate with IS4C and Fannie.
 	    Copyright (C) 2009  Matthaus Litteken
-		
+
 		This file is part of CoMET.
 
 	    This program is free software: you can redistribute it and/or modify
@@ -40,11 +40,11 @@ $_SESSION['defaultPlan'] = 1;
 */
 
 // IS4C Connection Details (Needs select, insert, update on both DBs)
-$_SESSION['is4c_op'] = array('host' => 'localhost', 'user' => 'root', 'password' => 'lemoncoke', 'database' => 'ACG_op');
-$_SESSION['is4c_log'] = array('host' => 'localhost', 'user' => 'root', 'password' => 'lemoncoke', 'database' => 'is4c_log');
+$_SESSION['is4c_op'] = array('host' => 'localhost', 'user' => 'root', 'password' => 'lung*vIa', 'database' => 'is4c_op');
+$_SESSION['is4c_log'] = array('host' => 'localhost', 'user' => 'root', 'password' => 'lung*vIa', 'database' => 'is4c_log');
 
 // CoMET DB Connection details.
-$_SESSION['DB'] = array('host'=>'localhost', 'user'=>'root', 'password'=>'lemoncoke', 'database'=>'comet');
+$_SESSION['DB'] = array('host'=>'localhost', 'user'=>'root', 'password'=>'lung*vIa', 'database'=>'comet');
 
 // Pear Auth Config Info
 $_SESSION['authParams'] = array(
