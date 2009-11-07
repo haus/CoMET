@@ -67,9 +67,6 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 			$('#cardNo').html(responseText.cardNo);
 		}
 
-		//if (responseText.userID != undefined)
-			//alert(responseText.userID);
-		//alert(responseText.message);
 		$('#messageSpace').html(responseText.message);
 	}
 	
@@ -146,8 +143,6 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 		$('#navForm :button').click(function() {
 			$('#navButton').val(this.id);
 		});
-		
-		// $('.search').change
 	
 		$('#owner').load('./modules/owner.php');
 		$('#details').load('./modules/details.php');
@@ -157,17 +152,13 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 		
 	});
 	
-	/*
 	window.onbeforeunload = function() {
-		$('#navForm').ajaxSubmit({
-			beforeSubmit: validate,
-			url: './modules/mainHandler.php?navButton=current',
-			success: showResponse,
-			dataType:  'json'
-		});
-		return "Are you sure?";
+		if ($('#changed').val() == 'true') {
+			$('#navButton').val('current');
+			$('#navForm').submit();
+			return "There were unsaved changes. They have now been saved.";
+		}
 	}
-	*/
 	
 	function validatePayment(formData, jqForm, options) {
 		if ($('#pmtDatepicker').val().length > 0 && $('#pmtAmount').val().length > 0) {
@@ -262,6 +253,8 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 	
 		// bind to the form's submit event 
 	    $('#notesForm').submit(function() {
+			$('#navButton').val('current');
+			$('#navForm').submit();
 			$(this).ajaxSubmit(options);
 			return false;
 		});

@@ -27,18 +27,16 @@ session_start();
 	$(document).ready(function() {
 		$('#pmtDatepicker').datepicker({ dateFormat: 'mm/dd/yy', maxDate: 0 });
 		$("#paymentForm :input").keypress(function (e) {
-				if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
-					// $('#pmtSubmit').click();
-					$('#paymentForm').ajaxSubmit({
-						beforeSubmit: validatePayment,
-			        	success: paymentResponse,
-						dataType:  'json'}
-						);
-					return false;
-				} else {
-					return true;
-				}
-		    });
+			if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+				$('#navButton').val('current');
+				$('#navForm').submit();
+				$('#paymentForm').submit();
+
+				return false;
+			} else {
+				return true;
+			}
+	    });
 	});
 </script>
 <?php
