@@ -33,7 +33,9 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 <script type="text/JavaScript">
 	function validate(formData, jqForm, options) {
 		changed = $('#changed').val();
-
+		
+		// Disable the buttons when the form is submitted.
+		$('#navForm :button').attr("disabled","disabled");
 		return true;
 	}
 	
@@ -67,6 +69,8 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 			$('#cardNo').html(responseText.cardNo);
 		}
 
+	 	// Enable the buttons after the frames are loaded.
+		$('#navForm :button').removeAttr("disabled");
 		$('#messageSpace').html(responseText.message);
 	}
 	
