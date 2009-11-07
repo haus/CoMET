@@ -79,12 +79,10 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 	
 	function focusFirst() {
 		$('#firstSearch').focus();
-		//$('#navForm').submit();
 	}
 	
 	function focusLast() {
 		$('#lastSearch').focus();
-		//$('#navForm').submit();
 	}
 	
 	function triggerChange() {
@@ -156,7 +154,20 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 		$('#summary').load('./modules/summary.php');
 		$('#payments').load('./modules/payments.php');
 		$('#notes').load('./modules/notes.php');
+		
 	});
+	
+	/*
+	window.onbeforeunload = function() {
+		$('#navForm').ajaxSubmit({
+			beforeSubmit: validate,
+			url: './modules/mainHandler.php?navButton=current',
+			success: showResponse,
+			dataType:  'json'
+		});
+		return "Are you sure?";
+	}
+	*/
 	
 	function validatePayment(formData, jqForm, options) {
 		if ($('#pmtDatepicker').val().length > 0 && $('#pmtAmount').val().length > 0) {
@@ -205,6 +216,8 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 	
 		// bind to the form's submit event 
 	    $('#paymentForm').submit(function() {
+			$('#navButton').val('current');
+			$('#navForm').submit();
 			$(this).ajaxSubmit(options);
 			return false;
 		});

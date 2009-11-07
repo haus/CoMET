@@ -40,11 +40,11 @@ $_SESSION['defaultPlan'] = 1;
 */
 
 // IS4C Connection Details (Needs select, insert, update on both DBs)
-$_SESSION['is4c_op'] = array('host' => 'localhost', 'user' => 'root', 'password' => 'lung*vIa', 'database' => 'is4c_op');
-$_SESSION['is4c_log'] = array('host' => 'localhost', 'user' => 'root', 'password' => 'lung*vIa', 'database' => 'is4c_log');
+$_SESSION['is4c_op'] = array('host' => 'localhost', 'user' => 'root', 'password' => 'lemoncoke', 'database' => 'ACG_is4c_op');
+$_SESSION['is4c_log'] = array('host' => 'localhost', 'user' => 'root', 'password' => 'lemoncoke', 'database' => 'ACG_is4c_log');
 
 // CoMET DB Connection details.
-$_SESSION['DB'] = array('host'=>'localhost', 'user'=>'root', 'password'=>'lung*vIa', 'database'=>'comet');
+$_SESSION['DB'] = array('host'=>'localhost', 'user'=>'root', 'password'=>'lemoncoke', 'database'=>'comet');
 
 // Pear Auth Config Info
 $_SESSION['authParams'] = array(

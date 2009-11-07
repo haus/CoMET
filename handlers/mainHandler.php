@@ -31,7 +31,6 @@ if (isset($_SESSION['level'])) {
 	$owners = false;
 	if (!isset($_POST['value']))
 		echo '{ ';
-	// echo ' "userID": "' . $_SESSION['userID'] . '",';
 
 	// Process the data, update as needed.
 	// If the new data is different from the current data, insert a new row into the appropriate table, update the old end date to today/now,
@@ -144,12 +143,12 @@ if (isset($_SESSION['level'])) {
 				}
 				echo ' "message": "data written", ';
 			} else { // Partially filled in. Error.
-				echo ' "message": "Partially Filled In." }';
+				echo ' "errorMsg": "Partially Filled In." }';
 				exit();
 			}
 		} elseif ($numRows == 1) { // Already existing row. Update or not.
 			if (!$details && !$owners) { // Empty. Error out.
-				echo ' "message": "Record cannot be empty." }';
+				echo ' "errorMsg": "Record cannot be empty." }';
 				exit();
 			} elseif ($details && $owner) { // Mostly filled in. Check secondary owner rows.
 				checkPost(); // Will kill the script if there are errors.
@@ -255,7 +254,7 @@ if (isset($_SESSION['level'])) {
 						if ($ownerInsertR)
 							echo ' "message": "success ' . $i . ' added ", ';
 						else
-							echo ' "message": "error ' . $i . ' error ", '; 
+							echo ' "errorMsg": "error ' . $i . ' error ", '; 
 					} elseif ($ownerNumRows1 == 1 && $ownerNumRows == 0 && empty($first) && empty($last)) { // Removing person from card
 						$ownerUpdateQ = sprintf("UPDATE raw_owners SET endDate=curdate() WHERE cardNo=%u AND personNum=%u AND endDate IS NULL",
 							$_SESSION['cardNo'],
@@ -266,7 +265,7 @@ if (isset($_SESSION['level'])) {
 						if ($ownerUpdateR)
 							echo ' "message": "success ' . $i . ' removed", ';
 						else
-							echo ' "message": "failure ' . $i . ' removed", ';
+							echo ' "errorMsg": "failure ' . $i . ' removed", ';
 					} elseif ($ownerNumRows1 == 1 && $ownerNumRows == 0 && !empty($first) && !empty($last)) { // Updating person on card
 						// First update the old row.
 						$ownerUpdateQ = sprintf("UPDATE raw_owners SET endDate=curdate() WHERE cardNo=%u AND personNum=%u AND endDate IS NULL",
@@ -307,7 +306,7 @@ if (isset($_SESSION['level'])) {
 			
 			
 			} else { // Partially filled in. Error.
-				echo ' "message": "Partially Filled In" }';
+				echo ' "errorMsg": "Partially Filled In" }';
 				exit();
 			}
 		} else {
@@ -391,31 +390,9 @@ if (isset($_SESSION['level'])) {
 			echo ' "cardNo": "' . $_SESSION['cardNo'] . '" }';
 		break;
 		
-		/*case 'firstSearch':
-			$name = explode(' ', escape_data($DBS['comet'], $_POST['firstSearch']));
-			$first = $name[0];
-			$last = $name[1];
-			$cardQ = "SELECT cardNo FROM owners
-				WHERE firstName='$first'
-				AND lastName='$last'";
-			$cardR = mysqli_query($DBS['comet'], $cardQ);
-			list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
-			// echo '"errorMsg": "' . $cardQ . '", ';
+		case 'current':
 			echo ' "cardNo": "' . $_SESSION['cardNo'] . '" }';
 		break;
-		
-		case 'lastSearch':
-			$name = explode(', ', escape_data($DBS['comet'], $_POST['lastSearch']));
-			$first = $name[1];
-			$last = $name[0];
-			$cardQ = "SELECT cardNo FROM owners
-				WHERE firstName='$first'
-				AND lastName='$last'";
-			$cardR = mysqli_query($DBS['comet'], $cardQ);
-			list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
-			echo ' "cardNo": "' . $_SESSION['cardNo'] . '" }';
-		break;
-		*/
 		
 		default:
 			$cardQ = "SELECT MAX(cardNo)+1 FROM details";
