@@ -35,6 +35,9 @@ $_SESSION['sharePrice'] = 180.00;
 // Default payment plan.
 $_SESSION['defaultPlan'] = 1;
 
+// Default State for the details form.
+$_SESSION['defaultState'] = 'OR';
+
 /**
  *	Database Information
 */

@@ -109,6 +109,8 @@ if (isset($_SESSION['level'])) {
 	//	echo '<script type="text/javascript">alert(' . "'hi'" . ');</script>';
 		list($address, $phone, $city, $state, $zip, $phone, $email) = mysqli_fetch_row($memDetailsR);
 	}
+	
+	$state = (is_null($state) ? $_SESSION['defaultState'] : $state);
 
 	echo '<div id="detailsForm">';
 	printf('<span class="address">
