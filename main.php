@@ -36,6 +36,7 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 		
 		// Disable the buttons when the form is submitted.
 		$('#navForm :button').attr("disabled","disabled");
+		$('#navForm :input').attr("disabled","disabled");
 		return true;
 	}
 	
@@ -71,6 +72,7 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 
 	 	// Enable the buttons after the frames are loaded.
 		$('#navForm :button').removeAttr("disabled");
+		$('#navForm :input').removeAttr("disabled");
 		$('#messageSpace').html(responseText.message);
 	}
 	
