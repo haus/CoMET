@@ -32,6 +32,9 @@ $_SESSION['discounts'] = array(0,2,5,15);
 // Default share price.
 $_SESSION['sharePrice'] = 180.00;
 
+// Default payment amount.
+$_SESSION['defaultPayment'] = 45.00;
+
 // Default payment plan.
 $_SESSION['defaultPlan'] = 1;
 

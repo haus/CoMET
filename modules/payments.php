@@ -54,6 +54,7 @@ if (isset($_SESSION['level'])) {
 	$planQ = "SELECT amount FROM paymentPlans WHERE planID=(SELECT paymentPlan FROM details WHERE cardNo={$_SESSION['cardNo']})";
 	$planR = mysqli_query($DBS['comet'], $planQ);
 	list($defaultAmount) = mysqli_fetch_row($planR);
+	$defaultAmount = (is_null($defaultAmount) ? $_SESSION['defaultPayment'] : $defaultAmount);
 
 	$checkQ = "SELECT SUM(p.amount), d.sharePrice
 		FROM payments AS p
