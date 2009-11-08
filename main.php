@@ -68,6 +68,7 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 			$('#firstSearch').val('');
 			$('#lastSearch').val('');
 			$('#cardNo').html(responseText.cardNo);
+			$('#changed').val('false');
 		}
 
 	 	// Enable the buttons after the frames are loaded.
@@ -213,8 +214,11 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 	
 		// bind to the form's submit event 
 	    $('#paymentForm').submit(function() {
-			$('#navButton').val('current');
-			$('#navForm').submit();
+			if ($('#changed').val() == 'true') {
+				$('#navButton').val('current');
+				$('#navForm').submit();
+			}
+			
 			$(this).ajaxSubmit(options);
 			return false;
 		});
@@ -259,8 +263,11 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 	
 		// bind to the form's submit event 
 	    $('#notesForm').submit(function() {
-			$('#navButton').val('current');
-			$('#navForm').submit();
+			if ($('#changed').val() == 'true') {
+				$('#navButton').val('current');
+				$('#navForm').submit();
+			}
+			
 			$(this).ajaxSubmit(options);
 			return false;
 		});

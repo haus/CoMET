@@ -28,8 +28,11 @@ session_start();
 		$('#pmtDatepicker').datepicker({ dateFormat: 'mm/dd/yy', maxDate: 0 });
 		$("#paymentForm :input").keypress(function (e) {
 			if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
-				$('#navButton').val('current');
-				$('#navForm').submit();
+				if ($('#changed').val() == 'true') {
+					$('#navButton').val('current');
+					$('#navForm').submit();
+				}
+				
 				$('#paymentForm').submit();
 
 				return false;

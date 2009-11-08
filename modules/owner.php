@@ -142,20 +142,25 @@ function updateDiscount(person) {
 	memtype = document.getElementById('memType(' + person + ')');
 	staff = document.getElementById('staff(' + person + ')');
 	discount = document.getElementById('discount(' + person + ')');
+	check = document.getElementById('checks(' + person + ')');
 
 	// Big if. ACG specific. (0,2,5,15)
-	if (staff.value == 1 || staff.value == 4 || staff.value == 5) {
+	if (staff.value == 0 && memtype.value == 0) {
+		discount.selectedIndex = 0;
+		check.checked = false;
+	} else if (staff.value == 1 || staff.value == 4 || staff.value == 5) {
 		discount.selectedIndex = 3;
+		check.checked = true;
 	} else if (staff.value == 6) {
 		discount.selectedIndex = 0;
+		check.checked = true;
 	} else if (staff.value == 0 || staff.value == 2 || staff.value == 3) {
 		if (memtype.value == 1 || memtype.value == 2 || memtype.value == 6) {
 			discount.selectedIndex = 1;
 		} else {
 			discount.selectedIndex = 0;
 		}
-	} else {
-		discount.selectedIndex = 0;
+		check.checked = true;
 	}
 }
 
