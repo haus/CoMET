@@ -348,7 +348,7 @@ if (isset($_SESSION['level'])) {
 		break;
 	
 		case 'nextRecord':
-			$cardQ = "SELECT cardNo FROM details WHERE cardNo > {$_SESSION['cardNo']} ORDER BY cardNo ASC LIMIT 1";
+			$cardQ = "SELECT cardNo FROM owners WHERE cardNo > {$_SESSION['cardNo']} ORDER BY cardNo ASC LIMIT 1";
 			$cardR = mysqli_query($DBS['comet'], $cardQ);
 			if (mysqli_num_rows($cardR) == 1)
 				list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
@@ -357,7 +357,7 @@ if (isset($_SESSION['level'])) {
 		break;
 
 		case 'prevRecord':
-			$cardQ = "SELECT cardNo FROM details WHERE cardNo < {$_SESSION['cardNo']} ORDER BY cardNo DESC LIMIT 1";
+			$cardQ = "SELECT cardNo FROM owners WHERE cardNo < {$_SESSION['cardNo']} ORDER BY cardNo DESC LIMIT 1";
 			$cardR = mysqli_query($DBS['comet'], $cardQ);
 			if (mysqli_num_rows($cardR) == 1)
 				list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
@@ -366,21 +366,21 @@ if (isset($_SESSION['level'])) {
 		break;
 
 		case 'firstRecord':
-			$cardQ = "SELECT MIN(cardNo) FROM details";
+			$cardQ = "SELECT MIN(cardNo) FROM owners";
 			$cardR = mysqli_query($DBS['comet'], $cardQ);
 			list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
 			echo ' "cardNo": "' . $_SESSION['cardNo'] . '" }';
 		break;
 
 		case 'lastRecord':
-			$cardQ = "SELECT MAX(cardNo) FROM details";
+			$cardQ = "SELECT MAX(cardNo) FROM owners";
 			$cardR = mysqli_query($DBS['comet'], $cardQ);
 			list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
 			echo ' "cardNo": "' . $_SESSION['cardNo'] . '" }';
 		break;
 	
 		case 'new':
-			$cardQ = "SELECT MAX(cardNo)+1 FROM details";
+			$cardQ = "SELECT MAX(cardNo)+1 FROM owners";
 			$cardR = mysqli_query($DBS['comet'], $cardQ);
 		
 			if (mysqli_num_rows($cardR) == 1)
@@ -395,7 +395,7 @@ if (isset($_SESSION['level'])) {
 		break;
 		
 		default:
-			$cardQ = "SELECT MAX(cardNo)+1 FROM details";
+			$cardQ = "SELECT MAX(cardNo)+1 FROM owners";
 			$cardR = mysqli_query($DBS['comet'], $cardQ);
 		
 			if (mysqli_num_rows($cardR) == 1)

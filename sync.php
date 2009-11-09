@@ -35,6 +35,7 @@ if (isset($_SESSION['level'])) {
 	
 	// Initialize $body variable...
 	$body = '';
+	$count = 0;
 	
 	// Records to be added...
 	$newQ = "SELECT cardNo, personNum, firstName, lastName, discount, memType, staff, writeChecks, chargeOk FROM owners
@@ -68,6 +69,7 @@ if (isset($_SESSION['level'])) {
 		
 		printf('%s<br />', ($insertR) ? 'inserted successfully' : 'insert failure');
 		
+		$count++;
 	}
 	
 	// Records to be deleted...mail details to contact info...
@@ -96,6 +98,8 @@ if (isset($_SESSION['level'])) {
 		
 		$body .= sprintf("Deleted: Card #: %u, Person #: %u, First: %s, Last: %s, Discount: %u, Staff: %u, Memtype: %u, Check: %u, Charge: %u, Hours: %u\n",
 			$cardNo, $personNum, $first, $last, $discount, $staff, $memType, $check, $charge, $ssi);
+		
+		$count++;
 	}
 	
 	// Records to be updated...
@@ -122,6 +126,8 @@ if (isset($_SESSION['level'])) {
 		if (!$updateR) printf('<h3>Query: %s<br />Error %s</h3>', $updateR, mysqli_error($DBS['is4c_op']));
 		
 		printf('%s<br />', ($updateR) ? 'updated successfully' : 'update failure');
+		
+		$count++;
 	}
 	
 	// Mail admin...
@@ -130,6 +136,8 @@ if (isset($_SESSION['level'])) {
 	$subject = "CoMET Mail - Deleted Records";
 	
 	if (!empty($body)) mail($to, $subject, $body, $headers);
+	
+	if ($count == 0) echo '<br /><h3 class="center">No changes to push to Fannie.</h3><br />';
 	
 } else {
 	header('Location: ../index.php');

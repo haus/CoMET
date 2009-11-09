@@ -143,7 +143,10 @@ if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
 				$('#summary').load('./modules/summary.php');
 				$('#payments').load('./modules/payments.php');
 				$('#notes').load('./modules/notes.php');
+				$('#firstSearch').val('');
+				$('#lastSearch').val('');
 				$('#cardNo').html(value);
+				$('#changed').val('false');
 			}
 		});
 		
