@@ -23,6 +23,8 @@
  *	Store specific values.
 */
 
+// TODO: Load most of these from DB for easier management...
+
 // Number of people in a household, on a membership.
 $_SESSION['houseHoldSize'] = 2;
 

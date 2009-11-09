@@ -51,6 +51,9 @@ session_start();
 			tb_show('Login Here','login.php?TB_iframe=true&modal=true&height=175&width=250');
 			
 			$('#content').load('main.php');
+			$('#sync').click(function() {
+				$('body').css('cursor', 'wait');
+			});
 
 			// prepare the form when the DOM is ready 
 		    var options = { 
@@ -88,6 +91,7 @@ if ($_SESSION['authObject']->checkAuth()) {
 		<li class="ajaxLink"><a href="main.php">Main</a></li>
 		<li class="ajaxLink"><a href="reports.php">Reports</a></li>
 		<li class="ajaxLink"><a href="mailer.php">Mailer</a></li>
+		<li class="ajaxLink"><a id="sync" href="sync.php">Sync To Fannie</a></li>
 		<li class="ajaxLink" id="config"><a href="config.php">Config</a></li>
 		<form name="logout" class="headList" action="login.php?act=logout" id="logoutForm" method="post">
 			<li id="logout"><button class="buttonAsLink">Logout</button></li>
