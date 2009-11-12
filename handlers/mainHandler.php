@@ -380,7 +380,7 @@ if (isset($_SESSION['level'])) {
 		break;
 	
 		case 'new':
-			$cardQ = "SELECT MAX(cardNo)+1 FROM owners";
+			$cardQ = "SELECT MAX(cardNo)+1 FROM owners WHERE cardNo NOT IN (9999, 99999)";
 			$cardR = mysqli_query($DBS['comet'], $cardQ);
 		
 			if (mysqli_num_rows($cardR) == 1)

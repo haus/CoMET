@@ -170,10 +170,12 @@ if (isset($_SESSION['level'])) {
 							$nextDue, $_SESSION['userID'], $_SESSION['cardNo']);
 					$insertR = mysqli_query($DBS['comet'], $insertQ);
 				
-				if ($insertR)
-					echo '{ "success": "success!" }';
-				else
-					echo '{ "errorMsg":"Query: ' . $insertQ . ', MySQL Error: ' . mysqli_error($DBS['comet']) . '" }';
+					if ($insertR)
+						echo '{ "success": "success!" }';
+					else
+						echo '{ "errorMsg":"Query: ' . $insertQ . ', MySQL Error: ' . mysqli_error($DBS['comet']) . '" }';
+				} else {
+					echo '{ "errorMsg":"Query: ' . $updateQ . ', MySQL Error: ' . mysqli_error($DBS['comet']) . '" }';
 				}
 			}
 		} else {
