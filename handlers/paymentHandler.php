@@ -56,7 +56,8 @@ if (isset($_SESSION['level'])) {
 			FROM payments AS p 
 				RIGHT JOIN details AS d ON (d.cardNo = p.cardNo) 
 				INNER JOIN paymentPlans AS pp ON (d.paymentPlan = pp.planID)
-			WHERE d.cardNo={$_SESSION['cardNo']}";
+			WHERE d.cardNo={$_SESSION['cardNo']}
+			GROUP BY d.cardNo";
 		$checkR = mysqli_query($DBS['comet'], $checkQ);
 		
 		list($total, $last, $next, $trash, $sPrice, $pPlan, $pFreq, $pAmount) = mysqli_fetch_row($checkR);
@@ -142,16 +143,16 @@ if (isset($_SESSION['level'])) {
 					$nextDue = date_create($date);
 					$nextDue = date_add($nextDue, new DateInterval("P" . $period . "M"));
 					$nextDue = "'" . date_format($nextDue, 'Y-m-d') . "'";
-					/*echo '{ "errorMsg": "Adding to pmtdate. ' . "\n" . 'PmtDate: ' . strtotime($date) . '. ' . "\n" . 'NextDue: ' . strtotime($next) . '." }';
-					exit();*/
+					echo '{ "errorMsg": "Adding to pmtdate. ' . "\n" . 'PmtDate: ' . strtotime($date) . '. ' . "\n" . 'NextDue: ' . strtotime($nextDue) . '." }';
+					exit();
 				// If before or on next due, next due = next due + (12/period)	
 				} elseif (strtotime($date) <= strtotime($next)) {
 					$period = (int)(12 / $pFreq);
 					$nextDue = date_create($next);
 					$nextDue = date_add($nextDue, new DateInterval("P" . $period . "M"));
 					$nextDue = "'" . date_format($nextDue, 'Y-m-d') . "'";
-					/*echo '{ "errorMsg": "Adding to pmtdate. ' . "\n" . 'PmtDate: ' . strtotime($date) . '. ' . "\n" . 'NextDue: ' . strtotime($next) . '." }';
-					exit();*/
+					echo '{ "errorMsg": "Adding to pmtdate. ' . "\n" . 'PmtDate: ' . strtotime($date) . '. ' . "\n" . 'NextDue: ' . strtotime($next) . '." }';
+					exit();
 
 				}
 
