@@ -143,16 +143,16 @@ if (isset($_SESSION['level'])) {
 					$nextDue = date_create($date);
 					$nextDue = date_add($nextDue, new DateInterval("P" . $period . "M"));
 					$nextDue = "'" . date_format($nextDue, 'Y-m-d') . "'";
-					echo '{ "errorMsg": "Adding to pmtdate. ' . "\n" . 'PmtDate: ' . strtotime($date) . '. ' . "\n" . 'NextDue: ' . strtotime($nextDue) . '." }';
-					exit();
+					/*echo '{ "errorMsg": "Adding to pmtdate. ' . "\n" . 'PmtDate: ' . strtotime($date) . '. ' . "\n" . 'NextDue: ' . strtotime($nextDue) . '." }';
+					exit();*/
 				// If before or on next due, next due = next due + (12/period)	
 				} elseif (strtotime($date) <= strtotime($next)) {
 					$period = (int)(12 / $pFreq);
 					$nextDue = date_create($next);
 					$nextDue = date_add($nextDue, new DateInterval("P" . $period . "M"));
 					$nextDue = "'" . date_format($nextDue, 'Y-m-d') . "'";
-					echo '{ "errorMsg": "Adding to pmtdate. ' . "\n" . 'PmtDate: ' . strtotime($date) . '. ' . "\n" . 'NextDue: ' . strtotime($next) . '." }';
-					exit();
+					/*echo '{ "errorMsg": "Adding to pmtdate. ' . "\n" . 'PmtDate: ' . strtotime($date) . '. ' . "\n" . 'NextDue: ' . strtotime($next) . '." }';
+					exit();*/
 
 				}
 
