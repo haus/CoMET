@@ -43,7 +43,7 @@ $_SESSION['defaultPlan'] = 1;
 // Default State for the details form.
 $_SESSION['defaultState'] = 'OR';
 
-// Default staff, memtype
+// Default staff, memtype, discount, checkwriting...
 $_SESSION['defaultStaff'] = 0;
 $_SESSION['defaultMemType'] = 2;
 $_SESSION['defaultDiscount'] = 2;

@@ -366,14 +366,14 @@ if (isset($_SESSION['level'])) {
 		break;
 
 		case 'firstRecord':
-			$cardQ = "SELECT MIN(cardNo) FROM owners";
+			$cardQ = "SELECT MIN(cardNo) FROM owners WHERE cardNo NOT IN (9999, 99999)";
 			$cardR = mysqli_query($DBS['comet'], $cardQ);
 			list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
 			echo ' "cardNo": "' . $_SESSION['cardNo'] . '" }';
 		break;
 
 		case 'lastRecord':
-			$cardQ = "SELECT MAX(cardNo) FROM owners";
+			$cardQ = "SELECT MAX(cardNo) FROM owners WHERE cardNo NOT IN (9999, 99999)";
 			$cardR = mysqli_query($DBS['comet'], $cardQ);
 			list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
 			echo ' "cardNo": "' . $_SESSION['cardNo'] . '" }';

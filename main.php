@@ -23,11 +23,14 @@ session_start();
 require_once('./includes/config.php');
 require_once('./includes/mysqli_connect.php');
 
-$cardQ = "SELECT MAX(cardNo) FROM details WHERE cardNo < 9999";
-$cardR = mysqli_query($DBS['comet'], $cardQ);
-if (!$cardR) printf('Query: %s, Error: %s', $cardQ, mysqli_error($DBS['comet']));
-list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
-if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
+if (!isset($_SESSION['cardNo'])) {
+	$cardQ = "SELECT MAX(cardNo) FROM details WHERE cardNo < 9999";
+	$cardR = mysqli_query($DBS['comet'], $cardQ);
+	if (!$cardR) printf('Query: %s, Error: %s', $cardQ, mysqli_error($DBS['comet']));
+	list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
+	if (is_null($_SESSION['cardNo'])) $_SESSION['cardNo'] = '1';
+}
+
 ?>
 
 <script type="text/JavaScript">
