@@ -18,4 +18,17 @@
 	    You should have received a copy of the GNU General Public License
 	    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+session_start();
+require_once('./includes/config.php');
+require_once('./includes/mysqli_connect.php');
+
 ?>
+<script type="text/javascript">
+$(document).ready(function() {
+	$('#mailSettings').load('./modules/mailer.php');
+});
+</script>
+<form id="mailerForm" method="POST" name="mailerForm" action="./handlers/mailerHandler.php">
+	<div id="mailSettings" class="center">
+	</div>
+</form>
