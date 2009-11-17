@@ -36,7 +36,7 @@ if (isset($_SESSION['level'])) {
 	}
 
 	while (list($num, $desc) = mysqli_fetch_row($staffR)) {
-		$staff[$num] = $desc;
+		$staffList[$num] = $desc;
 	}
 
 	/**
@@ -69,6 +69,11 @@ if (isset($_SESSION['level'])) {
 
 				if (!$memR) printf('Query: %s, Error: %s', $memQ, mysqli_error($DBS['comet']));
 				else $memRow = mysqli_fetch_array($memR, MYSQLI_ASSOC);
+				
+				$mType = (is_null($memRow['memType']) ? $_SESSION['defaultMemType'] : (int) $memRow['memType']);
+				$staff = (is_null($memRow['staff']) ? $_SESSION['defaultStaff'] : (int) $memRow['staff']);
+				$discount = (is_null($memRow['discount']) ? $_SESSION['defaultDiscount'] : (int) $memRow['discount']);
+				$check = (is_null($memRow['writeChecks']) ? $_SESSION['defaultCheck'] : (int) $memRow['writeChecks']);
 
 				printf("\n" . '<span class="person newline">%u</span>
 					<span class="text">
@@ -81,19 +86,19 @@ if (isset($_SESSION['level'])) {
 						<select id="memType(%u)" name="memType[%u]" onChange="updateDiscount(%u);">',
 						$i, $i, $i, $memRow['firstName'], $i, $i, $memRow['lastName'], $i, $i, $i);
 				foreach ($memType AS $num => $desc)
-					printf('<option value="%u"%s>%s</option>', $num, ($memRow['memType'] == $num ? ' selected="selected"' : ''), $desc);
+					printf('<option value="%u"%s>%s</option>', $num, ($mType == $num ? ' selected="selected"' : ''), $desc);
 				printf('</select>
 					</span>
 					<span class="widedropdown">
 						<select id="staff(%u)" class="staffDrop" name="staff[%u]" onChange="updateCharge(this, %u);updateDiscount(%u);">', $i, $i, $i, $i);
-				foreach ($staff AS $num => $desc)
-					printf('<option value="%u"%s>%s</option>', $num, ($memRow['staff'] == $num ? ' selected="selected"' : ''), $desc);
+				foreach ($staffList AS $num => $desc)
+					printf('<option value="%u"%s>%s</option>', $num, ($staff == $num ? ' selected="selected"' : ''), $desc);
 				printf('</select>
 					</span>
 					<span class="narrowdropdown">
 						<select id="discount(%u)" name="discount[%u]">', $i, $i);
 				foreach ($_SESSION['discounts'] AS $disc)
-							printf('<option value="%u"%s>%u%%</option>', $disc, ($memRow['discount'] == $disc ? ' selected="selected"' : ''), $disc);
+							printf('<option value="%u"%s>%u%%</option>', $disc, ($discount == $disc ? ' selected="selected"' : ''), $disc);
 				printf('</select>
 					</span>
 					<span class="check">
@@ -102,7 +107,7 @@ if (isset($_SESSION['level'])) {
 					<span class="check">
 						<input type="checkbox" id="charge(%u)" class="charge chargeCheck" disabled="true" name="charge[%u]"%s />
 					</span>',
-					$i, $i, ($memRow['writeChecks'] == 1 ? ' checked="checked"' : ''), $i, $i, ($memRow['chargeOk'] == 1 ? ' checked="checked"' : ''));
+					$i, $i, ($check == 1 ? ' checked="checked"' : ''), $i, $i, ($memRow['chargeOk'] == 1 ? ' checked="checked"' : ''));
 			}
 		}
 	echo '</div>';
