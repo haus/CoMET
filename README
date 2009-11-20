@@ -1,4 +1,5 @@
-CoMET is a stand-alone member equity tracking application designed to integrate with IS4C and Fannie.
+CoMET is a stand-alone member equity tracking application designed to 
+integrate with IS4C and Fannie.
 Copyright (C) 2009  Matthaus Litteken
 
 This file is part of CoMET.
@@ -16,10 +17,18 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-README
+*********************************************************************
+**************************	README	*********************************
+*********************************************************************
 
-General Information
-Installation
-Usage
-Troubleshooting
-Extending
+CoMET is written in PHP, with a lot of support from jQuery. It uses MySQL 
+for the database backend, any database that supports views would work with 
+some modification. It requires PHP of at least version 5.3 and has been 
+tested and designed with MySQL 5.
+
+A. General Information
+B. Installation
+C. Configuration/Setup
+D. Usage
+E. Troubleshooting
+F. Extending
