@@ -39,11 +39,15 @@ session_start();
 	<script type="text/JavaScript">
 		$(document).ready(function() {
 			$('.ajaxLink a').click(function() {
+				$('#navButton').val('current');
+				$('#navForm').submit();
 				$('#content').load(this.href);
 				return false;
 			});
 			
 			$('#logoutForm').submit(function() {
+				$('#navButton').val('current');
+				$('#navForm').submit();
 				$(this).ajaxSubmit(options);
 				return false;
 			});
