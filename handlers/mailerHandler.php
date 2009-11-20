@@ -19,7 +19,40 @@
 	    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 session_start();
-require_once('./includes/config.php');
-require_once('./includes/mysqli_connect.php');
+require_once('../includes/config.php');
+require_once('../includes/mysqli_connect.php');
+require_once('../includes/functions.php');
+
+$allowed = array('comingDueDays', 'comingDueMsg', 'pastDueDays', 'pastDueMsg', 'inactiveDays', 'inactiveMsg');
+
+if (isset($_POST['id']) && isset($_POST['value']) && in_array($_POST['id'], $allowed)) {
+	$id = escape_data($DBS['comet'], $_POST['id']);
+	$rawValue = $_POST['value'];
+	$value = escape_data($DBS['comet'], $_POST['value']);
+} else {
+	$id = NULL;
+	$value = NULL;
+}
+
+if (!empty($id) && $value) {
+	$valueQ = "SELECT value FROM options WHERE name='$id'";
+	$valueR = mysqli_query($DBS['comet'], $valueQ);
+	list($oldValue) = mysqli_fetch_row($valueR);
+	$oldValue = nl2br($oldValue);
+	
+	if (empty($value) || (strstr($id, 'Days') !== FALSE && !is_numeric($value))) {
+		// If empty or non-numeric when supposed to be then load and display the initial value...
+		echo $oldValue;
+		exit();
+	} else {
+		$updateQ = sprintf("UPDATE options SET value='%s' WHERE name='%s'", $value, $id);
+		$updateR = mysqli_query($DBS['comet'], $updateQ);
+		if ($updateR && mysqli_affected_rows($DBS['comet']) == 1) {
+			$rawValue = nl2br($rawValue);
+			echo $rawValue;
+		} else
+			echo $oldValue;
+	}
+}
 
 ?>

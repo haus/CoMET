@@ -23,30 +23,61 @@ require_once('../includes/config.php');
 require_once('../includes/mysqli_connect.php');
 
 ?>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('.editText').editable('./handlers/mailerHandler.php',
+			{
+				style: 'display: inline',
+				onblur: 'submit',
+				tooltip: 'Click to edit...'
+			}
+		);
+	
+		$('.editArea').editable('./handlers/mailerHandler.php',
+			{
+				type: 'autogrow',
+				onblur: 'submit',
+				tooltip: 'Click to edit...',
+				data: function(value, settings) {
+				      /* Convert <br> to nothing. */
+				      var retval = value.replace(/<br[\s\/]?>/gi, '');
+				      return retval;
+				    },
+				autogrow: {
+				        lineHeight : 16,
+				        maxHeight  : 512
+				}
+			}
+		);
+	});
+</script>
+
 <h1>Auto-reminder Mailer Settings</h1>
 <h4>Available tags to use: <em>[firstName], [lastName], [balance], [sharePrice], [dueDate], [paymentPlan]</em></h4>
-<div class="leftSidebar">
-	<br />
-	<h3>Coming Due Message (# of days to message: <input type="text" name="comingDueDays" size="5" maxlength="3" />)</h3>
-	<textarea rows="5" cols="75"></textarea>
-	
-	<br /><br />
-	<h3>Past Due Message (# of days to message: <input type="text" name="pastDueDays" size="5" maxlength="3" />)</h3>
-	<textarea rows="5" cols="75"></textarea>
 
-	<br /><br />
-	<h3>Inactive Message (# of days to message: <input type="text" name="inactiveDays" size="5" maxlength="3" />)</h3>
-	<textarea rows="5" cols="75"></textarea>
+<?php
+echo '<br />';
 
-	<br /><br />	
-	<h3>SMTP Settings</h3>
-	<p>
-		<strong>User: </strong><input type="text" name="smtpUser" /> 
-		<strong>Password: </strong><input type="password" name="smtpPassword" /> 
-		<strong>SMTP Host: </strong><input type="text" name="smtpHost" />
-	</p>
-	
-	<br />
-	<button type="submit" name="mailerTest">Test SMTP</button>
-	<button type="submit" name="mailerSubmit">Submit</button>
-</div>
+$mailer = array();
+
+$comingDueQ = "SELECT name, value 
+	FROM options 
+	WHERE name IN 
+		('comingDueDays', 'comingDueMsg', 'pastDueDays', 'pastDueMsg', 'inactiveDays', 'inactiveMsg')";
+$comingDueR = mysqli_query($DBS['comet'], $comingDueQ);
+while (list($name, $value) = mysqli_fetch_row($comingDueR)) {
+	$value = str_replace ('\r', '', $value);
+	$value = nl2br($value);
+	$mailer[$name] = $value;
+}
+
+printf('<h3>Coming Due Message (# of days to message: <span class="editText" id="comingDueDays">%s</span>)</h3>
+<span class="editArea" id="comingDueMsg">%s</span><br /><br />', $mailer['comingDueDays'], $mailer['comingDueMsg']);
+
+printf('<h3>Past Due Message (# of days to message: <span class="editText" id="pastDueDays">%s</span>)</h3>
+<span class="editArea" id="pastDueMsg">%s</span><br /><br />', $mailer['pastDueDays'], $mailer['pastDueMsg']);
+
+printf('<h3>Inactive Message (# of days to message: <span class="editText" id="inactiveDays">%s</span>)</h3>
+<span class="editArea" id="inactiveMsg">%s</span><br /><br />', $mailer['inactiveDays'], $mailer['inactiveMsg']);
+
+?>

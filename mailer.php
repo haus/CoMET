@@ -29,6 +29,6 @@ $(document).ready(function() {
 });
 </script>
 <form id="mailerForm" method="POST" name="mailerForm" action="./handlers/mailerHandler.php">
-	<div id="mailSettings" class="center">
+	<div id="mailSettings" class="left">
 	</div>
 </form>
