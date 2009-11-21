@@ -23,8 +23,13 @@ require_once('../includes/config.php');
 require_once('../includes/mysqli_connect.php');
 require_once('../includes/functions.php');
 
-$allowed = array('smtpUser', 'smtpPass', 'smtpHost', 'opHost', 'opUser', 'opPass', 'opDB', 'logHost', 'logUser', 'logPass', 'logDB');
+$allowed = array('smtpUser', 'smtpPass', 'smtpHost', 
+	'opHost', 'opUser', 'opPass', 'opDB', 
+	'logHost', 'logUser', 'logPass', 'logDB',
+	'houseHoldSize', 'discounts', 'sharePrice', 'defaultPayment', 'defaultPlan');
+	
 $passArray = array('smtpPass', 'opPass', 'logPass');
+$numericArray = array('houseHoldSize', 'defaultPlan', 'sharePrice', 'defaultPayment');
 
 if (isset($_POST['id']) && isset($_POST['value']) && in_array($_POST['id'], $allowed)) {
 	$id = escape_data($DBS['comet'], $_POST['id']);
