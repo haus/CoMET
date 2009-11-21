@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 CoMET is written in PHP, with a lot of support from jQuery. It uses MySQL 
 for the database backend, any database that supports views would work with 
 some modification. It requires PHP of at least version 5.3 and has been 
-tested and designed with MySQL 5.
+tested and designed with MySQL 5. It uses PEAR for Auth and Mail support.
 
 A. General Information
 B. Requirements
@@ -49,7 +49,10 @@ G. Extending
 *********************************************************************
 ************************	Installation	*************************
 *********************************************************************
-
+pear install Net_SMTP
+pear install Mail
+pear install Auth
+pear install MDB2/mysqli
 
 
 *********************************************************************
