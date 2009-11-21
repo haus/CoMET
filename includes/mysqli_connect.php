@@ -38,12 +38,4 @@ $DBS['is4c_log'] = mysqli_connect(
 	) 
 	or die('is4c_log fail!');
 
-$DBS['comet'] = mysqli_connect(
-		$_SESSION['DB']['host'], 
-		$_SESSION['DB']['user'], 
-		$_SESSION['DB']['password'], 
-		$_SESSION['DB']['database']
-	) 
-	or die('comet fail!');
-
 ?>

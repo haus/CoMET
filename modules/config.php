@@ -82,13 +82,16 @@ if (!$configR) {
 while (list($name, $value) = mysqli_fetch_row($configR)) {
 	$config[$name] = $value;
 }
+
 // SMTP Settings...
 echo '<h3>SMTP Settings</h3>';
 printf('<p>
 	<strong>User: </strong><span class="editText" id="smtpUser">%s</span>
 	<strong>Password: </strong><span class="editPass" id="smtpPass">%s</span>
 	<strong>SMTP Host: </strong><span class="editText" id="smtpHost">%s</span>
-</p><br />', $config['smtpUser'], '(hidden)', $config['smtpHost']);
+</p>', $config['smtpUser'], '(hidden)', $config['smtpHost']);
+echo '<div id="smtpResponse"></div>
+	<button type="submit" name="mailerTest">Test SMTP</button><br /><br />';
 
 // Store specific settings...
 echo '<h3>Store Specific Settings</h3>';
@@ -110,7 +113,9 @@ printf('<p>
 	<strong>Password: </strong><span class="editPass" id="opPass">%s</span>
 	<strong>Host: </strong><span class="editText" id="opHost">%s</span>
 	<strong>DB Name: </strong><span class="editText" id="opDB">%s</span>
-</p><br />', $config['opUser'], '(hidden)', $config['opHost'], $config['opDB']);
+</p>', $config['opUser'], '(hidden)', $config['opHost'], $config['opDB']);
+echo '<div id="opResponse"></div>
+	<button type="submit" name="mailerTest">Test OP DB Connection</button><br /><br />';
 
 echo '<h5>IS4C_LOG Connection Information</h5>';
 printf('<p>
@@ -118,8 +123,7 @@ printf('<p>
 	<strong>Password: </strong><span class="editPass" id="logPass">%s</span>
 	<strong>Host: </strong><span class="editText" id="logHost">%s</span>
 	<strong>DB Name: </strong><span class="editText" id="logDB">%s</span>
-</p><br />', $config['logUser'], '(hidden)', $config['logHost'], $config['logDB']);
-
-
-echo '<button type="submit" name="mailerTest">Test SMTP</button>';
+</p>', $config['logUser'], '(hidden)', $config['logHost'], $config['logDB']);
+echo '<div id="logResponse"></div>
+<button type="submit" name="mailerTest">Test LOG DB Connection</button><br /><br />';
 ?>

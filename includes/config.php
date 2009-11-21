@@ -19,46 +19,46 @@
 	    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+// CoMET DB Connection details.
+$_SESSION['DB'] = array('host'=>'localhost', 'user'=>'root', 'password'=>'lemoncoke', 'database'=>'comet');
+
+$DBS['comet'] = mysqli_connect(
+		$_SESSION['DB']['host'], 
+		$_SESSION['DB']['user'], 
+		$_SESSION['DB']['password'], 
+		$_SESSION['DB']['database']
+	) 
+	or die('comet fail!');
+	
 /**
  *	Store specific values.
 */
+$configQ = "SELECT name, value FROM options";
+$configR = mysqli_query($DBS['comet'], $configQ);
+if (!$configR) {
+	printf('MySQL Error: %s, Query: %s', mysqli_error($DBS['comet']), $configQ);
+	exit();
+}
 
-// TODO: Load most of these from DB for easier management...
-
-// Number of people in a household, on a membership.
-$_SESSION['houseHoldSize'] = 2;
-
-// Variety of discounts offered to members & workers.
-$_SESSION['discounts'] = array(0,2,5,15);
-
-// Default share price.
-$_SESSION['sharePrice'] = 180.00;
-
-// Default payment amount.
-$_SESSION['defaultPayment'] = 45.00;
-
-// Default payment plan.
-$_SESSION['defaultPlan'] = 1;
-
-// Default State for the details form.
-$_SESSION['defaultState'] = 'OR';
-
-// Default staff, memtype, discount, checkwriting...
-$_SESSION['defaultStaff'] = 0;
-$_SESSION['defaultMemType'] = 2;
-$_SESSION['defaultDiscount'] = 2;
-$_SESSION['defaultCheck'] = true;
+while (list($name, $value) = mysqli_fetch_row($configR)) {
+	if ($name == 'discounts') {
+		$_SESSION[$name] = explode(',', $value);
+	} else {
+		$_SESSION[$name] = $value;
+	}
+}
 
 /**
  *	Database Information
 */
 
 // IS4C Connection Details (Needs select, insert, update on both DBs)
-$_SESSION['is4c_op'] = array('host' => 'localhost', 'user' => 'root', 'password' => 'lemoncoke', 'database' => 'ACG_is4c_op');
-$_SESSION['is4c_log'] = array('host' => 'localhost', 'user' => 'root', 'password' => 'lemoncoke', 'database' => 'ACG_is4c_log');
-
-// CoMET DB Connection details.
-$_SESSION['DB'] = array('host'=>'localhost', 'user'=>'root', 'password'=>'lemoncoke', 'database'=>'comet');
+$_SESSION['is4c_op'] = array(
+	'host' => $_SESSION['opHost'], 'user' => $_SESSION['opUser'], 'password' => $_SESSION['opPass'], 'database' => $_SESSION['opDB']
+	);
+$_SESSION['is4c_log'] = array(
+	'host' => $_SESSION['logHost'], 'user' => $_SESSION['logUser'], 'password' => $_SESSION['logPass'], 'database' => $_SESSION['logDB']
+	);
 
 // Pear Auth Config Info
 $_SESSION['authParams'] = array(
