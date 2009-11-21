@@ -28,7 +28,5 @@ $(document).ready(function() {
 	$('#mailSettings').load('./modules/mailer.php');
 });
 </script>
-<form id="mailerForm" method="POST" name="mailerForm" action="./handlers/mailerHandler.php">
-	<div id="mailSettings" class="left">
-	</div>
-</form>
+<div id="mailSettings" class="left">
+</div>
