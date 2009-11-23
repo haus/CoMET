@@ -49,29 +49,21 @@ while (list($name, $value) = mysqli_fetch_row($configR)) {
 }
 
 /**
- *	Database Information
+ *	Database Connections
 */
-
-// IS4C Connection Details (Needs select, insert, update on both DBs)
-$_SESSION['is4c_op'] = array(
-	'host' => $_SESSION['opHost'], 'user' => $_SESSION['opUser'], 'password' => $_SESSION['opPass'], 'database' => $_SESSION['opDB']
-	);
-$_SESSION['is4c_log'] = array(
-	'host' => $_SESSION['logHost'], 'user' => $_SESSION['logUser'], 'password' => $_SESSION['logPass'], 'database' => $_SESSION['logDB']
-	);
 	
 $DBS['is4c_op'] = @mysqli_connect(
-		$_SESSION['is4c_op']['host'], 
-		$_SESSION['is4c_op']['user'], 
-		$_SESSION['is4c_op']['password'], 
-		$_SESSION['is4c_op']['database']
+		$_SESSION['opHost'], 
+		$_SESSION['opUser'], 
+		$_SESSION['opPass'], 
+		$_SESSION['opDB']
 	);
 
 $DBS['is4c_log'] = @mysqli_connect(
-		$_SESSION['is4c_log']['host'], 
-		$_SESSION['is4c_log']['user'], 
-		$_SESSION['is4c_log']['password'], 
-		$_SESSION['is4c_log']['database']
+		$_SESSION['logHost'], 
+		$_SESSION['logUser'], 
+		$_SESSION['logPass'], 
+		$_SESSION['logDB']
 	);
 
 // Pear Auth Config Info

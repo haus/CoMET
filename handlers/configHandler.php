@@ -26,33 +26,49 @@ if (isset($_POST['submitted'])) {
 	switch($_POST['testType']) {
 		case 'smtpTest':
 			require_once('Mail.php');
-			cometMail();
-			$from = "Matthaus <matthaus@albertagrocery.coop>";
-			$to = "Matthaus <mlitteken@gmail.com>";
-			$subject = "Testing...";
-			$body = "Testing...";
+			//cometMail();
+			
+			$smtpQ = "SELECT name, value FROM options WHERE name IN ('smtpHost', 'smtpUser', 'smtpPass')";
+			$smtpR = mysqli_query($DBS['comet'], $smtpQ);
+			
+			if (!$smtpR) {
+				$output['errorMsg'] = sprintf('MySQL Error: %s, Query: %s', mysqli_error($DBS['comet']), $smtpQ);
+			} else {
+				while (list($name, $value) = mysqli_fetch_row($smtpR)) {
+					$smtp[$name] = $value;
+				}
+			
+				$from = "CoMET <comet@albertagrocery.coop>";
+				$to = "Matthaus <mlitteken@gmail.com>";
+				$subject = "Testing...";
+				$body = "Testing...";
 
-			$host = "smtp.albertagrocery.coop";
-			$user = "matthaus@albertagrocery.coop";
-			$pass = "lung*vIa";
+				$host = $smtp['smtpHost'];
+				$user = $smtp['smtpUser'];
+				$pass = $smtp['smtpPass'];
 
-			$headers = array ('From' => $from,
-			  'To' => $to,
-			  'Subject' => $subject);
+				$headers = array ('From' => $from,
+				  'To' => $to,
+				  'Subject' => $subject);
 
-			$smtp = Mail::factory('smtp',
-			  array ('host' => $host,
-			    'auth' => true,
-			    'username' => $user,
-			    'password' => $pass));
+				$smtp = Mail::factory(
+					'smtp',
+					array (
+						'host' => $host,
+				    	'auth' => true,
+					    'username' => $user,
+					    'password' => $pass
+					)
+				);
 
-			$mail = $smtp->send($to, $headers, $body);
+				$mail = $smtp->send($to, $headers, $body);
 
-			if (PEAR::isError($mail)) {
-			  echo("<p>" . $mail->getMessage() . "</p>");
-			 } else {
-			  echo("<p>Message successfully sent!</p>");
-			 }
+				if (PEAR::isError($mail)) {
+					$output['smtpResult'] = '<blink>' . $mail->getMessage() . '</blink>';
+				} else {
+					$output['smtpResult'] = 'Success. Test email sent.';
+				}
+			}
 			
 			break;
 		case 'opTest':
@@ -60,17 +76,15 @@ if (isset($_POST['submitted'])) {
 			$opR = mysqli_query($DBS['comet'], $opQ);
 	
 			if (!$opR) {
-				printf('{"errorMsg": "MySQL Error: %s, Query: %s"}', mysqli_error($DBS['comet']), $opQ);
-				exit();
+				$output['errorMsg'] = sprintf('MySQL Error: %s, Query: %s', mysqli_error($DBS['comet']), $opQ);
 			} else {
 				while (list($name, $value) = mysqli_fetch_row($opR)) {
 					$db[$name] = $value;
 				}
 		
-				printf('{"opResult": "%s"}', 
-					(mysqli_connect($db['opHost'], $db['opUser'], $db['opPass'], $db['opDB']) 
-						? 'Successfully connected.' : 'Connection failure: please check connection details.'));
-				exit();
+				$output['opResult'] = sprintf('%s', 
+					(@mysqli_connect($db['opHost'], $db['opUser'], $db['opPass'], $db['opDB']) 
+						? 'Successfully connected.' : '<blink>Connection failure: ' . mysqli_connect_error()) . '</blink>');
 			}
 			
 			break;
@@ -80,17 +94,15 @@ if (isset($_POST['submitted'])) {
 			$logR = mysqli_query($DBS['comet'], $logQ);
 	
 			if (!$logR) {
-				printf('{"errorMsg": "MySQL Error: %s, Query: %s"}', mysqli_error($DBS['comet']), $logQ);
-				exit();
+				$output['errorMsg'] = sprintf('MySQL Error: %s, Query: %s', mysqli_error($DBS['comet']), $logQ);
 			} else {
 				while (list($name, $value) = mysqli_fetch_row($logR)) {
 					$db[$name] = $value;
 				}
 		
-				printf('{"logResult": "%s"}', 
-					(mysqli_connect($db['logHost'], $db['logUser'], $db['logPass'], $db['logDB']) 
-						? 'Successfully connected.' : 'Connection failure: please check connection details.'));
-				exit();
+				$output['logResult'] = sprintf('%s', 
+					(@mysqli_connect($db['logHost'], $db['logUser'], $db['logPass'], $db['logDB']) 
+						? 'Successfully connected.' : '<blink>Connection failure: ' . mysqli_connect_error()) . '</blink>');
 			}
 			
 			break;
@@ -99,6 +111,7 @@ if (isset($_POST['submitted'])) {
 			print_r($_POST);
 			break;
 	}
+	echo json_encode($output);
 } else {
 	$allowed = array('smtpUser', 'smtpPass', 'smtpHost', 
 		'opHost', 'opUser', 'opPass', 'opDB', 
