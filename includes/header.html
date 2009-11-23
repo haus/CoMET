@@ -19,6 +19,12 @@
 	    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 session_start();
+require_once('./includes/config.php');
+require_once('./includes/mysqli_connect.php');
+require_once('./includes/functions.php');
+require_once('PEAR.php');
+require_once('MDB2.php');
+require_once('Auth/Auth.php');
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -56,7 +62,16 @@ session_start();
 			
 			tb_show('Login Here','login.php?TB_iframe=true&modal=true&height=175&width=250');
 			
-			$('#content').load('main.php');
+			// Check for DBs...
+			<?php 
+			if ($DBS['is4c_op'] === false || $DBS['is4c_log'] === false):
+			?>$('#content').load('config.php');
+			<?php
+			else:
+			?>$('#content').load('main.php');
+			<?php
+			endif;
+			?>
 			$('#sync').click(function() {
 				$('body').css('cursor', 'wait');
 			});
@@ -77,13 +92,7 @@ session_start();
 </head>
 <body>
 <?php
-require_once('./includes/config.php');
-require_once('./includes/mysqli_connect.php');
-require_once('./includes/functions.php');
-require_once('PEAR.php');
-require_once('MDB2.php');
-require_once('Auth/Auth.php');
-	
+
 $_SESSION['authObject'] = new Auth("MDB2", $_SESSION['authParams'], 'myLogin');
 
 if ($_SESSION['authObject']->checkAuth()) {

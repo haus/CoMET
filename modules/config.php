@@ -20,7 +20,6 @@
 */
 session_start();
 require_once('../includes/config.php');
-require_once('../includes/mysqli_connect.php');
 ?>
 
 <script type="text/javascript">
@@ -31,7 +30,7 @@ require_once('../includes/mysqli_connect.php');
 	        return(input);
 	    }
 	});
-	
+
 	$(document).ready(function() {
 		$('.editText').editable('./handlers/configHandler.php',
 			{
@@ -62,9 +61,36 @@ require_once('../includes/mysqli_connect.php');
 				tooltip: 'Click to edit...'
 			}
 		);
+		
+		var configOptions = { 
+		       //target:        '#output1',   // target element(s) to be updated with server response 
+		       beforeSubmit:  validateConfig, // pre-submit callback 
+		       success:       configResponse,  // post-submit callback 
+
+		       // other available options: 
+		       //url:       './modules/handler.php'         // override for form's 'action' attribute 
+		       //type:      'post'        // 'get' or 'post', override for form's 'method' attribute 
+		       dataType:  'json'        // 'xml', 'script', or 'json' (expected server response type) 
+		       //clearForm: true        // clear all form fields after successful submit 
+		       //resetForm: true        // reset the form after successful submit 
+
+		       // $.ajax options can be used here too, for example: 
+		       //timeout:   3000 
+		   };
+
+		// bind to the form's submit event 
+		   $('#configForm').submit(function() {
+
+			$(this).ajaxSubmit(configOptions);
+			return false;
+		});
+
+		$('#configForm :button').click(function() {
+			$('#testType').val(this.id);
+		});
 	});
 </script>
-
+<form id="configForm" method="POST" name="configForm" action="./handlers/configHandler.php">
 <?php
 $configQ = "SELECT name, value 
 	FROM options 
@@ -90,8 +116,8 @@ printf('<p>
 	<strong>Password: </strong><span class="editPass" id="smtpPass">%s</span>
 	<strong>SMTP Host: </strong><span class="editText" id="smtpHost">%s</span>
 </p>', $config['smtpUser'], '(hidden)', $config['smtpHost']);
-echo '<div id="smtpResponse"></div>
-	<button type="submit" name="mailerTest">Test SMTP</button><br /><br />';
+echo '<p id="smtpResponse">&nbsp;</p>
+	<button type="submit" id="smtpTest" name="smtpTest">Test SMTP</button><br /><br />';
 
 // Store specific settings...
 echo '<h3>Store Specific Settings</h3>';
@@ -114,8 +140,8 @@ printf('<p>
 	<strong>Host: </strong><span class="editText" id="opHost">%s</span>
 	<strong>DB Name: </strong><span class="editText" id="opDB">%s</span>
 </p>', $config['opUser'], '(hidden)', $config['opHost'], $config['opDB']);
-echo '<div id="opResponse"></div>
-	<button type="submit" name="mailerTest">Test OP DB Connection</button><br /><br />';
+echo '<p id="opResponse">&nbsp;</p>
+	<button type="submit" id="opTest" name="opTest">Test OP DB Connection</button><br /><br />';
 
 echo '<h5>IS4C_LOG Connection Information</h5>';
 printf('<p>
@@ -124,6 +150,10 @@ printf('<p>
 	<strong>Host: </strong><span class="editText" id="logHost">%s</span>
 	<strong>DB Name: </strong><span class="editText" id="logDB">%s</span>
 </p>', $config['logUser'], '(hidden)', $config['logHost'], $config['logDB']);
-echo '<div id="logResponse"></div>
-<button type="submit" name="mailerTest">Test LOG DB Connection</button><br /><br />';
+echo '<p id="logResponse">&nbsp;</p>
+<button type="submit" id="logTest" name="logTest">Test LOG DB Connection</button><br /><br />';
 ?>
+
+<input type="hidden" id="testType" name="testType" value="" />
+<input type="hidden" name="submitted" value="TRUE" />
+</form>

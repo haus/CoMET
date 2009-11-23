@@ -20,15 +20,48 @@
 */
 session_start();
 require_once('./includes/config.php');
-require_once('./includes/mysqli_connect.php');
 
 ?>
 <script type="text/javascript">
-$(document).ready(function() {
-	$('#configSettings').load('./modules/config.php');
-});
+	function validateConfig(formData, jqForm, options) {
+		// Disable the buttons when the form is submitted.
+		$('#configForm :button').attr("disabled","disabled");
+		return true;
+	}
+	
+	// post-submit callback 
+	function configResponse(responseText, statusText)  { 
+	    // for normal html responses, the first argument to the success callback 
+	    // is the XMLHttpRequest object's responseText property
+
+	    // if the ajaxSubmit method was passed an Options Object with the dataType 
+	    // property set to 'xml' then the first argument to the success callback 
+	    // is the XMLHttpRequest object's responseXML property
+
+	    // if the ajaxSubmit method was passed an Options Object with the dataType 
+	    // property set to 'json' then the first argument to the success callback 
+	    // is the json data object returned by the server
+	
+		//alert(responseText);
+		//alert(responseText.message);
+		if (responseText.opResult != undefined) {
+			$('#opResponse').html('<strong>' + responseText.opResult + '</strong>');
+		} else if (responseText.logResult != undefined) {
+			$('#logResponse').html('<strong>' + responseText.logResult + '</strong>');
+		} else if (responseText.errorMsg != undefined) {
+			alert(responseText.errorMsg);
+		} else {
+
+		}
+
+	 	// Enable the buttons after the frames are loaded.
+		$('#configForm :button').removeAttr("disabled");
+
+	}
+
+	$(document).ready(function() {
+		$('#configSettings').load('./modules/config.php');
+	});
 </script>
-<form id="configForm" method="POST" name="configForm" action="./handlers/configHandler.php">
-	<div id="configSettings" class="center">
-	</div>
-</form>
+<div id="configSettings" class="center">
+</div>

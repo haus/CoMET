@@ -45,7 +45,6 @@ session_start();
 <?php
 if (isset($_SESSION['level'])) {
 	require_once('../includes/config.php');
-	require_once('../includes/mysqli_connect.php');
 
 	$paymentsQ = "SELECT amount, date, memo, paymentID, reference
 		FROM payments WHERE cardNo={$_SESSION['cardNo']} ORDER BY date ASC";

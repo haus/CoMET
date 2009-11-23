@@ -70,7 +70,6 @@ session_start();
 if (isset($_SESSION['level'])) {
 
 	require_once('../includes/config.php');
-	require_once('../includes/mysqli_connect.php');
 
 	$payQ = "SELECT SUM(p.amount), MAX(date), d.nextPayment, d.joined, d.sharePrice, d.paymentPlan, pp.frequency, pp.amount, d.startDate, u.user
 		FROM payments AS p

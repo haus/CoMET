@@ -22,20 +22,6 @@
 /**
  *	DB Connect Statements
 */
-$DBS['is4c_op'] = mysqli_connect(
-		$_SESSION['is4c_op']['host'], 
-		$_SESSION['is4c_op']['user'], 
-		$_SESSION['is4c_op']['password'], 
-		$_SESSION['is4c_op']['database']
-	) 
-	or die('is4c_op fail! ' . "<br />Error: " . mysqli_connect_error());
 
-$DBS['is4c_log'] = mysqli_connect(
-		$_SESSION['is4c_log']['host'], 
-		$_SESSION['is4c_log']['user'], 
-		$_SESSION['is4c_log']['password'], 
-		$_SESSION['is4c_log']['database']
-	) 
-	or die('is4c_log fail!');
 
 ?>

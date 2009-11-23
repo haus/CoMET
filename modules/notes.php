@@ -37,7 +37,6 @@ session_start();
 
 if (isset($_SESSION['level'])) {
 	require_once('../includes/config.php');
-	require_once('../includes/mysqli_connect.php');
 
 	$notesQ = "SELECT note, threadID, parentID, DATE(modified), DATE_FORMAT(modified, '%r'), notes.userID, u.user
 		FROM notes INNER JOIN users AS u ON (notes.userID = u.userID) WHERE cardNo={$_SESSION['cardNo']}";

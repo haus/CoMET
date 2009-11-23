@@ -59,6 +59,20 @@ $_SESSION['is4c_op'] = array(
 $_SESSION['is4c_log'] = array(
 	'host' => $_SESSION['logHost'], 'user' => $_SESSION['logUser'], 'password' => $_SESSION['logPass'], 'database' => $_SESSION['logDB']
 	);
+	
+$DBS['is4c_op'] = @mysqli_connect(
+		$_SESSION['is4c_op']['host'], 
+		$_SESSION['is4c_op']['user'], 
+		$_SESSION['is4c_op']['password'], 
+		$_SESSION['is4c_op']['database']
+	);
+
+$DBS['is4c_log'] = @mysqli_connect(
+		$_SESSION['is4c_log']['host'], 
+		$_SESSION['is4c_log']['user'], 
+		$_SESSION['is4c_log']['password'], 
+		$_SESSION['is4c_log']['database']
+	);
 
 // Pear Auth Config Info
 $_SESSION['authParams'] = array(

@@ -20,7 +20,6 @@
 */
 session_start();
 require_once('../includes/config.php');
-require_once('../includes/mysqli_connect.php');
 require_once('../includes/functions.php');
 
 $allowed = array('comingDueDays', 'comingDueMsg', 'pastDueDays', 'pastDueMsg', 'inactiveDays', 'inactiveMsg');

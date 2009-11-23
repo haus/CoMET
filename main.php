@@ -21,7 +21,6 @@
 */
 session_start();
 require_once('./includes/config.php');
-require_once('./includes/mysqli_connect.php');
 
 if (!isset($_SESSION['cardNo'])) {
 	$cardQ = "SELECT MAX(cardNo) FROM details WHERE cardNo < 9999";

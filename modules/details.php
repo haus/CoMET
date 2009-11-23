@@ -22,7 +22,6 @@ session_start();
 
 if (isset($_SESSION['level'])) {
 	require_once('../includes/config.php');
-	require_once('../includes/mysqli_connect.php');
 
 	$state_list = array('AL'=>"Alabama",
 	                'AK'=>"Alaska", 

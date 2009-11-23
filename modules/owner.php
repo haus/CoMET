@@ -23,7 +23,6 @@ session_start();
 
 if (isset($_SESSION['level'])) {
 	require_once('../includes/config.php');
-	require_once('../includes/mysqli_connect.php');
 
 	$memTypeQ = "SELECT memType, CONCAT(SUBSTR(memdesc, 1, 1), LOWER(SUBSTR(memdesc, 2, LENGTH(memdesc)))) FROM memtype ORDER BY memType ASC";
 	$memTypeR = mysqli_query($DBS['is4c_op'], $memTypeQ);
