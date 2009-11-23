@@ -25,8 +25,6 @@
 	require_once('PEAR.php');
 	require_once('MDB2.php');
 	require_once('Auth/Auth.php');
-
-//	$_SESSION['DB'] = array('host'=>'localhost', 'user'=>'root', 'password'=>'lemoncoke', 'database'=>'comet');
 		
 	$_SESSION['authObject'] = new Auth("MDB2", $_SESSION['authParams'], 'myLogin');
 
@@ -73,6 +71,7 @@
 			$_SESSION['user'] = $_SESSION['authObject']->getUsername();
 			$_SESSION['level'] = $_SESSION['authObject']->getAuthData('level');
 			$_SESSION['userID'] = $_SESSION['authObject']->getAuthData('userid');
+			$_SESSION['userEmail'] = $_SESSION['authObject']->getAuthData('email');
 			ob_end_clean();
 		} else {
 			// Failed to login...

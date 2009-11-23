@@ -62,13 +62,19 @@ $mailer = array();
 $comingDueQ = "SELECT name, value 
 	FROM options 
 	WHERE name IN 
-		('comingDueDays', 'comingDueMsg', 'pastDueDays', 'pastDueMsg', 'inactiveDays', 'inactiveMsg')";
+		('comingDueDays', 'comingDueMsg', 'pastDueDays', 'pastDueMsg', 'inactiveDays', 'inactiveMsg', 'reminderEmail', 'reminderFrom')";
 $comingDueR = mysqli_query($DBS['comet'], $comingDueQ);
 while (list($name, $value) = mysqli_fetch_row($comingDueR)) {
 	$value = str_replace ('\r', '', $value);
 	$value = nl2br($value);
 	$mailer[$name] = $value;
 }
+
+printf('<h3>Reminder Email Address: <span class="editText" id="reminderFrom">%s</span>&lt;<span class="editText" id="reminderEmail">%s</span>&gt;)</h3><br />',
+	$mailer['reminderFrom'], $mailer['reminderEmail']);
+
+printf('<h3>Coming Due Message (# of days to message: <span class="editText" id="comingDueDays">%s</span>)</h3>
+<span class="editArea" id="comingDueMsg">%s</span><br /><br />', $mailer['comingDueDays'], $mailer['comingDueMsg']);
 
 printf('<h3>Coming Due Message (# of days to message: <span class="editText" id="comingDueDays">%s</span>)</h3>
 <span class="editArea" id="comingDueMsg">%s</span><br /><br />', $mailer['comingDueDays'], $mailer['comingDueMsg']);

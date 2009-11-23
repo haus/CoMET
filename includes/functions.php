@@ -54,4 +54,46 @@ if (!function_exists('escape_data')) {
 			return trim($data);
 	}
 }
+
+function cometMail($to, $from, $subject, $body) {
+	require_once('./includes/config.php');
+	require_once('Mail.php');
+	
+	global $DBS;
+
+	$smtpQ = "SELECT name, value FROM options WHERE name IN ('smtpHost', 'systemUser', 'systemPass')";
+	$smtpR = mysqli_query($DBS['comet'], $smtpQ);
+
+	if (!$smtpR) {
+		 printf('MySQL Error: %s, Query: %s', mysqli_error($DBS['comet']), $smtpQ);
+	} else {
+		while (list($name, $value) = mysqli_fetch_row($smtpR)) {
+			$smtp[$name] = $value;
+		}
+
+		$host = $smtp['smtpHost'];
+		$user = $smtp['systemUser'];
+		$pass = $smtp['systemPass'];
+
+		$headers = array ('From' => $from,
+		  'To' => $to,
+		  'Subject' => $subject);
+
+		$smtp = Mail::factory(
+			'smtp',
+			array (
+				'host' => $host,
+		    	'auth' => true,
+			    'username' => $user,
+			    'password' => $pass
+			)
+		);
+
+		$mail = $smtp->send($to, $headers, $body);
+
+		if (PEAR::isError($mail)) {
+			echo '<blink>' . $mail->getMessage() . '</blink>';
+		}
+	}
+}
 ?>

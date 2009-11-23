@@ -50,6 +50,8 @@ require_once('./includes/config.php');
 			$('#logResponse').html('<strong>' + responseText.logResult + '</strong>');
 		} else if (responseText.smtpResult != undefined) {
 			$('#smtpResponse').html('<strong>' + responseText.smtpResult + '</strong>');
+		} else if (responseText.systemResult != undefined) {
+			$('#systemResponse').html('<strong>' + responseText.systemResult + '</strong>');
 		} else if (responseText.errorMsg != undefined) {
 			alert(responseText.errorMsg);
 		} else {

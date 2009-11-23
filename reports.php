@@ -18,4 +18,9 @@
 	    You should have received a copy of the GNU General Public License
 	    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+session_start();
+
+require_once('./includes/config.php');
+require_once('./includes/functions.php');
+
 ?>

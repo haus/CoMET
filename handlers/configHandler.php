@@ -26,7 +26,6 @@ if (isset($_POST['submitted'])) {
 	switch($_POST['testType']) {
 		case 'smtpTest':
 			require_once('Mail.php');
-			//cometMail();
 			
 			$smtpQ = "SELECT name, value FROM options WHERE name IN ('smtpHost', 'smtpUser', 'smtpPass')";
 			$smtpR = mysqli_query($DBS['comet'], $smtpQ);
@@ -71,7 +70,55 @@ if (isset($_POST['submitted'])) {
 			}
 			
 			break;
-		case 'opTest':
+			
+			case 'systemTest':
+				require_once('Mail.php');
+
+				$smtpQ = "SELECT name, value FROM options WHERE name IN ('smtpHost', 'systemUser', 'systemPass')";
+				$smtpR = mysqli_query($DBS['comet'], $smtpQ);
+
+				if (!$smtpR) {
+					$output['errorMsg'] = sprintf('MySQL Error: %s, Query: %s', mysqli_error($DBS['comet']), $smtpQ);
+				} else {
+					while (list($name, $value) = mysqli_fetch_row($smtpR)) {
+						$smtp[$name] = $value;
+					}
+
+					$from = "CoMET <comet@albertagrocery.coop>";
+					$to = "Matthaus <mlitteken@gmail.com>";
+					$subject = "Testing...";
+					$body = "Testing...";
+
+					$host = $smtp['smtpHost'];
+					$user = $smtp['systemUser'];
+					$pass = $smtp['systemPass'];
+
+					$headers = array ('From' => $from,
+					  'To' => $to,
+					  'Subject' => $subject);
+
+					$smtp = Mail::factory(
+						'smtp',
+						array (
+							'host' => $host,
+					    	'auth' => true,
+						    'username' => $user,
+						    'password' => $pass
+						)
+					);
+
+					$mail = $smtp->send($to, $headers, $body);
+
+					if (PEAR::isError($mail)) {
+						$output['systemResult'] = '<blink>' . $mail->getMessage() . '</blink>';
+					} else {
+						$output['systemResult'] = 'Success. Test email sent.';
+					}
+				}
+
+				break;
+				
+			case 'opTest':
 			$opQ = "SELECT name, value FROM options WHERE name IN ('opHost', 'opUser', 'opPass', 'opDB')";
 			$opR = mysqli_query($DBS['comet'], $opQ);
 	
@@ -113,12 +160,15 @@ if (isset($_POST['submitted'])) {
 	}
 	echo json_encode($output);
 } else {
-	$allowed = array('smtpUser', 'smtpPass', 'smtpHost', 
+	$allowed = array(
+		'smtpHost', 
+		'smtpUser', 'smtpPass',
+		'systemUser', 'systemPass',
 		'opHost', 'opUser', 'opPass', 'opDB', 
 		'logHost', 'logUser', 'logPass', 'logDB',
 		'houseHoldSize', 'discounts', 'sharePrice', 'defaultPayment', 'defaultPlan');
 	
-	$passArray = array('smtpPass', 'opPass', 'logPass');
+	$passArray = array('smtpPass', 'opPass', 'logPass', 'systemPass');
 	$numericArray = array('houseHoldSize', 'defaultPlan', 'sharePrice', 'defaultPayment');
 
 	if (isset($_POST['id']) && isset($_POST['value']) && in_array($_POST['id'], $allowed)) {

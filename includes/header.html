@@ -98,6 +98,7 @@ if ($_SESSION['authObject']->checkAuth()) {
 	$_SESSION['user'] = $_SESSION['authObject']->getUserName();
 	$_SESSION['level'] = $_SESSION['authObject']->getAuthData('level');
 	$_SESSION['userID'] = $_SESSION['authObject']->getAuthData('userid');
+	$_SESSION['userEmail'] = $_SESSION['authObject']->getAuthData('email');
 ?>
 <noscript>You need javascript to really enjoy all of this.</noscript>
 <div id="header">

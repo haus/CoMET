@@ -95,7 +95,9 @@ require_once('../includes/config.php');
 $configQ = "SELECT name, value 
 	FROM options 
 	WHERE name IN 
-		('smtpUser', 'smtpPass', 'smtpHost', 
+		('smtpHost', 
+			'smtpUser', 'smtpPass',
+			'systemUser', 'systemPass',
 			'opHost', 'opUser', 'opPass', 'opDB', 
 			'logHost', 'logUser', 'logPass', 'logDB',
 			'houseHoldSize', 'discounts', 'sharePrice', 'defaultPayment', 'defaultPlan')";
@@ -111,13 +113,25 @@ while (list($name, $value) = mysqli_fetch_row($configR)) {
 
 // SMTP Settings...
 echo '<h3>SMTP Settings</h3>';
+echo '<h5>Host Settings</h5>';
+printf('<p><strong>SMTP Host: </strong><span class="editText" id="smtpHost">%s</span></p><br />', $config['smtpHost']);
+
+echo '<h5>Reminder E-mail Account Settings</h5>';
 printf('<p>
 	<strong>User: </strong><span class="editText" id="smtpUser">%s</span>
 	<strong>Password: </strong><span class="editPass" id="smtpPass">%s</span>
-	<strong>SMTP Host: </strong><span class="editText" id="smtpHost">%s</span>
-</p>', $config['smtpUser'], '(hidden)', $config['smtpHost']);
+
+</p>', $config['smtpUser'], '(hidden)');
 echo '<p id="smtpResponse">&nbsp;</p>
-	<button type="submit" id="smtpTest" name="smtpTest">Test SMTP</button><br /><br />';
+	<button type="submit" id="smtpTest" name="smtpTest">Test Reminder Email Account</button><br /><br />';
+	
+echo '<h5>System E-mail Account Settings</h5>';
+printf('<p>
+	<strong>User: </strong><span class="editText" id="systemUser">%s</span>
+	<strong>Password: </strong><span class="editPass" id="systemPass">%s</span>
+</p>', $config['systemUser'], '(hidden)');
+echo '<p id="systemResponse">&nbsp;</p>
+	<button type="submit" id="systemTest" name="systemTest">Test System Email Account</button><br /><br />';
 
 // Store specific settings...
 echo '<h3>Store Specific Settings</h3>';

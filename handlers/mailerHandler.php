@@ -22,7 +22,7 @@ session_start();
 require_once('../includes/config.php');
 require_once('../includes/functions.php');
 
-$allowed = array('comingDueDays', 'comingDueMsg', 'pastDueDays', 'pastDueMsg', 'inactiveDays', 'inactiveMsg');
+$allowed = array('comingDueDays', 'comingDueMsg', 'pastDueDays', 'pastDueMsg', 'inactiveDays', 'inactiveMsg', 'reminderFrom', 'reminderEmail');
 
 if (isset($_POST['id']) && isset($_POST['value']) && in_array($_POST['id'], $allowed)) {
 	$id = escape_data($DBS['comet'], $_POST['id']);

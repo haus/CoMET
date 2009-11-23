@@ -31,6 +31,7 @@ session_start();
 
 if (isset($_SESSION['level'])) {
 	require_once('./includes/config.php');
+	require_once('./includes/functions.php');
 	
 	// Initialize $body variable...
 	$body = '';
@@ -39,15 +40,15 @@ if (isset($_SESSION['level'])) {
 	// Records to be added...
 	$newQ = "SELECT cardNo, personNum, firstName, lastName, discount, memType, staff, writeChecks, chargeOk FROM owners
 		WHERE CONCAT(cardNo, '-', personNum) NOT IN
-			(SELECT CONCAT(cardNo, '-', personNum) FROM {$_SESSION['is4c_op']['database']}.custdata)";
+			(SELECT CONCAT(cardNo, '-', personNum) FROM {$_SESSION['opDB']}.custdata)";
 	$newR = mysqli_query($DBS['comet'], $newQ);
 	
 	if (!$newR) printf('<h3>Query: %s<br />Error %s</h3>', $newQ, mysqli_error($DBS['comet']));
 	
-	if (mysqli_num_rows($newR) > 0) echo '<h3>Records added:</h3>';
+	if (mysqli_num_rows($newR) > 0) $newList = '<h3>Records added:</h3>';
 	
 	while (list($cardNo, $personNum, $first, $last, $discount, $memType, $staff, $check, $charge) = mysqli_fetch_row($newR)) {
-		printf("Card #: %u, Person #: %u, Name: %s %s ",
+		$newList .= sprintf("Card #: %u, Person #%u, Name: %s %s ",
 			$cardNo, $personNum, $first, $last);
 		
 		// Insert logic goes here...
@@ -66,24 +67,24 @@ if (isset($_SESSION['level'])) {
 		
 		if (!$insertR) printf('<h3>Query: %s<br />Error %s</h3>', $insertQ, mysqli_error($DBS['is4c_op']));
 		
-		printf('%s<br />', ($insertR) ? 'inserted successfully' : 'insert failure');
+		$newList .= sprintf('%s<br />', ($insertR) ? 'inserted successfully' : 'insert failure');
 		
 		$count++;
 	}
 	
 	// Records to be deleted...mail details to contact info...
 	$goneQ = "SELECT cardNo, personNum, firstName, lastName, discount, memType, staff, writeChecks, chargeOk, SSI 
-		FROM {$_SESSION['is4c_op']['database']}.custdata
+		FROM {$_SESSION['opDB']}.custdata
 		WHERE CONCAT(cardNo, '-', personNum) NOT IN
 			(SELECT CONCAT(cardNo, '-', personNum) FROM owners)";
 	$goneR = mysqli_query($DBS['comet'], $goneQ);
 	
 	if (!$goneR) printf('<h3>Query: %s<br />Error %s</h3>', $goneQ, mysqli_error($DBS['comet']));
 
-	if (mysqli_num_rows($goneR) > 0) echo '<br /><h3>Records added:</h3>';
+	if (mysqli_num_rows($goneR) > 0) $delList = '<br /><h3>Records added:</h3>';
 	
 	while (list($cardNo, $personNum, $first, $last, $discount, $memType, $staff, $check, $charge, $ssi) = mysqli_fetch_row($goneR)) {
-		printf("Card #: %u, Person #: %u, Name: %s %s ",
+		$delList .= sprintf("Card #: %u, Person #%u, Name: %s %s ",
 			$cardNo, $personNum, $first, $last);
 		
 		$deleteQ = sprintf("DELETE FROM custdata
@@ -93,9 +94,9 @@ if (isset($_SESSION['level'])) {
 		
 		if (!$deleteR) printf('<h3>Query: %s<br />Error %s</h3>', $deleteQ, mysqli_error($DBS['is4c_op']));
 		
-		printf('%s<br />', ($deleteR) ? 'deleted successfully' : 'delete failure');
+		$delList .= sprintf('%s<br />', ($deleteR) ? 'deleted successfully' : 'delete failure');
 		
-		$body .= sprintf("Deleted: Card #: %u, Person #: %u, First: %s, Last: %s, Discount: %u, Staff: %u, Memtype: %u, Check: %u, Charge: %u, Hours: %u\n",
+		$body .= sprintf("Deleted: Card #: %u, Person #%u, First: %s, Last: %s, Discount: %u, Staff: %u, Memtype: %u, Check: %u, Charge: %u, Hours: %u\n",
 			$cardNo, $personNum, $first, $last, $discount, $staff, $memType, $check, $charge, $ssi);
 		
 		$count++;
@@ -105,14 +106,14 @@ if (isset($_SESSION['level'])) {
 	$updateListQ = "SELECT cardNo, personNum, firstName, lastName, discount, memType, staff, writeChecks, chargeOk FROM owners
 		WHERE CONCAT_WS(',', cardNo, personNum, firstName, lastName, discount, memType, staff, writeChecks, chargeOk) NOT IN 
 			(SELECT CONCAT_WS(',', cardNo, personNum, firstName, lastName, discount, memType, staff, writeChecks, chargeOk) 
-			FROM {$_SESSION['is4c_op']['database']}.custdata)";
+			FROM {$_SESSION['opDB']}.custdata)";
 	$updateListR = mysqli_query($DBS['comet'], $updateListQ);
 	
 	if (!$updateListR) printf('<h3>Query: %s<br />Error %s</h3>', $updateListQ, mysqli_error($DBS['comet']));
 	
-	if (mysqli_num_rows($updateListR) > 0) echo '<br /><h3>Records updated:</h3>';
+	if (mysqli_num_rows($updateListR) > 0) $upList = '<br /><h3>Records updated:</h3>';
 	while (list($cardNo, $personNum, $first, $last, $discount, $memType, $staff, $check, $charge) = mysqli_fetch_row($updateListR)) {
-		printf("Card #: %u, Person #: %u, Name: %s %s ",
+		$upList .= sprintf("Card #: %u, Person #%u, Name: %s %s ",
 			$cardNo, $personNum, $first, $last);
 		
 		$updateQ = sprintf("UPDATE custdata
@@ -124,19 +125,37 @@ if (isset($_SESSION['level'])) {
 		
 		if (!$updateR) printf('<h3>Query: %s<br />Error %s</h3>', $updateR, mysqli_error($DBS['is4c_op']));
 		
-		printf('%s<br />', ($updateR) ? 'updated successfully' : 'update failure');
+		$upList .= sprintf('%s<br />', ($updateR) ? 'updated successfully' : 'update failure');
 		
 		$count++;
 	}
 	
 	// Mail admin...
-	$headers = "From: Me <mlitteken@gmail.com>\r\n";
-	$to = "Me <mlitteken@gmail.com>";
+	$from = "CoMET <comet@albertagrocery.coop>";
+	$to = $_SESSION['userEmail'];
 	$subject = "CoMET Mail - Deleted Records";
 	
-	if (!empty($body)) mail($to, $subject, $body, $headers);
+	// Force sync of fannie to lanes using cURL...
+	$curlSync = curl_init($_SESSION['syncURL']);
+	curl_setopt($curlSync, CURLOPT_RETURNTRANSFER, 'true');
+	if (curl_exec($curlSync) !== false) {
+		echo '<h3>CoMET synched to Fannie. Fannie synched to lanes.</h3><br />
+			<h3>Results:</h3>';
+	} else {
+		echo '<h3>CoMET synched to Fannie. Fannie not synched to lanes.</h3><br />
+			<h3>cURL Error: ' . curl_error($curlSync) . '</h3>';
+	}
 	
-	if ($count == 0) echo '<br /><h3 class="center">No changes to push to Fannie.</h3><br />';
+	if (isset($newList))
+		echo $newList;
+	if (isset($delList))
+	 	echo $delList;
+	if (isset($upList))
+		echo $upList;
+	
+	if (!empty($body)) cometMail($to, $from, $subject, $body);
+	
+	if ($count == 0) echo '<br /><h3>No changes to push to Fannie.</h3><br />';
 	
 } else {
 	header('Location: ../index.php');
