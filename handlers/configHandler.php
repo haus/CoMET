@@ -22,6 +22,82 @@ session_start();
 require_once('../includes/config.php');
 require_once('../includes/functions.php');
 
+$planQ = "SELECT * FROM paymentPlans ORDER BY planID ASC";
+$planR = mysqli_query($DBS['comet'], $planQ);
+if (!$planR) printf('Query: %s, Error: %s', $planQ, mysqli_error($DBS['comet']));
+
+while (list($planID, $freq, $amount) = mysqli_fetch_row($planR)) {
+	$plan[$planID] = sprintf('%s',
+		($freq > 1 ? '$' . $amount . ", $freq times per year" : '$' . $amount . " annually")
+	);
+}
+
+$memTypeQ = "SELECT memType, CONCAT(SUBSTR(memdesc, 1, 1), LOWER(SUBSTR(memdesc, 2, LENGTH(memdesc)))) FROM memtype ORDER BY memType ASC";
+$memTypeR = mysqli_query($DBS['is4c_op'], $memTypeQ);
+
+while (list($num, $desc) = mysqli_fetch_row($memTypeR)) {
+	$memType[$num] = $desc;
+}
+
+$staffQ = "SELECT staff_no, CONCAT(SUBSTR(staff_desc, 1, 1), LOWER(SUBSTR(staff_desc, 2, LENGTH(staff_desc)))) FROM staff ORDER BY staff_no ASC";
+$staffR = mysqli_query($DBS['is4c_op'], $staffQ);
+
+while (list($num, $desc) = mysqli_fetch_row($staffR)) {
+	$staffList[$num] = $desc;
+}
+
+$state_list = array('AL'=>"Alabama",
+                'AK'=>"Alaska", 
+                'AZ'=>"Arizona", 
+                'AR'=>"Arkansas", 
+                'CA'=>"California", 
+                'CO'=>"Colorado", 
+                'CT'=>"Connecticut", 
+                'DE'=>"Delaware", 
+                'DC'=>"District Of Columbia", 
+                'FL'=>"Florida", 
+                'GA'=>"Georgia", 
+                'HI'=>"Hawaii", 
+                'ID'=>"Idaho", 
+                'IL'=>"Illinois", 
+                'IN'=>"Indiana", 
+                'IA'=>"Iowa", 
+                'KS'=>"Kansas", 
+                'KY'=>"Kentucky", 
+                'LA'=>"Louisiana", 
+                'ME'=>"Maine", 
+                'MD'=>"Maryland", 
+                'MA'=>"Massachusetts", 
+                'MI'=>"Michigan", 
+                'MN'=>"Minnesota", 
+                'MS'=>"Mississippi", 
+                'MO'=>"Missouri", 
+                'MT'=>"Montana",
+                'NE'=>"Nebraska",
+                'NV'=>"Nevada",
+                'NH'=>"New Hampshire",
+                'NJ'=>"New Jersey",
+                'NM'=>"New Mexico",
+                'NY'=>"New York",
+                'NC'=>"North Carolina",
+                'ND'=>"North Dakota",
+                'OH'=>"Ohio", 
+                'OK'=>"Oklahoma", 
+                'OR'=>"Oregon", 
+                'PA'=>"Pennsylvania", 
+                'RI'=>"Rhode Island", 
+                'SC'=>"South Carolina", 
+                'SD'=>"South Dakota",
+                'TN'=>"Tennessee", 
+                'TX'=>"Texas", 
+                'UT'=>"Utah", 
+                'VT'=>"Vermont", 
+                'VA'=>"Virginia", 
+                'WA'=>"Washington", 
+                'WV'=>"West Virginia", 
+                'WI'=>"Wisconsin", 
+                'WY'=>"Wyoming");
+
 if (isset($_POST['submitted'])) {
 	switch($_POST['testType']) {
 		case 'smtpTest':
@@ -159,6 +235,36 @@ if (isset($_POST['submitted'])) {
 			break;
 	}
 	echo json_encode($output);
+} elseif (isset($_GET['json'])) {
+	switch ($_GET['json']) {
+		case 'defaultPlan':
+			echo json_encode($plan);
+			
+			break;
+		case 'defaultDiscount':
+			echo json_encode($_SESSION['discounts']);
+			
+			break;
+			
+		case 'defaultStaff':
+			echo json_encode($staffList);
+			
+			break;
+		
+		case 'defaultMemType':
+			echo json_encode($memType);
+			
+			break;
+		
+		case 'defaultState':
+			echo json_encode($state_list);
+			break;
+			
+		default:
+			
+			break;
+			
+	}
 } else {
 	$allowed = array(
 		'smtpHost', 
@@ -166,7 +272,8 @@ if (isset($_POST['submitted'])) {
 		'systemUser', 'systemPass',
 		'opHost', 'opUser', 'opPass', 'opDB', 
 		'logHost', 'logUser', 'logPass', 'logDB',
-		'houseHoldSize', 'discounts', 'sharePrice', 'defaultPayment', 'defaultPlan');
+		'houseHoldSize', 'discounts', 'sharePrice', 'defaultPayment', 'defaultPlan', 
+		'defaultStaff', 'defaultMemType', 'defaultState', 'defaultDiscount', 'syncURL');
 	
 	$passArray = array('smtpPass', 'opPass', 'logPass', 'systemPass');
 	$numericArray = array('houseHoldSize', 'defaultPlan', 'sharePrice', 'defaultPayment');
@@ -179,22 +286,37 @@ if (isset($_POST['submitted'])) {
 		$value = NULL;
 	}
 
-	if (!empty($id) && $value) {
+	if (!empty($id)) {
 		$valueQ = "SELECT value FROM options WHERE name='$id'";
 		$valueR = mysqli_query($DBS['comet'], $valueQ);
 		list($oldValue) = mysqli_fetch_row($valueR);
-	
-		if (empty($value)) {
+
+		if (empty($value) && $value == 0 && !in_array($id, $passArray)) {
+			$value = "0";
+		}
+			
+		if (empty($value) && $value != "0") {
 			// If empty or non-numeric when supposed to be then load and display the initial value...
 			echo (in_array($id, $passArray) ? '(hidden)' : $oldValue);
 			exit();
 		} else {
-			$updateQ = sprintf("UPDATE options SET value='%s' WHERE name='%s'", $value, $id);
+			$updateQ = sprintf("UPDATE options SET value='%s' WHERE name='%s'", ($id == 'defaultDiscount' ? $_SESSION['discounts'][$value] :$value), $id);
 			$updateR = mysqli_query($DBS['comet'], $updateQ);
 			if ($updateR && mysqli_affected_rows($DBS['comet']) == 1) {
-				echo (in_array($id, $passArray) ? '(hidden)' : $value);
-			} else
-				echo (in_array($id, $passArray) ? '(hidden)' : $oldValue);
+				echo (in_array($id, $passArray) ? '(hidden)' : 
+					($id == 'defaultPlan' ? $plan[$value] : 
+						($id == 'defaultDiscount' ? $_SESSION['discounts'][$value] :
+							($id == 'defaultStaff' ? $staffList[$value] : 
+								($id == 'defaultMemType' ? $memType[$value] :
+									($id == 'defaultState' ? $state_list[$value] : $value))))));
+			} else {
+				echo (in_array($id, $passArray) ? '(hidden)' : 
+					($id == 'defaultPlan' ? $plan[$oldValue] : 
+						($id == 'defaultDiscount' ? $_SESSION['discounts'][$oldValue] : 
+							($id == 'defaultStaff' ? $staffList[$oldValue] :
+								($id == 'defaultMemType' ? $memType[$oldValue] : 
+									($id == 'defaultState' ? $state_list[$oldValue] : $oldValue))))));
+			}
 		}
 	}
 

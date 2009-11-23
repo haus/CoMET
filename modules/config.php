@@ -62,6 +62,51 @@ require_once('../includes/config.php');
 			}
 		);
 		
+		$('.editPlan').editable('./handlers/configHandler.php', 
+			{ 
+				loadurl : './handlers/configHandler.php?json=defaultPlan',
+				type   : 'select',
+				onblur : 'submit',
+				style: 'display: inline',
+				tooltip: 'Click to edit...'
+	 		});
+
+		$('.editDiscount').editable('./handlers/configHandler.php',
+			{ 
+				loadurl : './handlers/configHandler.php?json=defaultDiscount',
+				type   : 'select',
+				onblur : 'submit',
+				style: 'display: inline',
+				tooltip: 'Click to edit...'
+	 		});
+		
+		$('.editStaff').editable('./handlers/configHandler.php', 
+			{ 
+				loadurl : './handlers/configHandler.php?json=defaultStaff',
+				type   : 'select',
+				onblur : 'submit',
+				style: 'display: inline',
+				tooltip: 'Click to edit...'
+	 		});
+
+		$('.editMemType').editable('./handlers/configHandler.php',
+			{ 
+				loadurl : './handlers/configHandler.php?json=defaultMemType',
+				type   : 'select',
+				onblur : 'submit',
+				style: 'display: inline',
+				tooltip: 'Click to edit...'
+	 		});
+		
+		$('.editState').editable('./handlers/configHandler.php',
+			{ 
+				loadurl : './handlers/configHandler.php?json=defaultState',
+				type   : 'select',
+				onblur : 'submit',
+				style: 'display: inline',
+				tooltip: 'Click to edit...'
+	 		});
+		
 		var configOptions = { 
 		       //target:        '#output1',   // target element(s) to be updated with server response 
 		       beforeSubmit:  validateConfig, // pre-submit callback 
@@ -100,7 +145,8 @@ $configQ = "SELECT name, value
 			'systemUser', 'systemPass',
 			'opHost', 'opUser', 'opPass', 'opDB', 
 			'logHost', 'logUser', 'logPass', 'logDB',
-			'houseHoldSize', 'discounts', 'sharePrice', 'defaultPayment', 'defaultPlan')";
+			'houseHoldSize', 'discounts', 'sharePrice', 'defaultPayment', 'defaultPlan', 
+			'defaultStaff', 'defaultMemType', 'defaultDiscount', 'defaultState', 'syncURL')";
 $configR = mysqli_query($DBS['comet'], $configQ);
 if (!$configR) {
 	printf('MySQL Error: %s, Query: %s', mysqli_error($DBS['comet']), $configQ);
@@ -110,6 +156,72 @@ if (!$configR) {
 while (list($name, $value) = mysqli_fetch_row($configR)) {
 	$config[$name] = $value;
 }
+
+$memTypeQ = "SELECT memType, CONCAT(SUBSTR(memdesc, 1, 1), LOWER(SUBSTR(memdesc, 2, LENGTH(memdesc)))) FROM memtype ORDER BY memType ASC";
+$memTypeR = mysqli_query($DBS['is4c_op'], $memTypeQ);
+
+$staffQ = "SELECT staff_no, CONCAT(SUBSTR(staff_desc, 1, 1), LOWER(SUBSTR(staff_desc, 2, LENGTH(staff_desc)))) FROM staff ORDER BY staff_no ASC";
+$staffR = mysqli_query($DBS['is4c_op'], $staffQ);
+
+while (list($num, $desc) = mysqli_fetch_row($memTypeR)) {
+	$memType[$num] = $desc;
+}
+
+while (list($num, $desc) = mysqli_fetch_row($staffR)) {
+	$staffList[$num] = $desc;
+}
+
+$state_list = array('AL'=>"Alabama",
+                'AK'=>"Alaska", 
+                'AZ'=>"Arizona", 
+                'AR'=>"Arkansas", 
+                'CA'=>"California", 
+                'CO'=>"Colorado", 
+                'CT'=>"Connecticut", 
+                'DE'=>"Delaware", 
+                'DC'=>"District Of Columbia", 
+                'FL'=>"Florida", 
+                'GA'=>"Georgia", 
+                'HI'=>"Hawaii", 
+                'ID'=>"Idaho", 
+                'IL'=>"Illinois", 
+                'IN'=>"Indiana", 
+                'IA'=>"Iowa", 
+                'KS'=>"Kansas", 
+                'KY'=>"Kentucky", 
+                'LA'=>"Louisiana", 
+                'ME'=>"Maine", 
+                'MD'=>"Maryland", 
+                'MA'=>"Massachusetts", 
+                'MI'=>"Michigan", 
+                'MN'=>"Minnesota", 
+                'MS'=>"Mississippi", 
+                'MO'=>"Missouri", 
+                'MT'=>"Montana",
+                'NE'=>"Nebraska",
+                'NV'=>"Nevada",
+                'NH'=>"New Hampshire",
+                'NJ'=>"New Jersey",
+                'NM'=>"New Mexico",
+                'NY'=>"New York",
+                'NC'=>"North Carolina",
+                'ND'=>"North Dakota",
+                'OH'=>"Ohio", 
+                'OK'=>"Oklahoma", 
+                'OR'=>"Oregon", 
+                'PA'=>"Pennsylvania", 
+                'RI'=>"Rhode Island", 
+                'SC'=>"South Carolina", 
+                'SD'=>"South Dakota",
+                'TN'=>"Tennessee", 
+                'TX'=>"Texas", 
+                'UT'=>"Utah", 
+                'VT'=>"Vermont", 
+                'VA'=>"Virginia", 
+                'WA'=>"Washington", 
+                'WV'=>"West Virginia", 
+                'WI'=>"Wisconsin", 
+                'WY'=>"Wyoming");
 
 // SMTP Settings...
 echo '<h3>SMTP Settings</h3>';
@@ -133,15 +245,37 @@ printf('<p>
 echo '<p id="systemResponse">&nbsp;</p>
 	<button type="submit" id="systemTest" name="systemTest">Test System Email Account</button><br /><br />';
 
+$planQ = "SELECT * FROM paymentPlans WHERE planID={$config['defaultPlan']}";
+$planR = mysqli_query($DBS['comet'], $planQ);
+if (!$planR) printf('Query: %s, Error: %s', $planQ, mysqli_error($DBS['comet']));
+
+list($planID, $freq, $amount) = mysqli_fetch_row($planR);
+$config['defaultPlan'] = sprintf('%s',
+	($freq > 1 ? '$' . $amount . ", $freq times per year" : '$' . $amount . " annually")
+);
+
 // Store specific settings...
 echo '<h3>Store Specific Settings</h3>';
 printf('<p>
-	<strong>Max Household Size: </strong><span class="editText" id="houseHoldSize">%s</span> 
-	<strong>Allowed Discounts: </strong><span class="editText" id="discounts">%s</span>
-	<strong>Default Share Price: </strong><span class="editText" id="sharePrice">%s</span>
-	<strong>Default Payment Amount: </strong><span class="editText" id="defaultPayment">%s</span>
-	<strong>Default Payment Plan: </strong><span class="editText" id="defaultPlan">%s</span>
-</p><br />', $config['houseHoldSize'], $config['discounts'], $config['sharePrice'], $config['defaultPayment'], $config['defaultPlan']);
+		<strong>Max Household Size: </strong><span class="editText" id="houseHoldSize">%s</span> 
+		<strong>Allowed Discounts: </strong><span class="editText" id="discounts">%s</span>
+		<strong>Default Share Price: </strong>$<span class="editText" id="sharePrice">%s</span>
+		<strong>Default Payment Amount: </strong>$<span class="editText" id="defaultPayment">%s</span>
+		<strong>Default Payment Plan: </strong><span class="editPlan" id="defaultPlan">%s</span>
+	</p>
+	<p>
+		<strong>Default Staff: </strong><span class="editStaff" id="defaultStaff">%s</span>
+		<strong>Default Memtype: </strong><span class="editMemType" id="defaultMemType">%s</span>
+		<strong>Default Discount: </strong><span class="editDiscount" id="defaultDiscount">%s</span>%%
+		<strong>Default State: </strong><span class="editState" id="defaultState">%s</span>
+	</p>
+	<p>
+		<strong>Fannie Sync URL: </strong><span class="editText" id="syncURL">%s</span>
+	</p>
+	<br />', 
+	$config['houseHoldSize'], $config['discounts'], $config['sharePrice'], $config['defaultPayment'], 
+	$config['defaultPlan'], $staffList[$config['defaultStaff']], $memType[$config['defaultMemType']], $config['defaultDiscount'], 
+	$state_list[$config['defaultState']], $config['syncURL']);
 
 
 // IS4C Connection Information...
