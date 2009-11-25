@@ -137,7 +137,7 @@ if (isset($_SESSION['level'])) {
 	
 	// Force sync of fannie to lanes using cURL...
 	$curlSync = curl_init($_SESSION['syncURL']);
-	curl_setopt($curlSync, CURLOPT_RETURNTRANSFER, 'true');
+	curl_setopt($curlSync, CURLOPT_RETURNTRANSFER, true);
 	if (curl_exec($curlSync) !== false) {
 		echo '<h3>CoMET synched to Fannie. Fannie synched to lanes.</h3><br />
 			<h3>Results:</h3>';

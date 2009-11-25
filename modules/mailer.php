@@ -76,9 +76,6 @@ printf('<h3>Reminder Email Address: <span class="editText" id="reminderFrom">%s<
 printf('<h3>Coming Due Message (# of days to message: <span class="editText" id="comingDueDays">%s</span>)</h3>
 <span class="editArea" id="comingDueMsg">%s</span><br /><br />', $mailer['comingDueDays'], $mailer['comingDueMsg']);
 
-printf('<h3>Coming Due Message (# of days to message: <span class="editText" id="comingDueDays">%s</span>)</h3>
-<span class="editArea" id="comingDueMsg">%s</span><br /><br />', $mailer['comingDueDays'], $mailer['comingDueMsg']);
-
 printf('<h3>Past Due Message (# of days to message: <span class="editText" id="pastDueDays">%s</span>)</h3>
 <span class="editArea" id="pastDueMsg">%s</span><br /><br />', $mailer['pastDueDays'], $mailer['pastDueMsg']);
 
