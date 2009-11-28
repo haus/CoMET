@@ -38,7 +38,10 @@ session_start();
 			{
 				style: 'display: inline',
 				onblur: 'submit',
-				tooltip: 'Click to edit...'
+				tooltip: 'Click to edit...',
+				callback: function(value, settings) {
+					$('#notes').load('./modules/notes.php');
+				}
 			}
 		);
 	});
