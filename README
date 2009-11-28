@@ -43,22 +43,25 @@ G. Extending
 *********************************************************************
 ************************	Requirements	*************************
 *********************************************************************
-
+- PHP 5.3 or later with mysqli, curl and cli extensions enabled
+- MySQL 5 or later
+- PEAR packages: Net_SMTP, Mail, Auth, MDB2/mysqli
+- Access to cron
 
 
 *********************************************************************
 ************************	Installation	*************************
 *********************************************************************
-pear install Net_SMTP
-pear install Mail
-pear install Auth
-pear install MDB2/mysqli
+Untar the comet.tar.gz into a directory within the webroot. Create the
+appropriate virtualhost file. Open a web browser to the installed location
+and install.php.
 
 
 *********************************************************************
 ***********************	Configuration/Setup  ************************
 *********************************************************************
-
+The installation script will prompt you for a username, password, and 
+email address.
 
 
 *********************************************************************

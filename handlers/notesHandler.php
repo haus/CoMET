@@ -68,20 +68,31 @@ if (isset($_SESSION['level'])) {
 		}
 	
 	} elseif (isset($_POST['removeID']) && is_numeric($_POST['removeID'])) {
-			$noteQ = sprintf("DELETE FROM notes WHERE threadID=%u LIMIT 1",
-				escape_data($DBS['comet'], $_POST['removeID'])
-			);
+		$noteQ = sprintf("DELETE FROM notes WHERE threadID=%u LIMIT 1",
+			escape_data($DBS['comet'], $_POST['removeID'])
+		);
 
-			$noteR = mysqli_query($DBS['comet'], $noteQ);
-			if (!$noteR) {
-				printf('{ "errorMsg":"Query: %s, Error: %s" }',
-					$noteQ, 
-					mysqli_error($DBS['comet'])
-				);
-			} else {
-				echo '{ "success": "success!" }';
-			}
+		$noteR = mysqli_query($DBS['comet'], $noteQ);
+		if (!$noteR) {
+			printf('{ "errorMsg":"Query: %s, Error: %s" }',
+				$noteQ, 
+				mysqli_error($DBS['comet'])
+			);
+		} else {
+			echo '{ "success": "success!" }';
 		}
+	} elseif (isset($_POST['value']) && isset($_POST['id'])) {
+		// Parse the threadID from the id. The id is in 'note-#' format.
+		$threadArray = explode('-', $_POST['id']);
+		$threadID = (int)$threadArray[1];
+		
+		// Check the user who wrote the note.
+		
+		
+		// Check the level of the current user.
+		
+		
+	}
 } else {
 	header('Location: ../index.php');
 }

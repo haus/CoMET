@@ -32,6 +32,16 @@ session_start();
 	function addChild(id) {
 		$('#noteID').val(id);
 	}
+	
+	$(document).ready(function() {
+		$('.editNote').editable('./handlers/notesHandler.php',
+			{
+				style: 'display: inline',
+				onblur: 'submit',
+				tooltip: 'Click to edit...'
+			}
+		);
+	});
 </script>
 <?php
 
@@ -93,7 +103,7 @@ function printNotes($parent) {
 			printf('<li>
 						<input type="submit" value="Reply" id="%s" name="addChild[]" onclick="%s" />
 						<!--<input type="image" src="includes/images/minus-8.png" name="pmtRemove[]" onclick="%s" />-->
-						%s
+						<span class="editNote" id="%s">%s</span>
 						<small>(written by %s on %s at %s)</small>
 					<br /><p id="%u" style="display:none">
 							<input type="submit" value="Add Reply" name="addNote[]" onclick="%s" />
@@ -101,7 +111,8 @@ function printNotes($parent) {
 					</p>',
 					'button' . $threadID,
 					'showRow(' . $threadID . ');	return false;', 
-					'updateRemoveID(' . $threadID . ');', 
+					'updateRemoveID(' . $threadID . ');',
+					'note-' . $threadID, 
 					$noteText . "\n",
 					$details[$threadID]['author'],
 					date('m/d/Y', strtotime($details[$threadID]['date'])), 

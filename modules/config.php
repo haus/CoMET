@@ -299,7 +299,7 @@ printf('<p>
 	<strong>DB Name: </strong><span class="editText" id="logDB">%s</span>
 </p>', $config['logUser'], '(hidden)', $config['logHost'], $config['logDB']);
 echo '<p id="logResponse">&nbsp;</p>
-<button type="submit" id="logTest" name="logTest">Test LOG DB Connection</button><br /><br />';
+<button type="submit" id="logTest" name="logTest">Test LOG DB Connection</button>';
 ?>
 
 <input type="hidden" id="testType" name="testType" value="" />
