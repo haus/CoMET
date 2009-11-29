@@ -95,7 +95,7 @@ if (isset($_SESSION['level'])) {
 		list($oldValue, $threadID, $userID) = mysqli_fetch_row($threadR);
 		
 		// Check the level of the current user. If the user wrote the note or is of level 4 or greater, edit the note.
-		if (($userID == $_SESSION['userID'] || $_SESSION['level'] >= 4) && (!empty($_POST['value']))) {
+		if (($userID == $_SESSION['userID'] || $_SESSION['level'] >= 4) && (!empty($_POST['value'])) && ($oldValue != $_POST['value'])) {
 			$updateQ = sprintf("UPDATE notes SET note = '%s', userID = %u, modified=now() WHERE threadID = %u",
 				escape_data($DBS['comet'], $_POST['value']), $_SESSION['userID'], $threadID);
 			$updateR = mysqli_query($DBS['comet'], $updateQ);
