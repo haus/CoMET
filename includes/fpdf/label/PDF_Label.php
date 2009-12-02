@@ -35,8 +35,6 @@
  * @copyright 2003 Laurent PASSEBECQ
 **/
 
-require_once('fpdf.php');
-
 class PDF_Label extends FPDF {
 
 	// Private properties
