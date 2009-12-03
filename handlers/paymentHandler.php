@@ -160,7 +160,7 @@ if (isset($_SESSION['level'])) {
 				
 				if ($updateR && mysqli_affected_rows($DBS['comet']) == 1) {
 					$insertQ = sprintf("INSERT INTO raw_details (
-						SELECT cardNo, address, phone, city, state, zip, email, %s, paymentPlan, joined, sharePrice, curdate(), 
+						SELECT cardNo, address, phone, city, state, zip, email, noMail, %s, paymentPlan, joined, sharePrice, curdate(), 
 							NULL, %u, NULL 
 							FROM raw_details
 							WHERE cardNo=%u 

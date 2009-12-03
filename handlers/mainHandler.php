@@ -106,7 +106,7 @@ if (isset($_SESSION['level'])) {
 				// Details then owners.
 				$detailsQ = sprintf(
 					"INSERT INTO raw_details VALUES 
-						(%u, '%s', '%s', '%s', '%s', %u, '%s', NULL, %u, '%s', %s, curdate(), NULL, '%s', NULL)", 
+						(%u, '%s', '%s', '%s', '%s', %u, '%s', false, NULL, %u, '%s', %s, curdate(), NULL, '%s', NULL)", 
 						$_SESSION['cardNo'], 
 						escape_data($DBS['comet'], $_POST['address']),
 						$phone,
@@ -177,7 +177,7 @@ if (isset($_SESSION['level'])) {
 					if ($detailsUpdateR) {
 						$detailsInsertQ = sprintf(
 							"INSERT INTO raw_details VALUES 
-								(%u, '%s', '%s', '%s', '%s', %u, '%s', NULL, 1, curdate(), %s, curdate(), NULL, '%s', NULL)", 
+								(%u, '%s', '%s', '%s', '%s', %u, '%s', false, NULL, 1, curdate(), %s, curdate(), NULL, '%s', NULL)", 
 								$_SESSION['cardNo'], 
 								escape_data($DBS['comet'], $_POST['address']),
 								$phone,

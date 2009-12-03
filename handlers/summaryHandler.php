@@ -48,7 +48,7 @@ if (isset($_SESSION['level'])) {
 	
 			if ($updateR && mysqli_affected_rows($DBS['comet']) == 1) {
 				$insertQ = "INSERT INTO raw_details (
-					SELECT cardNo, address, phone, city, state, zip, email, nextPayment, paymentPlan, joined, $newPrice, curdate(), 
+					SELECT cardNo, address, phone, city, state, zip, email, noMail, nextPayment, paymentPlan, joined, $newPrice, curdate(), 
 						NULL, {$_SESSION['userID']}, NULL 
 						FROM raw_details 
 						WHERE cardNo={$_SESSION['cardNo']} 
@@ -77,7 +77,7 @@ if (isset($_SESSION['level'])) {
 
 				if ($updateR && mysqli_affected_rows($DBS['comet']) == 1) {
 					$insertQ = "INSERT INTO raw_details (
-						SELECT cardNo, address, phone, city, state, zip, email, nextPayment, $newPlan, joined, sharePrice, curdate(), 
+						SELECT cardNo, address, phone, city, state, zip, email, noMail, nextPayment, $newPlan, joined, sharePrice, curdate(), 
 							NULL, {$_SESSION['userID']}, NULL 
 							FROM raw_details 
 							WHERE cardNo={$_SESSION['cardNo']} 
@@ -114,7 +114,7 @@ if (isset($_SESSION['level'])) {
 
 			if ($updateR && mysqli_affected_rows($DBS['comet']) == 1) {
 				$insertQ = "INSERT INTO raw_details (
-					SELECT cardNo, address, phone, city, state, zip, email, nextPayment, paymentPlan, '$newDate', sharePrice, curdate(), 
+					SELECT cardNo, address, phone, city, state, zip, email, noMail, nextPayment, paymentPlan, '$newDate', sharePrice, curdate(), 
 						NULL, {$_SESSION['userID']}, NULL 
 						FROM raw_details 
 						WHERE cardNo={$_SESSION['cardNo']} 
@@ -146,7 +146,7 @@ if (isset($_SESSION['level'])) {
 
 				if ($updateR && mysqli_affected_rows($DBS['comet']) == 1) {
 					$insertQ = "INSERT INTO raw_details (
-						SELECT cardNo, address, phone, city, state, zip, email, '$newDate', paymentPlan, joined, sharePrice, curdate(), 
+						SELECT cardNo, address, phone, city, state, zip, email, noMail, '$newDate', paymentPlan, joined, sharePrice, curdate(), 
 							NULL, {$_SESSION['userID']}, NULL 
 							FROM raw_details 
 							WHERE cardNo={$_SESSION['cardNo']} 
