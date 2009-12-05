@@ -108,6 +108,7 @@ if ($_SESSION['authObject']->checkAuth()) {
 		<li class="ajaxLink"><a href="mailer.php">Mailer</a></li>
 		<li class="ajaxLink"><a id="sync" href="sync.php">Sync To Fannie</a></li>
 		<li class="ajaxLink" id="config"><a href="config.php">Config</a></li>
+		<li class="ajaxLink" id="users"><a href="users.php">Manage Users</a></li>
 		<form name="logout" class="headList" action="login.php?act=logout" id="logoutForm" method="post">
 			<li id="logout"><button class="buttonAsLink">Logout</button></li>
 		</form>
@@ -116,12 +117,14 @@ if ($_SESSION['authObject']->checkAuth()) {
 		?>
 		<script type="text/javascript">
 			$('#config').show();
+			$('#users').show();
 		</script>
 		<?php
 	} else {
 		?>
 		<script type="text/javascript">
 			$('#config').hide();
+			$('#users').hide();
 		</script>
 		<?php
 	}
