@@ -60,7 +60,7 @@ if (isset($_SESSION['level'])) {
 				) 
 				VALUES 
 				(%u, %u, '%s', '%s', 60, 0, %u, %u, %u, %u, 1, '%s', %u, %u, 0, 0, 0, 1, NULL, 1, NULL, NOW(), NULL, 1)",
-				$cardNo, $personNum, $last, $first, $discount, ($charge == 1 ? 9999 : 0), $charge, $check, 
+				(int)$cardNo, (int)$personNum, escape_data($DBS['comet'], $last), escape_data($DBS['comet'], $first), (int)$discount, ($charge == 1 ? 9999 : 0), $charge, $check, 
 				($memType == 0 || $memType == 6 || $memType == 7 ? 'reg' : 'pc'), $memType, $staff
 			);
 		$insertR = mysqli_query($DBS['is4c_op'], $insertQ);
@@ -89,7 +89,7 @@ if (isset($_SESSION['level'])) {
 		
 		$deleteQ = sprintf("DELETE FROM custdata
 			WHERE cardNo=%u AND personNum=%u
-			LIMIT 1", $cardNo, $personNum);
+			LIMIT 1", (int)$cardNo, (int)$personNum);
 		$deleteR = mysqli_query($DBS['is4c_op'], $deleteQ);
 		
 		if (!$deleteR) printf('<h3>Query: %s<br />Error %s</h3>', $deleteQ, mysqli_error($DBS['is4c_op']));
@@ -119,7 +119,7 @@ if (isset($_SESSION['level'])) {
 		$updateQ = sprintf("UPDATE custdata
 			SET firstname='%s', lastname='%s', discount=%u, memtype=%u, staff=%u, writechecks=%u, chargeok=%u, memdiscountlimit=%u, type='%s'
 			WHERE cardNo=%u AND personNum=%u", 
-				$first, $last, $discount, $memType, $staff, $check, $charge, 
+				escape_data($DBS['comet'], $first), escape_data($DBS['comet'], $last), (int)$discount, (int)$memType, (int)$staff, (int)$check, (int)$charge, 
 				($charge == 1 ? 9999 : 0), ($memType == 0 || $memType == 6 || $memType == 7 ? 'reg' : 'pc'), $cardNo, $personNum);
 		$updateR = mysqli_query($DBS['is4c_op'], $updateQ);
 		
