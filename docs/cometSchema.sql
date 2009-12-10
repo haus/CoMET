@@ -1,3 +1,26 @@
+--		CoMET is a stand-alone member equity tracking application designed to integrate with IS4C and Fannie.
+--	    Copyright (C) 2009  Matthaus Litteken
+		
+--		This file is part of CoMET.
+
+--	    This program is free software: you can redistribute it and/or modify
+--	    it under the terms of the GNU General Public License as published by
+--	    the Free Software Foundation, either version 3 of the License, or
+--	    (at your option) any later version.
+
+--	    This program is distributed in the hope that it will be useful,
+--	    but WITHOUT ANY WARRANTY; without even the implied warranty of
+--	    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--	    GNU General Public License for more details.
+
+--	    You should have received a copy of the GNU General Public License
+--	    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+--
+-- CoMET Table List, Description and SQL Composition
+-- Bare DB schema with some test data and default settings.
+--
+
 -- MySQL dump 10.13  Distrib 5.1.37, for apple-darwin10.0.0 (i386)
 --
 -- Host: localhost    Database: comet_structure
@@ -44,6 +67,7 @@ SET character_set_client = @saved_cs_client;
 
 --
 -- Table structure for table `notes`
+-- Description: this table will store notes about specific members and replies to notes
 --
 
 DROP TABLE IF EXISTS `notes`;
@@ -72,6 +96,7 @@ UNLOCK TABLES;
 
 --
 -- Table structure for table `options`
+-- Description: options stores DB connection info for is4c_op and is4c_log, mail configuration settings and default values for many of CoMET's settings
 --
 
 DROP TABLE IF EXISTS `options`;
@@ -122,6 +147,7 @@ SET character_set_client = @saved_cs_client;
 
 --
 -- Table structure for table `paymentPlans`
+-- Description: paymentPlans is a list of valid plans
 --
 
 DROP TABLE IF EXISTS `paymentPlans`;
@@ -147,6 +173,7 @@ UNLOCK TABLES;
 
 --
 -- Table structure for table `payments`
+-- Description: this table stores equity payments to facilitate tracking, reporting, and notification
 --
 
 DROP TABLE IF EXISTS `payments`;
@@ -176,6 +203,7 @@ UNLOCK TABLES;
 
 --
 -- Table structure for table `raw_details`
+-- Description: Table with every iteration of changes in details for members. Helps to create versioning and allows users to revert to old addresses, information.
 --
 
 DROP TABLE IF EXISTS `raw_details`;
@@ -214,6 +242,7 @@ UNLOCK TABLES;
 
 --
 -- Table structure for table `raw_owners`
+-- Description: Table with a list of basic details used with Fannie and IS4C. Used to with versioning as well to allow rollbacks.
 --
 
 DROP TABLE IF EXISTS `raw_owners`;
@@ -249,6 +278,7 @@ UNLOCK TABLES;
 
 --
 -- Table structure for table `users`
+-- Description: Table users to tag changes and identify who changed fields and create authorization levels.
 --
 
 DROP TABLE IF EXISTS `users`;
@@ -266,6 +296,7 @@ CREATE TABLE `users` (
 
 --
 -- Dumping data for table `users`
+-- Default admin user created here with password of admin.
 --
 
 LOCK TABLES `users` WRITE;
@@ -276,6 +307,7 @@ UNLOCK TABLES;
 
 --
 -- Final view structure for view `details`
+-- Description: View of the most recent member details. Creates ability to rollback to previous states.
 --
 
 /*!50001 DROP TABLE `details`*/;
@@ -295,6 +327,7 @@ UNLOCK TABLES;
 
 --
 -- Final view structure for view `owners`
+-- Description: View of the most recent member owner info. Creates ability to rollback to previous states.
 --
 
 /*!50001 DROP TABLE `owners`*/;
