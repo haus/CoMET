@@ -45,7 +45,7 @@ G. Extending
 *********************************************************************
 - PHP 5.3 or later with mysqli, curl and cli extensions enabled
 - MySQL 5 or later
-- PEAR packages: Net_SMTP, Mail, Auth, MDB2/mysqli
+- PEAR packages: Net_SMTP, Mail, Auth, MDB2, MDB2/mysqli
 - Access to cron
 
 
