@@ -20,7 +20,7 @@
 */
 
 // CoMET DB Connection details.
-$_SESSION['DB'] = array('host'=>'localhost', 'user'=>'root', 'password'=>'lemoncoke', 'database'=>'comet_structure');
+$_SESSION['DB'] = array('host'=>'localhost', 'user'=>'user', 'password'=>'password', 'database'=>'comet');
 
 $DBS['comet'] = mysqli_connect(
 		$_SESSION['DB']['host'], 
