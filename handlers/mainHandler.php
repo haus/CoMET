@@ -131,8 +131,8 @@ if (isset($_SESSION['level'])) {
 								escape_data($DBS['comet'], $_POST['first'][$i]),
 								escape_data($DBS['comet'], $_POST['last'][$i]),
 								escape_data($DBS['comet'], $_POST['discount'][$i]),
-								escape_data($DBS['comet'], $_POST['memType'][$i]),
-								escape_data($DBS['comet'], $_POST['staff'][$i]),
+								(isset($_POST['memType'][$i]) ? escape_data($DBS['comet'], $_POST['memType'][$i]) : 0),
+								(isset($_POST['staff'][$i]) ? escape_data($DBS['comet'], $_POST['staff'][$i]) : 0),
 								(isset($_POST['charge'][$i]) && $_POST['charge'][$i] == 'on' ? 1 : 0),
 								(isset($_POST['checks'][$i]) && $_POST['checks'][$i] == 'on' ? 1 : 0),
 								$_SESSION['userID']
@@ -225,8 +225,8 @@ if (isset($_SESSION['level'])) {
 						$last,
 						$i,
 						escape_data($DBS['comet'], $_POST['discount'][$i]),
-						escape_data($DBS['comet'], $_POST['memType'][$i]),
-						escape_data($DBS['comet'], $_POST['staff'][$i]),
+						(isset($_POST['memType'][$i]) ? escape_data($DBS['comet'], $_POST['memType'][$i]) : 0),
+						(isset($_POST['staff'][$i]) ? escape_data($DBS['comet'], $_POST['staff'][$i]) : 0),
 						(isset($_POST['charge'][$i]) && $_POST['charge'][$i] == 'on' ? 1 : 0),
 						(isset($_POST['checks'][$i]) && $_POST['checks'][$i] == 'on' ? 1 : 0)
 					);
@@ -284,8 +284,8 @@ if (isset($_SESSION['level'])) {
 								$first,
 								$last,
 								escape_data($DBS['comet'], $_POST['discount'][$i]),
-								escape_data($DBS['comet'], $_POST['memType'][$i]),
-								escape_data($DBS['comet'], $_POST['staff'][$i]),
+								(isset($_POST['memType'][$i]) ? escape_data($DBS['comet'], $_POST['memType'][$i]) : 0),
+								(isset($_POST['staff'][$i]) ? escape_data($DBS['comet'], $_POST['staff'][$i]) : 0),
 								(isset($_POST['charge'][$i]) && $_POST['charge'][$i] == 'on' ? 1 : 0),
 								(isset($_POST['checks'][$i]) && $_POST['checks'][$i] == 'on' ? 1 : 0),
 								$_SESSION['userID']

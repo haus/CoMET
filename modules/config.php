@@ -157,18 +157,20 @@ while (list($name, $value) = mysqli_fetch_row($configR)) {
 	$config[$name] = $value;
 }
 
-$memTypeQ = "SELECT memType, CONCAT(SUBSTR(memdesc, 1, 1), LOWER(SUBSTR(memdesc, 2, LENGTH(memdesc)))) FROM memtype ORDER BY memType ASC";
-$memTypeR = mysqli_query($DBS['is4c_op'], $memTypeQ);
+if (is_resource($DBS['is4c_op']) && $DBS['is4c_op'] !== FALSE) {
+	$memTypeQ = "SELECT memType, CONCAT(SUBSTR(memdesc, 1, 1), LOWER(SUBSTR(memdesc, 2, LENGTH(memdesc)))) FROM memtype ORDER BY memType ASC";
+	$memTypeR = mysqli_query($DBS['is4c_op'], $memTypeQ);
 
-$staffQ = "SELECT staff_no, CONCAT(SUBSTR(staff_desc, 1, 1), LOWER(SUBSTR(staff_desc, 2, LENGTH(staff_desc)))) FROM staff ORDER BY staff_no ASC";
-$staffR = mysqli_query($DBS['is4c_op'], $staffQ);
+	$staffQ = "SELECT staff_no, CONCAT(SUBSTR(staff_desc, 1, 1), LOWER(SUBSTR(staff_desc, 2, LENGTH(staff_desc)))) FROM staff ORDER BY staff_no ASC";
+	$staffR = mysqli_query($DBS['is4c_op'], $staffQ);
 
-while (list($num, $desc) = mysqli_fetch_row($memTypeR)) {
-	$memType[$num] = $desc;
-}
+	while (list($num, $desc) = mysqli_fetch_row($memTypeR)) {
+		$memType[$num] = $desc;
+	}
 
-while (list($num, $desc) = mysqli_fetch_row($staffR)) {
-	$staffList[$num] = $desc;
+	while (list($num, $desc) = mysqli_fetch_row($staffR)) {
+		$staffList[$num] = $desc;
+	}
 }
 
 $state_list = array('AL'=>"Alabama",
@@ -274,7 +276,10 @@ printf('<p>
 	</p>
 	<br />', 
 	$config['houseHoldSize'], $config['discounts'], $config['sharePrice'], $config['defaultPayment'], 
-	$config['defaultPlan'], $staffList[$config['defaultStaff']], $memType[$config['defaultMemType']], $config['defaultDiscount'], 
+	$config['defaultPlan'], 
+	(isset($staffList) ? $staffList[$config['defaultStaff']] : 'is4c_op connection needed'), 
+	(isset($memType) ? $memType[$config['defaultMemType']] : 'is4c_op connection needed'), 
+	$config['defaultDiscount'], 
 	$state_list[$config['defaultState']], $config['syncURL']);
 
 

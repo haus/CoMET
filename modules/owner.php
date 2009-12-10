@@ -24,20 +24,22 @@ session_start();
 if (isset($_SESSION['level'])) {
 	require_once('../includes/config.php');
 
-	$memTypeQ = "SELECT memType, CONCAT(SUBSTR(memdesc, 1, 1), LOWER(SUBSTR(memdesc, 2, LENGTH(memdesc)))) FROM memtype ORDER BY memType ASC";
-	$memTypeR = mysqli_query($DBS['is4c_op'], $memTypeQ);
+	if (is_resource($DBS['is4c_op']) && $DBS['is4c_op'] !== FALSE) {
+		$memTypeQ = "SELECT memType, CONCAT(SUBSTR(memdesc, 1, 1), LOWER(SUBSTR(memdesc, 2, LENGTH(memdesc)))) FROM memtype ORDER BY memType ASC";
+		$memTypeR = mysqli_query($DBS['is4c_op'], $memTypeQ);
 
-	$staffQ = "SELECT staff_no, CONCAT(SUBSTR(staff_desc, 1, 1), LOWER(SUBSTR(staff_desc, 2, LENGTH(staff_desc)))) FROM staff ORDER BY staff_no ASC";
-	$staffR = mysqli_query($DBS['is4c_op'], $staffQ);
+		$staffQ = "SELECT staff_no, CONCAT(SUBSTR(staff_desc, 1, 1), LOWER(SUBSTR(staff_desc, 2, LENGTH(staff_desc)))) FROM staff ORDER BY staff_no ASC";
+		$staffR = mysqli_query($DBS['is4c_op'], $staffQ);
 
-	while (list($num, $desc) = mysqli_fetch_row($memTypeR)) {
-		$memType[$num] = $desc;
+		while (list($num, $desc) = mysqli_fetch_row($memTypeR)) {
+			$memType[$num] = $desc;
+		}
+
+		while (list($num, $desc) = mysqli_fetch_row($staffR)) {
+			$staffList[$num] = $desc;
+		}
 	}
-
-	while (list($num, $desc) = mysqli_fetch_row($staffR)) {
-		$staffList[$num] = $desc;
-	}
-
+	
 	/**
 	 * Owner module for CoMET. Will interface with IS4C/Fannie database to retrieve
 	 * data and update members.

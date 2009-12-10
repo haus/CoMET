@@ -32,18 +32,20 @@ while (list($planID, $freq, $amount) = mysqli_fetch_row($planR)) {
 	);
 }
 
-$memTypeQ = "SELECT memType, CONCAT(SUBSTR(memdesc, 1, 1), LOWER(SUBSTR(memdesc, 2, LENGTH(memdesc)))) FROM memtype ORDER BY memType ASC";
-$memTypeR = mysqli_query($DBS['is4c_op'], $memTypeQ);
+if (is_resource($DBS['is4c_op']) && $DBS['is4c_op'] !== FALSE) {
+	$memTypeQ = "SELECT memType, CONCAT(SUBSTR(memdesc, 1, 1), LOWER(SUBSTR(memdesc, 2, LENGTH(memdesc)))) FROM memtype ORDER BY memType ASC";
+	$memTypeR = mysqli_query($DBS['is4c_op'], $memTypeQ);
 
-while (list($num, $desc) = mysqli_fetch_row($memTypeR)) {
-	$memType[$num] = $desc;
-}
+	while (list($num, $desc) = mysqli_fetch_row($memTypeR)) {
+		$memType[$num] = $desc;
+	}
 
-$staffQ = "SELECT staff_no, CONCAT(SUBSTR(staff_desc, 1, 1), LOWER(SUBSTR(staff_desc, 2, LENGTH(staff_desc)))) FROM staff ORDER BY staff_no ASC";
-$staffR = mysqli_query($DBS['is4c_op'], $staffQ);
+	$staffQ = "SELECT staff_no, CONCAT(SUBSTR(staff_desc, 1, 1), LOWER(SUBSTR(staff_desc, 2, LENGTH(staff_desc)))) FROM staff ORDER BY staff_no ASC";
+	$staffR = mysqli_query($DBS['is4c_op'], $staffQ);
 
-while (list($num, $desc) = mysqli_fetch_row($staffR)) {
-	$staffList[$num] = $desc;
+	while (list($num, $desc) = mysqli_fetch_row($staffR)) {
+		$staffList[$num] = $desc;
+	}
 }
 
 $state_list = array('AL'=>"Alabama",
