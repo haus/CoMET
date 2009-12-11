@@ -36,6 +36,14 @@ if (!isset($_SESSION['cardNo'])) {
 	function validate(formData, jqForm, options) {
 		changed = $('#changed').val();
 		
+		if ($('#navButton').val() == 'delete') {
+			var answer = confirm("Delete current member?");
+		    if (answer) {
+				return true;
+		    }
+		    return false;
+		}
+		
 		// Disable the buttons when the form is submitted.
 		$('#navForm :button').attr("disabled","disabled");
 		$('#navForm :input').attr("disabled","disabled");
@@ -297,6 +305,7 @@ if (!isset($_SESSION['cardNo'])) {
 			<button type="submit" name="lastRecord" value="last" id="lastRecord">&gt;&gt;&gt;</button>
 		</span>
 		<span style="float:right;padding:5px;">
+			<button type="submit" name="delete" id="delete" value="delete">Delete Member</button>
 			<button type="submit" name="new" id="new" value="new">New Member</button>
 		</span>
 		<input type="hidden" name="changed" value="false" id="changed" />

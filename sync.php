@@ -81,7 +81,7 @@ if (isset($_SESSION['level'])) {
 	
 	if (!$goneR) printf('<h3>Query: %s<br />Error %s</h3>', $goneQ, mysqli_error($DBS['comet']));
 
-	if (mysqli_num_rows($goneR) > 0) $delList = '<br /><h3>Records added:</h3>';
+	if (mysqli_num_rows($goneR) > 0) $delList = '<br /><h3>Records deleted:</h3>';
 	
 	while (list($cardNo, $personNum, $first, $last, $discount, $memType, $staff, $check, $charge, $ssi) = mysqli_fetch_row($goneR)) {
 		$delList .= sprintf("Card #: %u, Person #%u, Name: %s %s ",

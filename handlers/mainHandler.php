@@ -332,6 +332,23 @@ if (isset($_SESSION['level'])) {
 	$navButton = (isset($_REQUEST['navButton']) ? escape_data($DBS['comet'], $_REQUEST['navButton']) : NULL);
 	//echo '"errorMsg": "' . $navButton . '", ';
 	switch ($navButton) {
+		case 'delete':
+			$updateQ = sprintf("UPDATE raw_owners SET endDate = curdate() 
+				WHERE cardNo = %u AND personNum BETWEEN 1 and %u AND endDate IS NULL", $_SESSION['cardNo'], $_SESSION['houseHoldSize']);
+			$updateR = mysqli_query($DBS['comet'], $updateQ);
+				
+			$updateQ = sprintf("UPDATE raw_details SET endDate = curdate()
+				WHERE cardNo = %u AND endDate IS NULL", $_SESSION['cardNo']);
+			$updateR = mysqli_query($DBS['comet'], $updateQ);
+			
+			$cardQ = "SELECT cardNo FROM owners WHERE cardNo < {$_SESSION['cardNo']} ORDER BY cardNo DESC LIMIT 1";
+			$cardR = mysqli_query($DBS['comet'], $cardQ);
+			if (mysqli_num_rows($cardR) == 1)
+				list($_SESSION['cardNo']) = mysqli_fetch_row($cardR);
+			
+			echo ' "cardNo": "' . $_SESSION['cardNo'] . '" }';
+		break;	
+		
 		case 'search':
 			if (is_numeric($_POST['value']) && $_POST['value'] > 0)
 				$_SESSION['cardNo'] = (int) $_POST['value'];
