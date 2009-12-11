@@ -38,6 +38,7 @@ session_start();
 			{
 				style: 'display: inline',
 				onblur: 'submit',
+				select: 'true',
 				tooltip: 'Click to edit...',
 				callback: reload
 			}

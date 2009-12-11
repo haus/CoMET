@@ -138,6 +138,7 @@ if (!isset($_SESSION['cardNo'])) {
 			width: 40,
 			style: 'display: inline',
 			onblur: 'submit',
+			select: 'true',
 			tooltip: 'Click to browse by number...',
 			callback: function(value, settings) {
 				$('#owner').load('./modules/owner.php');
