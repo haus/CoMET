@@ -45,7 +45,8 @@ if (isset($_SESSION['level'])) {
 		} else {
 			echo '{ "success": "success!" }';
 		}
-	} elseif (!empty($date) && !empty($amount) && is_numeric($amount) && checkdate(substr($date, 0, 2), substr($date, 3, 2), substr($date, 6, 4))) { // Non empty, numeric amount, non empty actual date.
+	// Non empty, numeric amount, non empty actual date.
+	} elseif (!empty($date) && !empty($amount) && is_numeric($amount) && checkdate(substr($date, 0, 2), substr($date, 3, 2), substr($date, 6, 4))) { 
 		$year = substr($date, 6, 4);
 		$month = substr($date, 0, 2);
 		$day = substr($date, 3, 2);
@@ -76,6 +77,7 @@ if (isset($_SESSION['level'])) {
 			);
 	
 			$paymentR = mysqli_query($DBS['comet'], $paymentQ);
+
 			if (!$paymentR) {
 				printf('{ "errorMsg":"Query: %s, Error: %s" }',
 					$dateQ, 
@@ -130,7 +132,49 @@ if (isset($_SESSION['level'])) {
 				}
 				
 				// Then update the details.
+				// Payment Plans Update
+				$planQ = sprintf("SELECT planID FROM paymentPlans WHERE amount=%s LIMIT 1",$amount);
+				$planR = mysqli_query($DBS['comet'], $planQ);
+				
+				if (mysqli_num_rows($planR) > 0) {
+					list($plan) = mysqli_fetch_row($planR);
+					
+					$updateQ = "UPDATE raw_details SET endDate=curdate() WHERE cardNo={$_SESSION['cardNo']} AND endDate IS NULL";
+					$updateR = mysqli_query($DBS['comet'], $updateQ);
+					
+					if ($updateR && mysqli_affected_rows($DBS['comet']) == 1) {
+						$insertQ = sprintf("INSERT INTO raw_details (
+							SELECT cardNo, address, phone, city, state, zip, email, noMail, nextPayment, %u, joined, sharePrice, curdate(), 
+								NULL, %u, NULL 
+								FROM raw_details
+								WHERE cardNo=%u 
+									AND DATE(endDate) = curdate() 
+									AND id=(SELECT MAX(id) FROM raw_details WHERE cardNo={$_SESSION['cardNo']}) 
+								GROUP BY cardNo HAVING MAX(endDate))", 
+								$plan, $_SESSION['userID'], $_SESSION['cardNo']);
+						$insertR = mysqli_query($DBS['comet'], $insertQ);
+
+						if (!$insertR) {
+							echo '{ "errorMsg":"Query: ' . $insertQ . ', MySQL Error: ' . mysqli_error($DBS['comet']) . '" }';
+							exit();
+						}
+					} else {
+						echo '{ "errorMsg":"Query: ' . $updateQ . ', MySQL Error: ' . mysqli_error($DBS['comet']) . '" }';
+						exit();
+					}
+				}
+				
 				// Next Payment Logic
+				if ($amount >= 30) {
+					$period = 12;
+				} elseif ($amount >= 15) {
+					$period = 6;
+				} elseif ($amount >= 5) {
+					$period = 1;
+				} else {
+					$period = 0;
+				}
+				
 				// If paid up fully, next due = null
 				if (($total + $amount) == $sPrice) { // If fully paid, shareholder.
 					$nextDue = 'NULL';
@@ -138,21 +182,15 @@ if (isset($_SESSION['level'])) {
 				// Okay this part requires PHP 5.3 or greater. Date Time work.
 				// If after next due or null, next due = payment date + (12/period)
 				} elseif (is_null($next) || (strtotime($date) > strtotime($next))) {
-					$period = (int)(12 / $pFreq);
 					$nextDue = date_create($date);
 					$nextDue = date_add($nextDue, new DateInterval("P" . $period . "M"));
 					$nextDue = "'" . date_format($nextDue, 'Y-m-d') . "'";
-					/*echo '{ "errorMsg": "Adding to pmtdate. ' . "\n" . 'PmtDate: ' . strtotime($date) . '. ' . "\n" . 'NextDue: ' . strtotime($nextDue) . '." }';
-					exit();*/
+
 				// If before or on next due, next due = next due + (12/period)	
 				} elseif (strtotime($date) <= strtotime($next)) {
-					$period = (int)(12 / $pFreq);
 					$nextDue = date_create($next);
 					$nextDue = date_add($nextDue, new DateInterval("P" . $period . "M"));
 					$nextDue = "'" . date_format($nextDue, 'Y-m-d') . "'";
-					/*echo '{ "errorMsg": "Adding to pmtdate. ' . "\n" . 'PmtDate: ' . strtotime($date) . '. ' . "\n" . 'NextDue: ' . strtotime($next) . '." }';
-					exit();*/
-
 				}
 
 				$updateQ = "UPDATE raw_details SET endDate=curdate() WHERE cardNo={$_SESSION['cardNo']} AND endDate IS NULL";
@@ -187,4 +225,5 @@ if (isset($_SESSION['level'])) {
 } else {
 	header('Location: ../index.php');
 }
+
 ?>

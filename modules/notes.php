@@ -69,6 +69,7 @@ if (isset($_SESSION['level'])) {
 			$details[$tID]['date'] = $modified;
 			$details[$tID]['author'] = $name;
 			$details[$tID]['time'] = $time;
+			$details[$tID]['userID'] = $uID;
 		}
 	
 		printNotes($notes[0]);
@@ -106,7 +107,7 @@ function printNotes($parent) {
 			printf('<li>
 						<input type="submit" value="Reply" id="%s" name="addChild[]" onclick="%s" />
 						<!--<input type="image" src="includes/images/minus-8.png" name="pmtRemove[]" onclick="%s" />-->
-						<span class="editNote" id="%s">%s</span>
+						<span %s id="%s">%s</span>
 						<small>(written by %s on %s at %s)</small>
 					<br /><p id="%u" style="display:none">
 							<input type="submit" value="Add Reply" name="addNote[]" onclick="%s" />
@@ -115,6 +116,7 @@ function printNotes($parent) {
 					'button' . $threadID,
 					'showRow(' . $threadID . ');	return false;', 
 					'updateRemoveID(' . $threadID . ');',
+					($details[$threadID]['userID'] == $_SESSION['userID'] || $_SESSION['level'] >= 4 ? 'class="editNote"' : ''),
 					'note-' . $threadID, 
 					$noteText . "\n",
 					$details[$threadID]['author'],
