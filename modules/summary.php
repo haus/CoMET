@@ -121,7 +121,7 @@ if (isset($_SESSION['level'])) {
 ?>
 		<script type="text/javascript">
 			$(document).ready(function() {
-				$('#datepicker').datepicker({ dateFormat: 'yy-mm-dd', maxDate: 0 });
+				$('#datepicker').datepicker({ dateFormat: 'yy-mm-dd', changeYear: 'true', yearRange: '2000:<?php echo date('Y'); ?>', maxDate: 0 });
 			});
 		</script>
 <?php
