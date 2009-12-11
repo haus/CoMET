@@ -32,7 +32,7 @@ while (list($planID, $freq, $amount) = mysqli_fetch_row($planR)) {
 	);
 }
 
-if (is_resource($DBS['is4c_op']) && $DBS['is4c_op'] !== FALSE) {
+if ($DBS['is4c_op'] !== FALSE) {
 	$memTypeQ = "SELECT memType, CONCAT(SUBSTR(memdesc, 1, 1), LOWER(SUBSTR(memdesc, 2, LENGTH(memdesc)))) FROM memtype ORDER BY memType ASC";
 	$memTypeR = mysqli_query($DBS['is4c_op'], $memTypeQ);
 
