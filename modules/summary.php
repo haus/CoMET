@@ -28,7 +28,9 @@ session_start();
 		plugin:  function(settings, original) {
 			var form = this;
 			$("input", this).filter(":text").datepicker({
-				onSelect: function(dateText) { $(this).hide(); $(form).trigger("submit"); }
+				onSelect: function(dateText) { $(this).hide(); $(form).trigger("submit"); },
+				changeYear: 'true',
+				yearRange: '2000:<?php echo date('Y') + 1; ?>'
 			});
 		}
 	});
