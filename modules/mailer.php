@@ -62,7 +62,10 @@ $mailer = array();
 $comingDueQ = "SELECT name, value 
 	FROM options 
 	WHERE name IN 
-		('comingDueDays', 'comingDueMsg', 'pastDueDays', 'pastDueMsg', 'inactiveDays', 'inactiveMsg', 'reminderEmail', 'reminderFrom')";
+		('comingDueDays', 'comingDueMsg', 'comingDueSubject',
+			'pastDueDays', 'pastDueMsg', 'pastDueSubject',
+			'inactiveDays', 'inactiveMsg', 'inactiveSubject',
+			'reminderEmail', 'reminderFrom')";
 $comingDueR = mysqli_query($DBS['comet'], $comingDueQ);
 while (list($name, $value) = mysqli_fetch_row($comingDueR)) {
 	$value = str_replace ('\r', '', $value);

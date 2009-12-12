@@ -20,6 +20,7 @@
 */
 session_start();
 require_once('../includes/config.php');
+require_once('../includes/functions.php');
 require_once('Mail.php');
 
 $from = sprintf('%s <%s>', $_SESSION['reminderFrom'], $_SESSION['reminderEmail']);
