@@ -52,7 +52,7 @@ require_once('../includes/config.php');
 </script>
 
 <h1>Auto-reminder Mailer Settings</h1>
-<h4>Available tags to use: <em>[firstName], [lastName], [balance], [sharePrice], [dueDate], [paymentPlan]</em></h4>
+<h4>Available tags to use: <em>[firstName], [lastName], [balance], [dueDate], [paymentPlan]</em></h4>
 
 <?php
 echo '<br />';
@@ -77,12 +77,15 @@ printf('<h3>Reminder Email Address: <span class="editText" id="reminderFrom">%s<
 	$mailer['reminderFrom'], $mailer['reminderEmail']);
 
 printf('<h3>Coming Due Message (# of days to message: <span class="editText" id="comingDueDays">%s</span>)</h3>
-<span class="editArea" id="comingDueMsg">%s</span><br /><br />', $mailer['comingDueDays'], $mailer['comingDueMsg']);
+<h3>Coming Due Subject: <em><span class="editText" id="comingDueSubject">%s</span></em></h3>
+<span class="editArea" id="comingDueMsg">%s</span><br /><br />', $mailer['comingDueDays'], $mailer['comingDueSubject'], $mailer['comingDueMsg']);
 
 printf('<h3>Past Due Message (# of days to message: <span class="editText" id="pastDueDays">%s</span>)</h3>
-<span class="editArea" id="pastDueMsg">%s</span><br /><br />', $mailer['pastDueDays'], $mailer['pastDueMsg']);
+<h3>Past Due Subject: <em><span class="editText" id="pastDueSubject">%s</span></em></h3>
+<span class="editArea" id="pastDueMsg">%s</span><br /><br />', $mailer['pastDueDays'], $mailer['pastDueSubject'], $mailer['pastDueMsg']);
 
 printf('<h3>Inactive Message (# of days to message: <span class="editText" id="inactiveDays">%s</span>)</h3>
-<span class="editArea" id="inactiveMsg">%s</span><br /><br />', $mailer['inactiveDays'], $mailer['inactiveMsg']);
+<h3>Inactive Subject: <em><span class="editText" id="inactiveSubject">%s</span></em></h3>
+<span class="editArea" id="inactiveMsg">%s</span><br /><br />', $mailer['inactiveDays'], $mailer['inactiveSubject'], $mailer['inactiveMsg']);
 
 ?>
