@@ -55,45 +55,42 @@ if (!function_exists('escape_data')) {
 	}
 }
 
-function cometMail($to, $from, $subject, $body) {
-	require_once('./includes/config.php');
+function cometMail($to, $from, $subject, $body, $type = 'system') {
+	require_once(__DIR__ . '/config.php');
 	require_once('Mail.php');
+
+	$host = $_SESSION['smtpHost'];
 	
-	global $DBS;
+	if ($type == 'system') {
+		$user = $_SESSION['systemUser'];
+		$pass = $_SESSION['systemPass'];
+	} elseif ($type == 'reminder') {
+		$user = $_SESSION['smtpUser'];
+		$pass = $_SESSION['smtpPass'];
+	}
 
-	$smtpQ = "SELECT name, value FROM options WHERE name IN ('smtpHost', 'systemUser', 'systemPass')";
-	$smtpR = mysqli_query($DBS['comet'], $smtpQ);
+	$headers = array ('From' => $from,
+	  'To' => $to,
+	  'Subject' => $subject);
 
-	if (!$smtpR) {
-		 printf('MySQL Error: %s, Query: %s', mysqli_error($DBS['comet']), $smtpQ);
+	$smtp = Mail::factory(
+		'smtp',
+		array (
+			'host' => $host,
+	    	'auth' => true,
+		    'username' => $user,
+		    'password' => $pass
+		)
+	);
+
+	$mail = $smtp->send($to, $headers, $body);
+
+	if (PEAR::isError($mail) && $type == 'system') {
+		echo '<blink>' . $mail->getMessage() . '</blink>';
+	} elseif (PEAR::isError($mail) && $type == 'reminder') {
+		return $mail->getMessage();
 	} else {
-		while (list($name, $value) = mysqli_fetch_row($smtpR)) {
-			$smtp[$name] = $value;
-		}
-
-		$host = $smtp['smtpHost'];
-		$user = $smtp['systemUser'];
-		$pass = $smtp['systemPass'];
-
-		$headers = array ('From' => $from,
-		  'To' => $to,
-		  'Subject' => $subject);
-
-		$smtp = Mail::factory(
-			'smtp',
-			array (
-				'host' => $host,
-		    	'auth' => true,
-			    'username' => $user,
-			    'password' => $pass
-			)
-		);
-
-		$mail = $smtp->send($to, $headers, $body);
-
-		if (PEAR::isError($mail)) {
-			echo '<blink>' . $mail->getMessage() . '</blink>';
-		}
+		return 0;
 	}
 }
 ?>

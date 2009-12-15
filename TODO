@@ -22,7 +22,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************
 
 Features/Script Specifics
-- Update payment plan on payment before setting next payment date.
 - User management tab
 - Reports including contact list generator, mailing labels, and more.
 - Thickbox receipt pop up for main tab.
@@ -30,6 +29,8 @@ Features/Script Specifics
 - Cron script to email owners before and after next payment is due.
 - Cron script to backup the db nightly
 - Export script to backup db
+- Log viewer and log table for cron script changes...
+- Notify on lack of email addresses...
 
 Higher Level Specifics
 - User level definitions

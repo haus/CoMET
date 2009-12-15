@@ -19,8 +19,11 @@
 	    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 session_start();
-require_once('../includes/config.php');
-require_once('../includes/functions.php');
+$baseDir = (substr(__DIR__, -1) == '/' ? substr(__DIR__, 0, -1) : __DIR__);
+$baseDir = substr(__DIR__, 0, strrpos($baseDir, '/'));
+
+require_once($baseDir . '/includes/config.php');
+require_once($baseDir . '/includes/functions.php');
 require_once('Mail.php');
 
 $from = sprintf('%s <%s>', $_SESSION['reminderFrom'], $_SESSION['reminderEmail']);
@@ -30,10 +33,9 @@ $user = $_SESSION['smtpUser'];
 $pass = $_SESSION['smtpPass'];
 
 $to = ' <mlitteken@gmail.com>';
-$subject = 'reminder message';
 
 $search = array('[firstName]', '[lastName]', '[dueDate]', '[balance]', '[paymentPlan]');
-
+$count = 0;
 
 // First inactives...owners who will be made inactive...
 $inactiveQ = sprintf(
@@ -50,14 +52,25 @@ $inactiveQ = sprintf(
 $inactiveR = mysqli_query($DBS['comet'], $inactiveQ);
 
 $inactiveMsg = $_SESSION['inactiveMsg'];
+$inactiveSubject = $_SESSION['inactiveSubject'];
 
 if (!$inactiveR)
 	printf('Error: %s, Query: %s', mysqli_error($DBS['comet']), $inactiveQ);
 
 while (list($email, $first, $last, $sPrice, $planAmount, $paid, $nextDue, $daysLate) = mysqli_fetch_row($inactiveR)) {
 	$replace = array($first, $last, $nextDue, '$' . number_format($sPrice-$paid, 2), '$' . $planAmount);
+	$newTo = $first . ' ' . $last . $to;
 	$body = str_replace($search, $replace, $inactiveMsg);
 	echo $body . "\n";
+	
+	$return = cometMail($newTo, $from, $inactiveSubject, $body, $type = 'reminder');
+	
+	if ($return == 0) {
+		$count++;
+		echo "Successfully sent inactive email #$count\n";
+	} else {
+		echo $return;
+	}
 }
 		
 // Then coming due...reminder that they should make a payment...
@@ -71,18 +84,29 @@ $comingDueQ = sprintf(
 	WHERE o.memType IN (1,2,3)
 		AND o.personNum = 1
 	GROUP BY cardNo
-		HAVING diff BETWEEN -20 AND -%u', $_SESSION['comingDueDays']);
+		HAVING diff = -%u', $_SESSION['comingDueDays']);
 $comingDueR = mysqli_query($DBS['comet'], $comingDueQ);
 
 $comingDueMsg = $_SESSION['comingDueMsg'];
+$comingDueSubject = $_SESSION['comingDueSubject'];
 
 if (!$comingDueR)
 	printf('Error: %s, Query: %s', mysqli_error($DBS['comet']), $comingDueQ);
 
 while (list($email, $first, $last, $sPrice, $planAmount, $paid, $nextDue, $daysLate) = mysqli_fetch_row($comingDueR)) {
 	$replace = array($first, $last, $nextDue, '$' . number_format($sPrice-$paid, 2), '$' . $planAmount);
+	$newTo = $first . ' ' . $last . $to;
 	$body = str_replace($search, $replace, $comingDueMsg);
 	echo $body . "\n";
+	
+	$return = cometMail($newTo, $from, $comingDueSubject, $body, $type = 'reminder');
+	
+	if ($return == 0) {
+		$count++;
+		echo "Successfully sent coming due email #$count\n";
+	} else {
+		echo $return;
+	}
 }
 
 // Then past due...reminder that they will be put on hold...
@@ -96,37 +120,29 @@ $pastDueQ = sprintf(
 	WHERE o.memType IN (1,2,3)
 		AND o.personNum = 1
 	GROUP BY cardNo
-		HAVING diff BETWEEN %u AND 20', $_SESSION['pastDueDays']);
+		HAVING diff = %u', $_SESSION['pastDueDays']);
 $pastDueR = mysqli_query($DBS['comet'], $pastDueQ);
 
 $pastDueMsg = $_SESSION['pastDueMsg'];
+$pastDueSubject = $_SESSION['pastDueSubject'];
 
 if (!$pastDueR)
 	printf('Error: %s, Query: %s', mysqli_error($DBS['comet']), $pastDueQ);
 
 while (list($email, $first, $last, $sPrice, $planAmount, $paid, $nextDue, $daysLate) = mysqli_fetch_row($pastDueR)) {
 	$replace = array($first, $last, $nextDue, '$' . number_format($sPrice-$paid, 2), '$' . $planAmount);
+	$newTo = $first . ' ' . $last . $to;
 	$body = str_replace($search, $replace, $pastDueMsg);
 	echo $body . "\n";
+	
+	$return = cometMail($newTo, $from, $pastDueSubject, $body, $type = 'reminder');
+	
+	if ($return == 0) {
+		$count++;
+		echo "Successfully sent past due email #$count\n";
+	} else {
+		echo $return;
+	}
 }
-
-exit();
-
-$headers = array ('From' => $from,
-  'To' => $to,
-  'Subject' => $subject);
-
-$smtp = Mail::factory('smtp',
-  array ('host' => $host,
-    'auth' => true,
-    'username' => $user,
-    'password' => $pass));
-
-$mail = $smtp->send($to, $headers, $body);
-
-if (PEAR::isError($mail)) {
-  echo("<p>" . $mail->getMessage() . "</p>");
- } else {
-  echo("<p>Message successfully sent!</p>");
- }
+	
 ?>
