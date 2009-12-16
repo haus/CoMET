@@ -24,7 +24,6 @@ $baseDir = substr(__DIR__, 0, strrpos($baseDir, '/'));
 
 require_once($baseDir . '/includes/config.php');
 require_once($baseDir . '/includes/functions.php');
-require_once('Mail.php');
 
 $from = sprintf('%s <%s>', $_SESSION['reminderFrom'], $_SESSION['reminderEmail']);
 $from = 'Matthaus Litteken <matthaus@albertagrocery.coop>';
@@ -47,7 +46,7 @@ $inactiveQ = sprintf(
 		INNER JOIN owners AS o ON d.cardNo = o.cardNo 
 		INNER JOIN payments AS p ON p.cardNo = d.cardNo
 		INNER JOIN paymentPlans AS pp ON pp.planID = d.paymentPlan
-	WHERE o.memType IN (1,2,3)
+	WHERE o.memType IN (2,5)
 		AND o.personNum = 1
 		AND d.email IS NOT NULL AND d.email <> \'\'
 	GROUP BY cardNo 
@@ -83,7 +82,7 @@ $comingDueQ = sprintf(
 		INNER JOIN owners AS o ON d.cardNo = o.cardNo 
 		INNER JOIN payments AS p ON p.cardNo = d.cardNo
 		INNER JOIN paymentPlans AS pp ON pp.planID = d.paymentPlan
-	WHERE o.memType IN (1,2,3)
+	WHERE o.memType = 2
 		AND o.personNum = 1
 		AND d.email IS NOT NULL AND d.email <> \'\'
 	GROUP BY cardNo
@@ -119,7 +118,7 @@ $pastDueQ = sprintf(
 		INNER JOIN owners AS o ON d.cardNo = o.cardNo 
 		INNER JOIN payments AS p ON p.cardNo = d.cardNo
 		INNER JOIN paymentPlans AS pp ON pp.planID = d.paymentPlan
-	WHERE o.memType IN (1,2,3)
+	WHERE o.memType IN (2,5)
 		AND o.personNum = 1
 		AND d.email IS NOT NULL AND d.email <> \'\'
 	GROUP BY cardNo
