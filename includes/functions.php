@@ -55,7 +55,7 @@ if (!function_exists('escape_data')) {
 	}
 }
 
-function cometMail($to, $from, $subject, $body, $type = 'system') {
+function cometMail($mail, $type) {
 	require_once(__DIR__ . '/config.php');
 	require_once('Mail.php');
 
@@ -69,10 +69,6 @@ function cometMail($to, $from, $subject, $body, $type = 'system') {
 		$pass = $_SESSION['smtpPass'];
 	}
 
-	$headers = array ('From' => $from,
-	  'To' => $to,
-	  'Subject' => $subject);
-
 	$smtp = Mail::factory(
 		'smtp',
 		array (
@@ -82,15 +78,28 @@ function cometMail($to, $from, $subject, $body, $type = 'system') {
 		    'password' => $pass
 		)
 	);
+	
+	$count = 0;
+	
+	foreach ($mail AS $eMail) {
+		$headers = array(
+			'From' => $eMail['from'],
+		  	'To' => $eMail['to'],
+		  	'Subject' => $eMail['subject']
+		);
 
-	$mail = $smtp->send($to, $headers, $body);
+		$mail = $smtp->send($eMail['to'], $headers, $eMail['body']);
 
-	if (PEAR::isError($mail) && $type == 'system') {
-		echo '<blink>' . $mail->getMessage() . '</blink>';
-	} elseif (PEAR::isError($mail) && $type == 'reminder') {
-		return $mail->getMessage();
-	} else {
-		return 0;
+		if (PEAR::isError($mail) && $type == 'system') {
+			echo '<blink>' . $mail->getMessage() . '</blink>';
+		} elseif (PEAR::isError($mail) && $type == 'reminder') {
+			echo $mail->getMessage() . "\n";
+			$count = $count;
+		} else {
+			$count++;
+		}
 	}
+	
+	return $count;
 }
 ?>

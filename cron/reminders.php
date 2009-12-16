@@ -37,6 +37,8 @@ $to = ' <mlitteken@gmail.com>';
 $search = array('[firstName]', '[lastName]', '[dueDate]', '[balance]', '[paymentPlan]');
 $count = 0;
 
+$reminders = array();
+
 // First inactives...owners who will be made inactive...
 $inactiveQ = sprintf(
 	'SELECT d.email, o.firstName, o.lastName, d.sharePrice, pp.amount, SUM(p.amount), 
@@ -47,6 +49,7 @@ $inactiveQ = sprintf(
 		INNER JOIN paymentPlans AS pp ON pp.planID = d.paymentPlan
 	WHERE o.memType IN (1,2,3)
 		AND o.personNum = 1
+		AND d.email IS NOT NULL AND d.email <> \'\'
 	GROUP BY cardNo 
 		HAVING diff >= %u', $_SESSION['inactiveDays']);
 $inactiveR = mysqli_query($DBS['comet'], $inactiveQ);
@@ -61,16 +64,15 @@ while (list($email, $first, $last, $sPrice, $planAmount, $paid, $nextDue, $daysL
 	$replace = array($first, $last, $nextDue, '$' . number_format($sPrice-$paid, 2), '$' . $planAmount);
 	$newTo = $first . ' ' . $last . $to;
 	$body = str_replace($search, $replace, $inactiveMsg);
-	echo $body . "\n";
 	
-	$return = cometMail($newTo, $from, $inactiveSubject, $body, $type = 'reminder');
-	
-	if ($return == 0) {
-		$count++;
-		echo "Successfully sent inactive email #$count\n";
-	} else {
-		echo $return;
-	}
+	$reminders[] = array(
+		'to' => $newTo, 
+		'from' => $from, 
+		'subject' => $inactiveSubject, 
+		'body' => $body
+		);
+		
+	$count++;
 }
 		
 // Then coming due...reminder that they should make a payment...
@@ -83,6 +85,7 @@ $comingDueQ = sprintf(
 		INNER JOIN paymentPlans AS pp ON pp.planID = d.paymentPlan
 	WHERE o.memType IN (1,2,3)
 		AND o.personNum = 1
+		AND d.email IS NOT NULL AND d.email <> \'\'
 	GROUP BY cardNo
 		HAVING diff = -%u', $_SESSION['comingDueDays']);
 $comingDueR = mysqli_query($DBS['comet'], $comingDueQ);
@@ -97,16 +100,15 @@ while (list($email, $first, $last, $sPrice, $planAmount, $paid, $nextDue, $daysL
 	$replace = array($first, $last, $nextDue, '$' . number_format($sPrice-$paid, 2), '$' . $planAmount);
 	$newTo = $first . ' ' . $last . $to;
 	$body = str_replace($search, $replace, $comingDueMsg);
-	echo $body . "\n";
 	
-	$return = cometMail($newTo, $from, $comingDueSubject, $body, $type = 'reminder');
-	
-	if ($return == 0) {
-		$count++;
-		echo "Successfully sent coming due email #$count\n";
-	} else {
-		echo $return;
-	}
+	$reminders[] = array(
+		'to' => $newTo, 
+		'from' => $from, 
+		'subject' => $comingDueSubject, 
+		'body' => $body
+		);
+		
+	$count++;
 }
 
 // Then past due...reminder that they will be put on hold...
@@ -119,6 +121,7 @@ $pastDueQ = sprintf(
 		INNER JOIN paymentPlans AS pp ON pp.planID = d.paymentPlan
 	WHERE o.memType IN (1,2,3)
 		AND o.personNum = 1
+		AND d.email IS NOT NULL AND d.email <> \'\'
 	GROUP BY cardNo
 		HAVING diff = %u', $_SESSION['pastDueDays']);
 $pastDueR = mysqli_query($DBS['comet'], $pastDueQ);
@@ -133,16 +136,22 @@ while (list($email, $first, $last, $sPrice, $planAmount, $paid, $nextDue, $daysL
 	$replace = array($first, $last, $nextDue, '$' . number_format($sPrice-$paid, 2), '$' . $planAmount);
 	$newTo = $first . ' ' . $last . $to;
 	$body = str_replace($search, $replace, $pastDueMsg);
-	echo $body . "\n";
 	
-	$return = cometMail($newTo, $from, $pastDueSubject, $body, $type = 'reminder');
-	
-	if ($return == 0) {
-		$count++;
-		echo "Successfully sent past due email #$count\n";
-	} else {
-		echo $return;
-	}
+	$reminders[] = array(
+		'to' => $newTo, 
+		'from' => $from, 
+		'subject' => $pastDueSubject, 
+		'body' => $body
+		);
+		
+	$count++;
 }
+
+$mailed = cometMail($reminders, 'reminder');
+
+if ($mailed == $count)
+	echo "Success, $count reminder mails sent.";
+else
+	echo "Failure, only $mailed send of $count attempts.";
 	
 ?>
