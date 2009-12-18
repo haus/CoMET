@@ -88,7 +88,7 @@ if (isset($_SESSION['level'])) {
 		echo '<tr class="center">
 				<td><input type="image" src="includes/images/plus-8.png" name="pmtSubmit" id="pmtSubmit" /></td>
 				<td><input type="text" name="date" id="pmtDatepicker" size="10" maxlength="10" /></td>
-				<td>$<input type="text" name="amount" id="pmtAmount" size="5" maxlength="6" value="' . number_format($defaultAmount, 2) . '" /></td>
+				<td>$<input type="text" name="amount" id="pmtAmount" size="5" maxlength="7" value="' . number_format($defaultAmount, 2) . '" /></td>
 				<td><input type="text" name="memo" id="pmtMemo" size="35" maxlength="50" /></td>
 				<td><input type="text" name="ref" id="pmtReference" size="10" maxlength="20" /></td>
 			</tr>
