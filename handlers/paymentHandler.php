@@ -64,9 +64,7 @@ if (isset($_SESSION['level'])) {
 		$total = (is_null($total) ? 0 : $total);
 		$sPrice = (is_null($sPrice) ? $_SESSION['sharePrice'] : $sPrice);
 		
-		if ($amount < 0) {
-			echo '{ "errorMsg" : "A non-positive payment is not okay." }';
-		} elseif (($sPrice - $total) >= $amount) { // The payment won't overpay the share. Good to go.
+		if (($sPrice - $total) >= $amount) { // The payment won't overpay the share. Good to go.
 			$paymentQ = sprintf("INSERT INTO payments VALUES (NULL, %s, %f, '%s', %s, %u, %u)",
 				(empty($memo) ? 'NULL' : "'" . $memo . "'"),
 				$amount,
