@@ -106,7 +106,7 @@ if (isset($_SESSION['level'])) {
 				// Details then owners.
 				$detailsQ = sprintf(
 					"INSERT INTO raw_details VALUES 
-						(%u, '%s', '%s', '%s', '%s', %u, '%s', false, NULL, %u, '%s', %s, curdate(), NULL, '%s', NULL)", 
+						(%u, '%s', '%s', '%s', '%s', %u, '%s', %u, NULL, %u, '%s', %s, curdate(), NULL, '%s', NULL)", 
 						$_SESSION['cardNo'], 
 						escape_data($DBS['comet'], $_POST['address']),
 						$phone,
@@ -114,6 +114,7 @@ if (isset($_SESSION['level'])) {
 						escape_data($DBS['comet'], $_POST['state']),
 						$zip,
 						escape_data($DBS['comet'], $_POST['email']),
+						(isset($_POST['noMail']) ? 1 : 0),
 						$plan,
 						$joinDate,
 						$sharePrice,
@@ -155,14 +156,15 @@ if (isset($_SESSION['level'])) {
 				$zip = ereg_replace("[^0-9]", "", escape_data($DBS['comet'], $_POST['zip']));
 			
 				$detailsQ = sprintf( // If this returns a record, there have been no changes.
-					"SELECT * FROM details WHERE cardNo=%u AND address='%s' AND phone='%s' AND city='%s' AND state='%s' AND zip=%u AND email='%s'", 
+					"SELECT * FROM details WHERE cardNo=%u AND address='%s' AND phone='%s' AND city='%s' AND state='%s' AND zip=%u AND email='%s' AND noMail=%u", 
 						$_SESSION['cardNo'], 
 						escape_data($DBS['comet'], $_POST['address']),
 						$phone,
 						escape_data($DBS['comet'], $_POST['city']),
 						escape_data($DBS['comet'], $_POST['state']),
 						$zip,
-						escape_data($DBS['comet'], $_POST['email'])
+						escape_data($DBS['comet'], $_POST['email']),
+						(isset($_POST['noMail']) ? 1 : 0)
 					);
 				$detailsR = mysqli_query($DBS['comet'], $detailsQ);
 			
@@ -177,7 +179,7 @@ if (isset($_SESSION['level'])) {
 					if ($detailsUpdateR) {
 						$detailsInsertQ = sprintf(
 							"INSERT INTO raw_details VALUES 
-								(%u, '%s', '%s', '%s', '%s', %u, '%s', false, NULL, 1, curdate(), %s, curdate(), NULL, '%s', NULL)", 
+								(%u, '%s', '%s', '%s', '%s', %u, '%s', %u, NULL, 1, curdate(), %s, curdate(), NULL, '%s', NULL)", 
 								$_SESSION['cardNo'], 
 								escape_data($DBS['comet'], $_POST['address']),
 								$phone,
@@ -185,6 +187,7 @@ if (isset($_SESSION['level'])) {
 								escape_data($DBS['comet'], $_POST['state']),
 								$zip,
 								escape_data($DBS['comet'], $_POST['email']),
+								(isset($_POST['noMail']) ? 1 : 0),
 								$_SESSION['sharePrice'],
 								$_SESSION['userID']
 							);

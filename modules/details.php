@@ -94,11 +94,14 @@ if (isset($_SESSION['level'])) {
 				$('#detailsForm :input').change(function() {
 					triggerChange();
 					});
+				$('#detailsForm :checkbox').click(function() {
+					triggerChange();
+					});
 			}
 		);
 	</script>
 	<?php
-	$memDetailsQ = "SELECT address, phone, city, state, zip, phone, email
+	$memDetailsQ = "SELECT address, phone, city, state, zip, phone, email, noMail
 	 	FROM details WHERE cardNo = {$_SESSION['cardNo']} LIMIT 1";
 	$memDetailsR = mysqli_query($DBS['comet'], $memDetailsQ);
 
@@ -106,7 +109,7 @@ if (isset($_SESSION['level'])) {
 		printf('Query: %s, Error: %s', $memDetailsQ, mysqli_error($DBS['comet']));
 	} else {
 	//	echo '<script type="text/javascript">alert(' . "'hi'" . ');</script>';
-		list($address, $phone, $city, $state, $zip, $phone, $email) = mysqli_fetch_row($memDetailsR);
+		list($address, $phone, $city, $state, $zip, $phone, $email, $noMail) = mysqli_fetch_row($memDetailsR);
 	}
 	
 	$state = (is_null($state) ? $_SESSION['defaultState'] : $state);
@@ -116,13 +119,16 @@ if (isset($_SESSION['level'])) {
 			<label for="address">Address </label>
 			<textarea name="address" rows="2" cols="60">%s</textarea>
 		</span>
+		<span class="check">
+			<label for="noMail">No Mail <input type="checkbox" name="noMail" %s /></label>
+		</span>
 		<span class="city newline">
 			<label for="city">City </label>
 			<input type="text" name="city" size="20" maxlength="50" value="%s" />
 		</span>
 		<span class="state">
 			<label for="state">State </label>
-			<select name="state" id="state">', $address, $city);
+			<select name="state" id="state">', $address, ($noMail == 1 ? 'checked="checked"' : NULL), $city);
 	foreach ($state_list AS $abrev => $name)
 		printf('<option value="%s"%s>%s</option>' . "\n", $abrev, ($abrev == $state ? ' selected="selected"' : ''), $name);
 	printf('</select>
