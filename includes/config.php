@@ -66,6 +66,27 @@ $DBS['is4c_log'] = @mysqli_connect(
 		$_SESSION['logDB']
 	);
 
+// Mail Queue Config Options
+// options for storing the messages
+// type is the container used, currently there are 'creole', 'db', 'mdb' and 'mdb2' available
+$_SESSION['queue_db'] = array(
+	"type" => "mdb2",
+	"dsn" => sprintf("mysqli://%s:%s@%s/%s", $_SESSION['DB']['user'], $_SESSION['DB']['password'], $_SESSION['DB']['host'], $_SESSION['DB']['database']),
+	"mail_table" => "mail_queue"
+	);
+
+// here are the options for sending the messages themselves
+// these are the options needed for the Mail-Class, especially used for Mail::factory()
+$_SESSION['queue_options'] = array(
+	"driver" => "smtp",
+	"host" => $_SESSION['smtpHost'],
+	"port" => 25,
+	// "localhost" => "localhost"  //optional Mail_smtp parameter
+	"auth" => true,
+	"username" => $_SESSION['smtpUser'],
+	"password" => $_SESSION['smtpPass']
+	);
+
 // Pear Auth Config Info
 $_SESSION['authParams'] = array(
 	"dsn" => "mysqli://" . $_SESSION['DB']['user'] . ":" . $_SESSION['DB']['password'] . "@" . $_SESSION['DB']['host'] . "/" . $_SESSION['DB']['database'],

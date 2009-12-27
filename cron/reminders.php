@@ -61,6 +61,10 @@ if (!$inactiveR)
 
 while (list($email, $first, $last, $sPrice, $planAmount, $paid, $nextDue, $daysLate) = mysqli_fetch_row($inactiveR)) {
 	$replace = array($first, $last, $nextDue, '$' . number_format($sPrice-$paid, 2), '$' . $planAmount);
+	
+	$first = str_replace('.', '', $first);
+	$last = str_replace('.', '', $last);
+	
 	$newTo = $first . ' ' . $last . $to;
 	$body = str_replace($search, $replace, $inactiveMsg);
 	

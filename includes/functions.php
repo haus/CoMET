@@ -58,48 +58,86 @@ if (!function_exists('escape_data')) {
 function cometMail($mail, $type) {
 	require_once(__DIR__ . '/config.php');
 	require_once('Mail.php');
+	require_once('Mail/Queue.php');
 
 	$host = $_SESSION['smtpHost'];
 	
 	if ($type == 'system') {
 		$user = $_SESSION['systemUser'];
 		$pass = $_SESSION['systemPass'];
-	} elseif ($type == 'reminder') {
-		$user = $_SESSION['smtpUser'];
-		$pass = $_SESSION['smtpPass'];
-	}
-
-	$smtp = Mail::factory(
-		'smtp',
-		array (
-			'host' => $host,
-	    	'auth' => true,
-		    'username' => $user,
-		    'password' => $pass
-		)
-	);
-	
-	$count = 0;
-	
-	foreach ($mail AS $eMail) {
-		$headers = array(
-			'From' => $eMail['from'],
-		  	'To' => $eMail['to'],
-		  	'Subject' => $eMail['subject']
+		
+		$smtp = Mail::factory(
+			'smtp',
+			array (
+				'host' => $host,
+		    	'auth' => true,
+			    'username' => $user,
+			    'password' => $pass
+			)
 		);
 
-		$mail = $smtp->send($eMail['to'], $headers, $eMail['body']);
+		$count = 0;
 
-		if (PEAR::isError($mail) && $type == 'system') {
-			echo '<blink>' . $mail->getMessage() . '</blink>';
-		} elseif (PEAR::isError($mail) && $type == 'reminder') {
-			echo $mail->getMessage() . "\n";
-			$count = $count;
-		} else {
-			$count++;
+		foreach ($mail AS $eMail) {
+			$headers = array(
+				'From' => $eMail['from'],
+			  	'To' => $eMail['to'],
+			  	'Subject' => $eMail['subject']
+			);
+
+			$mail = $smtp->send($eMail['to'], $headers, $eMail['body']);
+
+			if (PEAR::isError($mail) && $type == 'system') {
+				echo '<blink>' . $mail->getMessage() . '</blink>';
+			} elseif (PEAR::isError($mail) && $type == 'reminder') {
+				echo $mail->getMessage() . "\n";
+				$count = $count;
+			} else {
+				$count++;
+			}
 		}
+
+		return $count;
+		
+	} elseif ($type == 'reminder') {
+		
+		/* we use the db_options and mail_options here */
+		$mail_queue =& new Mail_Queue($_SESSION["queue_db"], $_SESSION["queue_options"]);
+
+		$count = 0;
+
+		foreach ($mail AS $eMail) {			
+			$headers = array(
+				'From' => $eMail['from'],
+			  	'To' => $eMail['to'],
+			  	'Subject' => $eMail['subject']
+			);
+
+			/* we use Mail_mime() to construct a valid mail */
+			$mime =& new Mail_mime();
+			$mime->setTXTBody($eMail['body']);
+			$body = $mime->get();
+			$headers = $mime->headers($headers);
+
+
+			/* Put message to queue */
+			$mail_queue->put($eMail['from'], $eMail['to'], $headers, $body);
+			$count++;
+			/*
+			if (PEAR::isError($mail) && $type == 'system') {
+				echo '<blink>' . $mail->getMessage() . '</blink>';
+			} elseif (PEAR::isError($mail) && $type == 'reminder') {
+				echo $mail->getMessage() . "\n";
+				$count = $count;
+			} else {
+				$count++;
+			}
+			*/
+		}
+
+		return $count;
+		
 	}
-	
-	return $count;
+
 }
 ?>

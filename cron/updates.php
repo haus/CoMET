@@ -25,43 +25,71 @@ $baseDir = substr(__DIR__, 0, strrpos($baseDir, '/'));
 require_once($baseDir . '/includes/config.php');
 require_once($baseDir . '/includes/functions.php');
 
+/*
+	// First update the old row.
+	$ownerUpdateQ = sprintf("UPDATE raw_owners SET endDate=curdate() WHERE cardNo=%u AND personNum=%u AND endDate IS NULL",
+		$_SESSION['cardNo'],
+		$personNum
+	);
+	$ownerUpdateR = mysqli_query($DBS['comet'], $ownerUpdateQ);
+
+	if ($ownerUpdateR) {
+		// Then insert the new row.
+		
+		$ownerInsertQ = sprintf("INSERT INTO raw_owners (
+			SELECT cardNo, personNum, firstName, lastName, %u, %u, staff, chargeOk, writeChecks, curdate(), NULL, %u, NULL
+				FROM raw_owners
+				WHERE cardNo=%u AND DATE(endDate) = curdate() AND personNum = %u GROUP BY cardNo, personNum HAVING MAX(endDate))",
+				$newDisc, $newMemType, $_SESSION['userID'], $_SESSION['cardNo'], $personNum
+		);
+		$ownerInsertR = mysqli_query($DBS['comet'], $ownerInsertQ);
+
+		if ($ownerInsertR) {
+			
+		} else {
+			echo '{ "errorMsg": "failure on ' . $personNum . ' inserted" }';
+		}
+	}
+*/
+
 // First people on hold...owners who will be put on hold...
-// Move to memtype of 5.
-$onHoldQ = "SELECT d.cardNo
+// Move to memtype of 5. Update discount, check for staff of 1 or 5.
+$onHoldQ = sprintf("SELECT d.cardNo, COUNT(personNum)
 	FROM owners AS o 
 		INNER JOIN details AS d ON o.cardNo = d.cardNo 
-	WHERE TIMESTAMPDIFF(DAY, d.nextPayment, curdate()) BETWEEN 30 and 269 
+	WHERE TIMESTAMPDIFF(DAY, d.nextPayment, curdate()) BETWEEN 30 AND %u 
 		AND o.memType = 2
-	GROUP BY d.cardNo";
+	GROUP BY d.cardNo", $_SESSION['inactiveDays'] - 1);
 $onHoldR = mysqli_query($DBS['comet'], $onHoldQ);
 
 if (!$onHoldR) printf('Error: %s, Query: %s', mysqli_error($DBS['comet']), $onHoldQ);
 
+echo 'On Hold' . "\n";
+while (list($cardNo, $count) = mysqli_fetch_row($onHoldR)) {
+	// First update the latest entry...
+	$updateQ = "";
+	
+	// Then insert the new entries...
+	$insertQ = "";
+	echo "$cardNo - $count\n";
+}
 
 // Then inactives...owners who will be made inactive...
-// Move to memtype of 3
-$inactiveQ = sprintf(
-	'SELECT d.email, o.firstName, o.lastName, d.sharePrice, pp.amount, SUM(p.amount), 
-		DATE_FORMAT(nextPayment, \'%%M %%e, %%Y\'), TIMESTAMPDIFF(DAY, nextPayment, curdate()) AS diff, o.cardNo 
-	FROM details AS d 
-		INNER JOIN owners AS o ON d.cardNo = o.cardNo 
-		INNER JOIN payments AS p ON p.cardNo = d.cardNo
-		INNER JOIN paymentPlans AS pp ON pp.planID = d.paymentPlan
-	WHERE o.memType IN (2,5)
-		AND o.personNum = 1
-		AND d.email IS NOT NULL AND d.email <> \'\'
-	GROUP BY cardNo 
-		HAVING diff >= %u', $_SESSION['inactiveDays']);
+// Move to memtype of 3. Update discount, check for staff of 1 or 5.
+$inactiveQ = sprintf("SELECT d.cardNo, COUNT(personNum)
+	FROM owners AS o 
+		INNER JOIN details AS d ON o.cardNo = d.cardNo
+	WHERE TIMESTAMPDIFF(DAY, d.nextPayment, curdate()) >= %u
+		AND o.memType IN (2,5)
+	GROUP BY d.cardNo", $_SESSION['inactiveDays']);
 $inactiveR = mysqli_query($DBS['comet'], $inactiveQ);
 
-$inactiveMsg = $_SESSION['inactiveMsg'];
-$inactiveSubject = $_SESSION['inactiveSubject'];
+if (!$inactiveR) printf('Error: %s, Query: %s', mysqli_error($DBS['comet']), $inactiveQ);
 
-if (!$inactiveR)
-	printf('Error: %s, Query: %s', mysqli_error($DBS['comet']), $inactiveQ);
-
-while (list($email, $first, $last, $sPrice, $planAmount, $paid, $nextDue, $daysLate) = mysqli_fetch_row($inactiveR)) {
-	$replace = array($first, $last, $nextDue, '$' . number_format($sPrice-$paid, 2), '$' . $planAmount);
+echo 'Inactive' . "\n";	
+while (list($cardNo, $count) = mysqli_fetch_row($inactiveR)) {
+	$updateQ = "";
 	
+	echo "$cardNo - $count\n";
 }
 ?>
