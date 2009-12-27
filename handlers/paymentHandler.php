@@ -31,7 +31,30 @@ if (isset($_SESSION['level'])) {
 	if (isset($_POST['amount'])) $amount = escape_data($DBS['comet'], $_POST['amount']);
 
 	// Validate the data a bit.
-	if (isset($_POST['removeID']) && is_numeric($_POST['removeID'])) {
+	if (isset($_POST['value']) && isset($_POST['id'])) {
+		$paymentID = (int) $_POST['id'];
+		// Get information about the payment to be edited
+		$paymentQ = sprintf("SELECT memo FROM payments WHERE paymentID=%u", $paymentID);
+		$paymentR = mysqli_query($DBS['comet'], $paymentQ);
+		
+		if (!$paymentR) printf('Query: %s, Error: %s', $paymentQ, mysqli_error($DBS['comet']));
+		
+		list($oldValue) = mysqli_fetch_row($paymentR);
+		
+		// Check the level of the current user. If the user wrote the note or is of level 4 or greater, edit the note.
+		if ($oldValue != $_POST['value']) {
+			$updateQ = sprintf("UPDATE payments SET memo = '%s', userID=%u WHERE paymentID = %u",
+				escape_data($DBS['comet'], $_POST['value']), $_SESSION['userID'], $paymentID);
+			$updateR = mysqli_query($DBS['comet'], $updateQ);
+			
+			if (!$updateR) printf('Query: %s, Error: %s', $updateQ, mysqli_error($DBS['comet']));
+			else {
+				echo $_POST['value'];
+			}
+		} else {
+			echo $oldValue;
+		}
+	} elseif (isset($_POST['removeID']) && is_numeric($_POST['removeID'])) {
 		$paymentQ = sprintf("DELETE FROM payments WHERE paymentID=%u LIMIT 1",
 			escape_data($DBS['comet'], $_POST['removeID'])
 		);

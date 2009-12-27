@@ -40,6 +40,17 @@ session_start();
 				return true;
 			}
 	    });
+		$('.editText').editable('./handlers/paymentHandler.php',
+			{
+				style: 'display: inline',
+				onblur: 'submit',
+				select: 'true',
+				tooltip: 'Click to edit...',
+				callback: function(value, settings) {
+					$('#payments').load('./modules/payments.php');
+				}
+			}
+		);
 	});
 </script>
 <?php
@@ -78,10 +89,18 @@ if (isset($_SESSION['level'])) {
 					<td><input type="image" name="pmtRemove[]" src="includes/images/minus-8.png" onclick="%s" /></td>
 					<td>%s</td>
 					<td>$%s</td>
-					<td>%s</td>
+					<td><span class="editText" id="%s">%s</span></td>
 					<td>%s (Thickbox receipt link)</td>
-					</tr>', 'updateRemoveID(' . $id . ');', date('m/d/Y', strtotime($date)), number_format($amount, 2), $memo, $ref);
-			}
+					</tr>', 
+					'updateRemoveID(' . $id . ');', 
+					date('m/d/Y', 
+					strtotime($date)), 
+					number_format($amount, 2), 
+					$id,
+					(empty($memo) ? 'No Memo' : $memo), 
+					$ref
+				);
+		}
 	}
 
 	if (($total != $sPrice) || (is_null($total) || is_null($sPrice))) {
