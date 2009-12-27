@@ -25,8 +25,8 @@ $baseDir = substr(__DIR__, 0, strrpos($baseDir, '/'));
 require_once($baseDir . '/includes/config.php');
 require_once($baseDir . '/includes/functions.php');
 
-$from = sprintf('%s <%s>', $_SESSION['reminderFrom'], $_SESSION['reminderEmail']);
-$from = 'Matthaus Litteken <matthaus@albertagrocery.coop>';
+$from = sprintf('"%s" <%s>', $_SESSION['reminderFrom'], $_SESSION['reminderEmail']);
+$from = '"Matthaus Litteken" <matthaus@albertagrocery.coop>';
 $host = $_SESSION['smtpHost'];
 $user = $_SESSION['smtpUser'];
 $pass = $_SESSION['smtpPass'];
@@ -62,10 +62,7 @@ if (!$inactiveR)
 while (list($email, $first, $last, $sPrice, $planAmount, $paid, $nextDue, $daysLate) = mysqli_fetch_row($inactiveR)) {
 	$replace = array($first, $last, $nextDue, '$' . number_format($sPrice-$paid, 2), '$' . $planAmount);
 	
-	$first = str_replace('.', '', $first);
-	$last = str_replace('.', '', $last);
-	
-	$newTo = $first . ' ' . $last . $to;
+	$newTo = '"' . $first . ' ' . $last . '"' . $to;
 	$body = str_replace($search, $replace, $inactiveMsg);
 	
 	$reminders[] = array(
