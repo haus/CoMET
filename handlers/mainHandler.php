@@ -104,41 +104,35 @@ if (isset($_SESSION['level'])) {
 				$plan = ((isset($_POST['plan']) && is_numeric($_POST['plan']) && $_POST['plan'] > 0) ? (int) $_POST['plan'] : 1);
 				
 				// Details then owners.
-				$detailsQ = sprintf(
-					"INSERT INTO raw_details VALUES 
-						(%u, '%s', '%s', '%s', '%s', %u, '%s', %u, NULL, %u, '%s', %s, curdate(), NULL, '%s', NULL)", 
+				addDetails(
 						$_SESSION['cardNo'], 
-						escape_data($DBS['comet'], $_POST['address']),
-						$phone,
-						escape_data($DBS['comet'], $_POST['city']),
-						escape_data($DBS['comet'], $_POST['state']),
-						$zip,
-						escape_data($DBS['comet'], $_POST['email']),
+						$_POST['address'], 
+						$phone, 
+						$_POST['city'], 
+						$_POST['state'], 
+						$zip, 
+						$_POST['email'], 
 						(isset($_POST['noMail']) ? 1 : 0),
 						$plan,
 						$joinDate,
 						$sharePrice,
 						$_SESSION['userID']
 					);
-				$detailsR = mysqli_query($DBS['comet'], $detailsQ);
 				
 				for ($i = 1; $i <= $_SESSION['houseHoldSize']; $i++) {
 					if ( !empty($_POST['first'][$i]) && !empty($_POST['last'][$i]) ) {
-						$ownerQ = sprintf(
-							"INSERT INTO raw_owners VALUES 
-							(%u, %u, '%s', '%s', %u, %u, %u, %u, %u, curdate(), NULL, %u, NULL)", 
+						updateOwner(
 								$_SESSION['cardNo'], 
 								$i,
-								escape_data($DBS['comet'], $_POST['first'][$i]),
-								escape_data($DBS['comet'], $_POST['last'][$i]),
-								escape_data($DBS['comet'], $_POST['discount'][$i]),
+								$_POST['first'][$i],
+								$_POST['last'][$i],
+								$_POST['discount'][$i],
 								(isset($_POST['memType'][$i]) ? escape_data($DBS['comet'], $_POST['memType'][$i]) : 0),
 								(isset($_POST['staff'][$i]) ? escape_data($DBS['comet'], $_POST['staff'][$i]) : 0),
 								(isset($_POST['charge'][$i]) && $_POST['charge'][$i] == 'on' ? 1 : 0),
 								(isset($_POST['checks'][$i]) && $_POST['checks'][$i] == 'on' ? 1 : 0),
 								$_SESSION['userID']
 						);
-						$ownerR = mysqli_query($DBS['comet'], $ownerQ);
 					}
 				}
 				echo ' "message": "data written", ';
@@ -156,7 +150,8 @@ if (isset($_SESSION['level'])) {
 				$zip = ereg_replace("[^0-9]", "", escape_data($DBS['comet'], $_POST['zip']));
 			
 				$detailsQ = sprintf( // If this returns a record, there have been no changes.
-					"SELECT * FROM details WHERE cardNo=%u AND address='%s' AND phone='%s' AND city='%s' AND state='%s' AND zip=%u AND email='%s' AND noMail=%u", 
+					"SELECT * FROM details 
+						WHERE cardNo=%u AND address='%s' AND phone='%s' AND city='%s' AND state='%s' AND zip=%u AND email='%s' AND noMail=%u", 
 						$_SESSION['cardNo'], 
 						escape_data($DBS['comet'], $_POST['address']),
 						$phone,
@@ -170,31 +165,22 @@ if (isset($_SESSION['level'])) {
 			
 				if (mysqli_num_rows($detailsR) == 1) echo ' "message": "No changes", ';
 				else {
-					// Updating records. Two queries. One to update the old record, one to insert the new record.
-					$detailsUpdateQ = sprintf(
-						"UPDATE raw_details SET endDate=curdate() WHERE cardNo=%u AND endDate IS NULL",
-						$_SESSION['cardNo']
-						);
-					$detailsUpdateR = mysqli_query($DBS['comet'], $detailsUpdateQ);
-					if ($detailsUpdateR) {
-						$detailsInsertQ = sprintf(
-							"INSERT INTO raw_details VALUES 
-								(%u, '%s', '%s', '%s', '%s', %u, '%s', %u, NULL, 1, curdate(), %s, curdate(), NULL, '%s', NULL)", 
+					// Updating records. 
+					if (updateDetails(
 								$_SESSION['cardNo'], 
-								escape_data($DBS['comet'], $_POST['address']),
+								$_POST['address'],
 								$phone,
-								escape_data($DBS['comet'], $_POST['city']),
-								escape_data($DBS['comet'], $_POST['state']),
+								$_POST['city'],
+								$_POST['state'],
 								$zip,
-								escape_data($DBS['comet'], $_POST['email']),
+								$_POST['email'],
 								(isset($_POST['noMail']) ? 1 : 0),
-								$_SESSION['sharePrice'],
+								NULL,
+								NULL,
+								NULL,
+								NULL,
 								$_SESSION['userID']
-							);
-						$detailsInsertR = mysqli_query($DBS['comet'], $detailsInsertQ);
-					}
-				
-					if ($detailsInsertR)
+							))
 						echo ' "message": "Changes made, details updated", ';
 				
 				}
@@ -238,74 +224,47 @@ if (isset($_SESSION['level'])) {
 					$ownerNumRows = mysqli_num_rows($ownerR);
 				
 					if ($ownerNumRows1 == 0 && !empty($first) && !empty($last)) { // Adding person to card
-						$ownerInsertQ = sprintf("INSERT INTO raw_owners VALUES
-							(%u, %u, '%s', '%s', %u, %u, %u, %u, %u, curdate(), NULL, %u, NULL)",
+						if (addOwner(
 							$_SESSION['cardNo'],
 							$i,
 							$first,
 							$last,
-							escape_data($DBS['comet'], $_POST['discount'][$i]),
-							escape_data($DBS['comet'], $_POST['memType'][$i]),
-							escape_data($DBS['comet'], $_POST['staff'][$i]),
+							$_POST['discount'][$i],
+							$_POST['memType'][$i],
+							$_POST['staff'][$i],
 							(isset($_POST['charge'][$i]) && $_POST['charge'][$i] == 'on' ? 1 : 0),
 							(isset($_POST['checks'][$i]) && $_POST['checks'][$i] == 'on' ? 1 : 0),
 							$_SESSION['userID']
-						);
-						$ownerInsertR = mysqli_query($DBS['comet'], $ownerInsertQ);
-					
-						if ($ownerInsertR)
+						))
 							echo ' "message": "success ' . $i . ' added ", ';
 						else
 							echo ' "errorMsg": "error ' . $i . ' error ", '; 
 					} elseif ($ownerNumRows1 == 1 && $ownerNumRows == 0 && empty($first) && empty($last)) { // Removing person from card
-						$ownerUpdateQ = sprintf("UPDATE raw_owners SET endDate=curdate() WHERE cardNo=%u AND personNum=%u AND endDate IS NULL",
-							$_SESSION['cardNo'],
-							$i
-						);
-						$ownerUpdateR = mysqli_query($DBS['comet'], $ownerUpdateQ);
-					
-						if ($ownerUpdateR)
+						if (deleteOwner($_SESSION['cardNo'], $i))
 							echo ' "message": "success ' . $i . ' removed", ';
 						else
 							echo ' "errorMsg": "failure ' . $i . ' removed", ';
 					} elseif ($ownerNumRows1 == 1 && $ownerNumRows == 0 && !empty($first) && !empty($last)) { // Updating person on card
-						// First update the old row.
-						$ownerUpdateQ = sprintf("UPDATE raw_owners SET endDate=curdate() WHERE cardNo=%u AND personNum=%u AND endDate IS NULL",
-							$_SESSION['cardNo'],
-							$i
-						);
-						$ownerUpdateR = mysqli_query($DBS['comet'], $ownerUpdateQ);
-					
-						if ($ownerUpdateR) {
-							// Then insert the new row.
-							echo ' "message": "success ' . $i . ' updated", ';
-						
-							$ownerInsertQ = sprintf("INSERT INTO raw_owners VALUES
-								(%u, %u, '%s', '%s', %u, %u, %u, %u, %u, curdate(), NULL, %u, NULL)",
+						// Update
+						if (updateOwner(
 								$_SESSION['cardNo'],
 								$i,
 								$first,
 								$last,
-								escape_data($DBS['comet'], $_POST['discount'][$i]),
+								$_POST['discount'][$i],
 								(isset($_POST['memType'][$i]) ? escape_data($DBS['comet'], $_POST['memType'][$i]) : 0),
 								(isset($_POST['staff'][$i]) ? escape_data($DBS['comet'], $_POST['staff'][$i]) : 0),
 								(isset($_POST['charge'][$i]) && $_POST['charge'][$i] == 'on' ? 1 : 0),
 								(isset($_POST['checks'][$i]) && $_POST['checks'][$i] == 'on' ? 1 : 0),
 								$_SESSION['userID']
-							);
-							$ownerInsertR = mysqli_query($DBS['comet'], $ownerInsertQ);
-						
-							if ($ownerInsertR)
-								echo ' "message": "success ' . $i . ' inserted", ';
-							else
-								echo ' "message": "failure on ' . $i . ' inserted", ';
+							))
+							echo ' "message": "success ' . $i . ' inserted", ';
+						else
+							echo ' "message": "failure on ' . $i . ' inserted", ';
 							
-						}
 					}
 				
 				}
-			
-			
 			
 			} else { // Partially filled in. Error.
 				echo ' "errorMsg": "Partially Filled In" }';
@@ -336,13 +295,8 @@ if (isset($_SESSION['level'])) {
 	//echo '"errorMsg": "' . $navButton . '", ';
 	switch ($navButton) {
 		case 'delete':
-			$updateQ = sprintf("UPDATE raw_owners SET endDate = curdate() 
-				WHERE cardNo = %u AND personNum BETWEEN 1 and %u AND endDate IS NULL", $_SESSION['cardNo'], $_SESSION['houseHoldSize']);
-			$updateR = mysqli_query($DBS['comet'], $updateQ);
-				
-			$updateQ = sprintf("UPDATE raw_details SET endDate = curdate()
-				WHERE cardNo = %u AND endDate IS NULL", $_SESSION['cardNo']);
-			$updateR = mysqli_query($DBS['comet'], $updateQ);
+			deleteOwner($_SESSION['cardNo']);
+			deleteDetails($_SESSION['cardNo']);
 			
 			$cardQ = "SELECT cardNo FROM owners WHERE cardNo < {$_SESSION['cardNo']} ORDER BY cardNo DESC LIMIT 1";
 			$cardR = mysqli_query($DBS['comet'], $cardQ);

@@ -49,8 +49,8 @@ function addOwner($cardNo, $personNum, $firstName, $lastName, $discount, $memTyp
 		"INSERT INTO raw_owners VALUES (%u, %u, '%s', '%s', %u, %u, %u, %u, %u, curdate(), NULL, %u, NULL)",
 			$cardNo,
 			$personNum,
-			escape_data($firstName),
-			escape_data($lastName),
+			escape_data($DBS['comet'], $firstName),
+			escape_data($DBS['comet'], $lastName),
 			(int) $discount,
 			(int) $memType,
 			(int) $staff,
@@ -83,6 +83,7 @@ function addOwner($cardNo, $personNum, $firstName, $lastName, $discount, $memTyp
  */
 function updateOwner($cardNo, $personNum, $firstName, $lastName, $discount, $memType, $staff, $chargeOk, $writeChecks, $userID) {
 	global $DBS;
+	
 	$updateQ = sprintf(
 		"UPDATE raw_owners SET endDate=curdate() WHERE cardNo=%u AND personNum=%u AND endDate IS NULL", 
 		$cardNo, $personNum
@@ -95,9 +96,11 @@ function updateOwner($cardNo, $personNum, $firstName, $lastName, $discount, $mem
 			"INSERT INTO raw_owners (
 			SELECT cardNo, personNum, %s, %s, %u, %u, %u, %u, %u, curdate(), NULL, %u, NULL
 				FROM raw_owners
-				WHERE cardNo=%u AND DATE(endDate) = curdate() AND personNum = %u GROUP BY cardNo, personNum HAVING MAX(endDate))",
-				(is_null($firstName) ? 'firstName' : escape_data($firstName)),
-				(is_null($lastName) ? 'lastName' : escape_data($lastName)),
+					WHERE cardNo=%u AND personNum = %u
+				ORDER BY id DESC
+				LIMIT 1)",
+				(is_null($firstName) ? 'firstName' : "'" . escape_data($DBS['comet'], $firstName) . "'"),
+				(is_null($lastName) ? 'lastName' : "'" . escape_data($DBS['comet'], $lastName) . "'"),
 				(is_null($discount) ? 'discount' : (int) $discount),
 				(is_null($memType) ? 'memType' : (int) $memType),
 				(is_null($staff) ? 'staff' : (int) $staff),
@@ -118,12 +121,141 @@ function updateOwner($cardNo, $personNum, $firstName, $lastName, $discount, $mem
 	}	
 }
 
-function addDetails() {
+function deleteOwner($cardNo, $personNum = NULL) {
+	global $DBS;
+	
+	$deleteQ = sprintf("UPDATE raw_owners SET endDate=curdate() WHERE cardNo=%u %s AND endDate IS NULL",
+		$cardNo,
+		(is_null($personNum) ? NULL : "AND personNum = $personNum")
+	);
+	
+	$deleteR = mysqli_query($DBS['comet'], $deleteQ);
+	
+	if ($deleteR)
+		return true;
+	else
+		return false;
+}
+
+/**
+ * addDetails function: Inserts details for a record into the database. Returns true on success, false on failure.
+ * @param integer $cardNo cardNo of the record to be inserted
+ * @param string $address Address of the record to be inserted. Is sanitized by escape_data.
+ * @param string $phone Phone number of the record to be inserted.
+ * @param string $city City of the record to be inserted. Is sanitized by escape_data.
+ * @param string $state State of the record to be inserted. Is sanitized by escape_data.
+ * @param string $zip Zip code of the record to be inserted.
+ * @param string $email Email address of the record to be inserted. Is sanitized by escape_data.
+ * @param boolean $noMail No mail boolean of the record to be inserted. Is cast to an integer.
+ * @param integer $plan Payment plan of the record to be inserted. Is cast to an integer.
+ * @param date $joinDate Join date for the record to be inserted.
+ * @param decimal $sharePrice Share price for the record to be inserted.
+ * @param integer $userID User ID of the user who added the record
+ * @return boolean true on success, false on failure
+ */
+function addDetails($cardNo, $address, $phone, $city, $state, $zip, $email, $noMail, $plan, $joinDate, $sharePrice, $userID) {
+	global $DBS;
+	
+	$insertQ = sprintf(
+		"INSERT INTO raw_details VALUES (%u, '%s', '%s', '%s', '%s', %u, '%s', %u, NULL, %u, '%s', %s, curdate(), NULL, %u, NULL)", 
+			$cardNo, 
+			escape_data($DBS['comet'], $address),
+			$phone,
+			escape_data($DBS['comet'], $city),
+			escape_data($DBS['comet'], $state),
+			$zip,
+			escape_data($DBS['comet'], $email),
+			(int) $noMail,
+			(int) $plan,
+			$joinDate,
+			$sharePrice,
+			$userID
+		);
+	
+	$insertR = mysqli_query($DBS['comet'], $insertQ);
+	
+	if ($insertR)
+		return true;
+	else
+		return false;
+
+}
+
+/**
+* updateDetails function: Updates the details for a record in the database then inserts the updated record. 
+* Returns true on success, false on failure.
+* @param integer $cardNo cardNo of the record to be inserted
+* @param string $address Address of the record to be inserted. Is sanitized by escape_data. If null, old value is used.
+* @param string $phone Phone number of the record to be inserted. If null, old value is used.
+* @param string $city City of the record to be inserted. Is sanitized by escape_data. If null, old value is used.
+* @param string $state State of the record to be inserted. Is sanitized by escape_data. If null, old value is used.
+* @param string $zip Zip code of the record to be inserted. If null, old value is used.
+* @param string $email Email address of the record to be inserted. Is sanitized by escape_data. If null, old value is used.
+* @param boolean $noMail No mail boolean of the record to be inserted. Is cast to an integer. If null, old value is used.
+* @param date $nextDue Next payment due date for the record to be inserted. If null, old value is used.
+* @param integer $plan Payment plan of the record to be inserted. Is cast to an integer. If null, old value is used.
+* @param date $joinDate Join date for the record to be inserted. If null, old value is used.
+* @param decimal $sharePrice Share price for the record to be inserted. If null, old value is used.
+* @param integer $userID User ID of the user who added the record
+* @return boolean true on success, false on failure
+*/
+function updateDetails($cardNo, $address, $phone, $city, $state, $zip, $email, $noMail, $nextDue, $plan, $joinDate, $sharePrice, $userID) {
+	global $DBS;
+	
+	$updateQ = sprintf(
+		"UPDATE raw_details SET endDate=curdate() WHERE cardNo=%u AND endDate IS NULL", 
+		$cardNo
+		);
+	$updateR = mysqli_query($DBS['comet'], $updateQ);
+	
+	if ($updateR) {
+		$insertQ = sprintf(
+			"INSERT INTO raw_details (
+				SELECT cardNo, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, curdate(), NULL, %s, NULL
+				FROM raw_details
+					WHERE cardNo = %u
+				ORDER BY id DESC
+				LIMIT 1)", 
+				(is_null($address) ? 'address' : "'" . escape_data($DBS['comet'], $address) . "'"),
+				(is_null($phone) ? 'phone' : "'" . $phone . "'"),
+				(is_null($city) ? 'city' : "'" . escape_data($DBS['comet'], $city) . "'"),
+				(is_null($state) ? 'state' : "'" . escape_data($DBS['comet'], $state) . "'"),
+				(is_null($zip) ? 'zip' : "'" . $zip . "'"),
+				(is_null($email) ? 'email' : "'" . escape_data($DBS['comet'], $email) . "'"),
+				(is_null($noMail) ? 'noMail' : (int) $noMail),
+				(is_null($nextDue) ? 'nextPayment' : "'" . $nextDue . "'"),
+				(is_null($plan) ? 'paymentPlan' : (int) $plan),
+				(is_null($joinDate) ? 'joined' : "'" . $joinDate . "'"),
+				(is_null($sharePrice) ? 'sharePrice' : "'" . $sharePrice . "'"),
+				$userID,
+				$cardNo
+			);
+	
+		$insertR = mysqli_query($DBS['comet'], $insertQ);
+	
+		if ($insertR)
+			return true;
+		else
+			return false;
+	} else {
+		return false;
+	}
 	
 }
 
-function updateDetails() {
+function deleteDetails($cardNo) {
+	global $DBS;
 	
+	$deleteQ = sprintf("UPDATE raw_details SET endDate=curdate() WHERE cardNo=%u AND endDate IS NULL",
+		$cardNo
+	);
+	
+	$deleteR = mysqli_query($DBS['comet'], $deleteQ);
+	
+	if ($deleteR)
+		return true;
+	else
+		return false;
 }
 
 /**
@@ -141,7 +273,12 @@ if (!function_exists('escape_data')) {
 	}
 }
 
-
+/**
+ * cometMail function: sends or queues an array of mails of the specified type. Returns the number of mails successfully sent or queued
+ * @param array $mail An array of mail messages. Each mail has keys for from, to, subject, and body.
+ * @param string $type A type for the mail. If it is reminder, the mails are sent to a queue. If it is system, it is sent immediately.
+ * @return integer The number of emails successfully sent or queued.
+*/
 function cometMail($mail, $type) {
 	require_once(__DIR__ . '/config.php');
 	require_once('Mail.php');
@@ -210,16 +347,6 @@ function cometMail($mail, $type) {
 			/* Put message to queue */
 			$mail_queue->put($eMail['from'], $eMail['to'], $headers, $body);
 			$count++;
-			/*
-			if (PEAR::isError($mail) && $type == 'system') {
-				echo '<blink>' . $mail->getMessage() . '</blink>';
-			} elseif (PEAR::isError($mail) && $type == 'reminder') {
-				echo $mail->getMessage() . "\n";
-				$count = $count;
-			} else {
-				$count++;
-			}
-			*/
 		}
 
 		return $count;
