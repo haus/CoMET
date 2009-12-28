@@ -87,8 +87,8 @@ if (isset($_SESSION['level'])) {
 			} elseif ($details && $owner) { // Something to write, check for bad secondary owner rows
 				checkPost(); // Will kill the script if there are errors.
 				echo ' "message": "data written", ';
-				$phone = ereg_replace("[^0-9]", "", escape_data($DBS['comet'], $_POST['phone']));
-				$zip = ereg_replace("[^0-9]", "", escape_data($DBS['comet'], $_POST['zip']));
+				$phone = ereg_replace("[^0-9]", "", escapeData($DBS['comet'], $_POST['phone']));
+				$zip = ereg_replace("[^0-9]", "", escapeData($DBS['comet'], $_POST['zip']));
 				
 				// Join Date Validation
 				$joinMonth = (isset($_POST['joinDate']) ? (int) substr($_POST['joinDate'], 5, 2) : 0);
@@ -127,8 +127,8 @@ if (isset($_SESSION['level'])) {
 								$_POST['first'][$i],
 								$_POST['last'][$i],
 								$_POST['discount'][$i],
-								(isset($_POST['memType'][$i]) ? escape_data($DBS['comet'], $_POST['memType'][$i]) : 0),
-								(isset($_POST['staff'][$i]) ? escape_data($DBS['comet'], $_POST['staff'][$i]) : 0),
+								(isset($_POST['memType'][$i]) ? escapeData($DBS['comet'], $_POST['memType'][$i]) : 0),
+								(isset($_POST['staff'][$i]) ? escapeData($DBS['comet'], $_POST['staff'][$i]) : 0),
 								(isset($_POST['charge'][$i]) && $_POST['charge'][$i] == 'on' ? 1 : 0),
 								(isset($_POST['checks'][$i]) && $_POST['checks'][$i] == 'on' ? 1 : 0),
 								$_SESSION['userID']
@@ -146,19 +146,19 @@ if (isset($_SESSION['level'])) {
 				exit();
 			} elseif ($details && $owner) { // Mostly filled in. Check secondary owner rows.
 				checkPost(); // Will kill the script if there are errors.
-				$phone = ereg_replace("[^0-9]", "", escape_data($DBS['comet'], $_POST['phone']));
-				$zip = ereg_replace("[^0-9]", "", escape_data($DBS['comet'], $_POST['zip']));
+				$phone = ereg_replace("[^0-9]", "", escapeData($DBS['comet'], $_POST['phone']));
+				$zip = ereg_replace("[^0-9]", "", escapeData($DBS['comet'], $_POST['zip']));
 			
 				$detailsQ = sprintf( // If this returns a record, there have been no changes.
 					"SELECT * FROM details 
 						WHERE cardNo=%u AND address='%s' AND phone='%s' AND city='%s' AND state='%s' AND zip=%u AND email='%s' AND noMail=%u", 
 						$_SESSION['cardNo'], 
-						escape_data($DBS['comet'], $_POST['address']),
+						escapeData($DBS['comet'], $_POST['address']),
 						$phone,
-						escape_data($DBS['comet'], $_POST['city']),
-						escape_data($DBS['comet'], $_POST['state']),
+						escapeData($DBS['comet'], $_POST['city']),
+						escapeData($DBS['comet'], $_POST['state']),
 						$zip,
-						escape_data($DBS['comet'], $_POST['email']),
+						escapeData($DBS['comet'], $_POST['email']),
 						(isset($_POST['noMail']) ? 1 : 0)
 					);
 				$detailsR = mysqli_query($DBS['comet'], $detailsQ);
@@ -196,8 +196,8 @@ if (isset($_SESSION['level'])) {
 					$ownerR1 = mysqli_query($DBS['comet'], $ownerQ1);
 					$ownerNumRows1 = mysqli_num_rows($ownerR1);
 
-					$first = escape_data($DBS['comet'], $_POST['first'][$i]);
-					$last = escape_data($DBS['comet'], $_POST['last'][$i]);
+					$first = escapeData($DBS['comet'], $_POST['first'][$i]);
+					$last = escapeData($DBS['comet'], $_POST['last'][$i]);
 				
 					$ownerQ = sprintf("SELECT * FROM owners WHERE 
 						cardNo=%u AND 
@@ -213,9 +213,9 @@ if (isset($_SESSION['level'])) {
 						$first,
 						$last,
 						$i,
-						escape_data($DBS['comet'], $_POST['discount'][$i]),
-						(isset($_POST['memType'][$i]) ? escape_data($DBS['comet'], $_POST['memType'][$i]) : 0),
-						(isset($_POST['staff'][$i]) ? escape_data($DBS['comet'], $_POST['staff'][$i]) : 0),
+						escapeData($DBS['comet'], $_POST['discount'][$i]),
+						(isset($_POST['memType'][$i]) ? escapeData($DBS['comet'], $_POST['memType'][$i]) : 0),
+						(isset($_POST['staff'][$i]) ? escapeData($DBS['comet'], $_POST['staff'][$i]) : 0),
 						(isset($_POST['charge'][$i]) && $_POST['charge'][$i] == 'on' ? 1 : 0),
 						(isset($_POST['checks'][$i]) && $_POST['checks'][$i] == 'on' ? 1 : 0)
 					);
@@ -252,8 +252,8 @@ if (isset($_SESSION['level'])) {
 								$first,
 								$last,
 								$_POST['discount'][$i],
-								(isset($_POST['memType'][$i]) ? escape_data($DBS['comet'], $_POST['memType'][$i]) : 0),
-								(isset($_POST['staff'][$i]) ? escape_data($DBS['comet'], $_POST['staff'][$i]) : 0),
+								(isset($_POST['memType'][$i]) ? escapeData($DBS['comet'], $_POST['memType'][$i]) : 0),
+								(isset($_POST['staff'][$i]) ? escapeData($DBS['comet'], $_POST['staff'][$i]) : 0),
 								(isset($_POST['charge'][$i]) && $_POST['charge'][$i] == 'on' ? 1 : 0),
 								(isset($_POST['checks'][$i]) && $_POST['checks'][$i] == 'on' ? 1 : 0),
 								$_SESSION['userID']
@@ -278,20 +278,20 @@ if (isset($_SESSION['level'])) {
 	
 	if (isset($_POST['firstSearch']) && !empty($_POST['firstSearch'])) {
 		$_REQUEST['navButton'] = 'search';
-		$search = explode(' ', escape_data($DBS['comet'], $_POST['firstSearch']));
+		$search = explode(' ', escapeData($DBS['comet'], $_POST['firstSearch']));
 		$count = count($search);
 		$_POST['value'] = trim($search[$count-1], '[');
 		$_POST['value'] = trim($_POST['value'], ']');
 	} elseif (isset($_POST['lastSearch']) && !empty($_POST['lastSearch'])) {
 		$_REQUEST['navButton'] = 'search';
-		$search = explode(' ', escape_data($DBS['comet'], $_POST['lastSearch']));
+		$search = explode(' ', escapeData($DBS['comet'], $_POST['lastSearch']));
 		$count = count($search);
 		$_POST['value'] = trim($search[$count-1], '[');
 		$_POST['value'] = trim($_POST['value'], ']');
 	}
 
 	// Read the submit type, adjust the $_SESSION['cardNo'] and let the main.php JS handle updating the divs
-	$navButton = (isset($_REQUEST['navButton']) ? escape_data($DBS['comet'], $_REQUEST['navButton']) : NULL);
+	$navButton = (isset($_REQUEST['navButton']) ? escapeData($DBS['comet'], $_REQUEST['navButton']) : NULL);
 	//echo '"errorMsg": "' . $navButton . '", ';
 	switch ($navButton) {
 		case 'delete':

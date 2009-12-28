@@ -29,9 +29,9 @@ $allowed = array(
 	'reminderFrom', 'reminderEmail');
 
 if (isset($_POST['id']) && isset($_POST['value']) && in_array($_POST['id'], $allowed)) {
-	$id = escape_data($DBS['comet'], $_POST['id']);
+	$id = escapeData($DBS['comet'], $_POST['id']);
 	$rawValue = $_POST['value'];
-	$value = escape_data($DBS['comet'], $_POST['value']);
+	$value = escapeData($DBS['comet'], $_POST['value']);
 } else {
 	$id = NULL;
 	$value = NULL;

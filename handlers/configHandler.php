@@ -281,8 +281,8 @@ if (isset($_POST['submitted'])) {
 	$numericArray = array('houseHoldSize', 'defaultPlan', 'sharePrice', 'defaultPayment');
 
 	if (isset($_POST['id']) && isset($_POST['value']) && in_array($_POST['id'], $allowed)) {
-		$id = escape_data($DBS['comet'], $_POST['id']);
-		$value = escape_data($DBS['comet'], $_POST['value']);
+		$id = escapeData($DBS['comet'], $_POST['id']);
+		$value = escapeData($DBS['comet'], $_POST['value']);
 	} else {
 		$id = NULL;
 		$value = NULL;

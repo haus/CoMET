@@ -31,8 +31,8 @@
  * addOwner function: Inserts a new owner into the database. Returns true on success, false on failure.
  * @param integer $cardNo cardNo of the record to be inserted
  * @param integer $personNum personNum of the record to be inserted
- * @param string $firstName First name of the record to be inserted, is sanitized with escape_data
- * @param string $lastName Last name of the record to be inserted, is sanitized with escape_data
+ * @param string $firstName First name of the record to be inserted, is sanitized with escapeData
+ * @param string $lastName Last name of the record to be inserted, is sanitized with escapeData
  * @param integer $discount Discount of the record to be inserted, is cast to an integer
  * @param integer $memType Member type of the record to be inserted, is cast to an integer
  * @param integer $staff Staff level of the record to be inserted, is cast to an integer
@@ -49,8 +49,8 @@ function addOwner($cardNo, $personNum, $firstName, $lastName, $discount, $memTyp
 		"INSERT INTO raw_owners VALUES (%u, %u, '%s', '%s', %u, %u, %u, %u, %u, curdate(), NULL, %u, NULL)",
 			$cardNo,
 			$personNum,
-			escape_data($DBS['comet'], $firstName),
-			escape_data($DBS['comet'], $lastName),
+			escapeData($DBS['comet'], $firstName),
+			escapeData($DBS['comet'], $lastName),
 			(int) $discount,
 			(int) $memType,
 			(int) $staff,
@@ -71,8 +71,8 @@ function addOwner($cardNo, $personNum, $firstName, $lastName, $discount, $memTyp
  * Returns true on success, false on failure.
  * @param integer $cardNo cardNo of the record to be inserted
  * @param integer $personNum personNum of the record to be inserted
- * @param string $firstName First name of the record to be inserted, is sanitized with escape_data. If null, old value is used.
- * @param string $lastName Last name of the record to be inserted, is sanitized with escape_data. If null, old value is used.
+ * @param string $firstName First name of the record to be inserted, is sanitized with escapeData. If null, old value is used.
+ * @param string $lastName Last name of the record to be inserted, is sanitized with escapeData. If null, old value is used.
  * @param integer $discount Discount of the record to be inserted, is cast to an integer. If null, old value is used.
  * @param integer $memType Member type of the record to be inserted, is cast to an integer. If null, old value is used.
  * @param integer $staff Staff level of the record to be inserted, is cast to an integer. If null, old value is used.
@@ -99,8 +99,8 @@ function updateOwner($cardNo, $personNum, $firstName, $lastName, $discount, $mem
 					WHERE cardNo=%u AND personNum = %u
 				ORDER BY id DESC
 				LIMIT 1)",
-				(is_null($firstName) ? 'firstName' : "'" . escape_data($DBS['comet'], $firstName) . "'"),
-				(is_null($lastName) ? 'lastName' : "'" . escape_data($DBS['comet'], $lastName) . "'"),
+				(is_null($firstName) ? 'firstName' : "'" . escapeData($DBS['comet'], $firstName) . "'"),
+				(is_null($lastName) ? 'lastName' : "'" . escapeData($DBS['comet'], $lastName) . "'"),
 				(is_null($discount) ? 'discount' : (int) $discount),
 				(is_null($memType) ? 'memType' : (int) $memType),
 				(is_null($staff) ? 'staff' : (int) $staff),
@@ -147,12 +147,12 @@ function deleteOwner($cardNo, $personNum = NULL) {
 /**
  * addDetails function: Inserts details for a record into the database. Returns true on success, false on failure.
  * @param integer $cardNo cardNo of the record to be inserted
- * @param string $address Address of the record to be inserted. Is sanitized by escape_data.
+ * @param string $address Address of the record to be inserted. Is sanitized by escapeData.
  * @param string $phone Phone number of the record to be inserted.
- * @param string $city City of the record to be inserted. Is sanitized by escape_data.
- * @param string $state State of the record to be inserted. Is sanitized by escape_data.
+ * @param string $city City of the record to be inserted. Is sanitized by escapeData.
+ * @param string $state State of the record to be inserted. Is sanitized by escapeData.
  * @param string $zip Zip code of the record to be inserted.
- * @param string $email Email address of the record to be inserted. Is sanitized by escape_data.
+ * @param string $email Email address of the record to be inserted. Is sanitized by escapeData.
  * @param boolean $noMail No mail boolean of the record to be inserted. Is cast to an integer.
  * @param integer $plan Payment plan of the record to be inserted. Is cast to an integer.
  * @param date $joinDate Join date for the record to be inserted.
@@ -166,12 +166,12 @@ function addDetails($cardNo, $address, $phone, $city, $state, $zip, $email, $noM
 	$insertQ = sprintf(
 		"INSERT INTO raw_details VALUES (%u, '%s', '%s', '%s', '%s', %u, '%s', %u, NULL, %u, '%s', %s, curdate(), NULL, %u, NULL)", 
 			$cardNo, 
-			escape_data($DBS['comet'], $address),
+			escapeData($DBS['comet'], $address),
 			$phone,
-			escape_data($DBS['comet'], $city),
-			escape_data($DBS['comet'], $state),
+			escapeData($DBS['comet'], $city),
+			escapeData($DBS['comet'], $state),
 			$zip,
-			escape_data($DBS['comet'], $email),
+			escapeData($DBS['comet'], $email),
 			(int) $noMail,
 			(int) $plan,
 			$joinDate,
@@ -192,12 +192,12 @@ function addDetails($cardNo, $address, $phone, $city, $state, $zip, $email, $noM
 * updateDetails function: Updates the details for a record in the database then inserts the updated record. 
 * Returns true on success, false on failure.
 * @param integer $cardNo cardNo of the record to be inserted
-* @param string $address Address of the record to be inserted. Is sanitized by escape_data. If null, old value is used.
+* @param string $address Address of the record to be inserted. Is sanitized by escapeData. If null, old value is used.
 * @param string $phone Phone number of the record to be inserted. If null, old value is used.
-* @param string $city City of the record to be inserted. Is sanitized by escape_data. If null, old value is used.
-* @param string $state State of the record to be inserted. Is sanitized by escape_data. If null, old value is used.
+* @param string $city City of the record to be inserted. Is sanitized by escapeData. If null, old value is used.
+* @param string $state State of the record to be inserted. Is sanitized by escapeData. If null, old value is used.
 * @param string $zip Zip code of the record to be inserted. If null, old value is used.
-* @param string $email Email address of the record to be inserted. Is sanitized by escape_data. If null, old value is used.
+* @param string $email Email address of the record to be inserted. Is sanitized by escapeData. If null, old value is used.
 * @param boolean $noMail No mail boolean of the record to be inserted. Is cast to an integer. If null, old value is used.
 * @param date $nextDue Next payment due date for the record to be inserted. If null, old value is used.
 * @param integer $plan Payment plan of the record to be inserted. Is cast to an integer. If null, old value is used.
@@ -223,12 +223,12 @@ function updateDetails($cardNo, $address, $phone, $city, $state, $zip, $email, $
 					WHERE cardNo = %u
 				ORDER BY id DESC
 				LIMIT 1)", 
-				(is_null($address) ? 'address' : "'" . escape_data($DBS['comet'], $address) . "'"),
+				(is_null($address) ? 'address' : "'" . escapeData($DBS['comet'], $address) . "'"),
 				(is_null($phone) ? 'phone' : "'" . $phone . "'"),
-				(is_null($city) ? 'city' : "'" . escape_data($DBS['comet'], $city) . "'"),
-				(is_null($state) ? 'state' : "'" . escape_data($DBS['comet'], $state) . "'"),
+				(is_null($city) ? 'city' : "'" . escapeData($DBS['comet'], $city) . "'"),
+				(is_null($state) ? 'state' : "'" . escapeData($DBS['comet'], $state) . "'"),
 				(is_null($zip) ? 'zip' : "'" . $zip . "'"),
-				(is_null($email) ? 'email' : "'" . escape_data($DBS['comet'], $email) . "'"),
+				(is_null($email) ? 'email' : "'" . escapeData($DBS['comet'], $email) . "'"),
 				(is_null($noMail) ? 'noMail' : (int) $noMail),
 				(is_null($nextDue) ? 'nextPayment' : "'" . $nextDue . "'"),
 				(is_null($plan) ? 'paymentPlan' : (int) $plan),
@@ -272,18 +272,16 @@ function deleteDetails($cardNo) {
 }
 
 /**
- * escape_data function: sanitizes trimmed input using mysqli_real_escape_string, if it exists.
+ * escapeData function: sanitizes trimmed input using mysqli_real_escape_string, if it exists.
  * @param object &$connection reference to the mysqli connection to use in the escaping
  * @param string $data string/data to be escaped for safe insertion into MySQL DB.
  * @return string sanitized data ready for insertion into MySQL DB.
  */
-if (!function_exists('escape_data')) {	
-	function escape_data(&$connection, $data) {
-		if (function_exists('mysqli_real_escape_string'))
-			return mysqli_real_escape_string($connection, trim($data));
-		else
-			return trim($data);
-	}
+function escapeData(&$connection, $data) {
+	if (function_exists('mysqli_real_escape_string'))
+		return mysqli_real_escape_string($connection, trim($data));
+	else
+		return trim($data);
 }
 
 /**

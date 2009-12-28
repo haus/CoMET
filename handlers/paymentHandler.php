@@ -25,10 +25,10 @@ if (isset($_SESSION['level'])) {
 	require_once('../includes/functions.php');
 
 	// Sanitize the data.
-	if (isset($_POST['date'])) $date = escape_data($DBS['comet'], $_POST['date']);
-	if (isset($_POST['memo'])) $memo = escape_data($DBS['comet'], $_POST['memo']);
-	if (isset($_POST['reference'])) $reference = escape_data($DBS['comet'], $_POST['reference']);
-	if (isset($_POST['amount'])) $amount = escape_data($DBS['comet'], $_POST['amount']);
+	if (isset($_POST['date'])) $date = escapeData($DBS['comet'], $_POST['date']);
+	if (isset($_POST['memo'])) $memo = escapeData($DBS['comet'], $_POST['memo']);
+	if (isset($_POST['reference'])) $reference = escapeData($DBS['comet'], $_POST['reference']);
+	if (isset($_POST['amount'])) $amount = escapeData($DBS['comet'], $_POST['amount']);
 
 	// Validate the data a bit.
 	if (isset($_POST['value']) && isset($_POST['id'])) {
@@ -44,7 +44,7 @@ if (isset($_SESSION['level'])) {
 		// Check the level of the current user. If the user wrote the note or is of level 4 or greater, edit the note.
 		if ($oldValue != $_POST['value']) {
 			$updateQ = sprintf("UPDATE payments SET memo = '%s', userID=%u WHERE paymentID = %u",
-				escape_data($DBS['comet'], $_POST['value']), $_SESSION['userID'], $paymentID);
+				escapeData($DBS['comet'], $_POST['value']), $_SESSION['userID'], $paymentID);
 			$updateR = mysqli_query($DBS['comet'], $updateQ);
 			
 			if (!$updateR) printf('Query: %s, Error: %s', $updateQ, mysqli_error($DBS['comet']));
@@ -56,7 +56,7 @@ if (isset($_SESSION['level'])) {
 		}
 	} elseif (isset($_POST['removeID']) && is_numeric($_POST['removeID'])) {
 		$paymentQ = sprintf("DELETE FROM payments WHERE paymentID=%u LIMIT 1",
-			escape_data($DBS['comet'], $_POST['removeID'])
+			escapeData($DBS['comet'], $_POST['removeID'])
 		);
 	
 		$paymentR = mysqli_query($DBS['comet'], $paymentQ);

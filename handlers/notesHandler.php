@@ -26,7 +26,7 @@ if (isset($_SESSION['level'])) {
 
 	if (isset($_POST['newMain']) && $_POST['newMain'] == "true") {
 		// Validate the note.
-		$mainNote = escape_data($DBS['comet'], $_POST['mainNote']);
+		$mainNote = escapeData($DBS['comet'], $_POST['mainNote']);
 	
 		if (!empty($mainNote)) {
 			$noteQ = sprintf("INSERT INTO notes VALUES ('%s', NULL, 0, %u, now(), %u)",
@@ -47,7 +47,7 @@ if (isset($_SESSION['level'])) {
 		}
 	} elseif (isset($_POST['noteID']) && is_numeric($_POST['noteID'])) {
 		$parent = (int) $_POST['noteID'];
-		$note = escape_data($DBS['comet'], $_POST['note'][$parent]);
+		$note = escapeData($DBS['comet'], $_POST['note'][$parent]);
 	
 		if (!empty($note)) {
 			$noteQ = sprintf("INSERT INTO notes VALUES ('%s', NULL, %u, %u, now(), %u)",
@@ -69,7 +69,7 @@ if (isset($_SESSION['level'])) {
 	
 	} elseif (isset($_POST['removeID']) && is_numeric($_POST['removeID'])) {
 		$noteQ = sprintf("DELETE FROM notes WHERE threadID=%u LIMIT 1",
-			escape_data($DBS['comet'], $_POST['removeID'])
+			escapeData($DBS['comet'], $_POST['removeID'])
 		);
 
 		$noteR = mysqli_query($DBS['comet'], $noteQ);
@@ -97,7 +97,7 @@ if (isset($_SESSION['level'])) {
 		// Check the level of the current user. If the user wrote the note or is of level 4 or greater, edit the note.
 		if (($userID == $_SESSION['userID'] || $_SESSION['level'] >= 4) && (!empty($_POST['value'])) && ($oldValue != $_POST['value'])) {
 			$updateQ = sprintf("UPDATE notes SET note = '%s', userID = %u, modified=now() WHERE threadID = %u",
-				escape_data($DBS['comet'], $_POST['value']), $_SESSION['userID'], $threadID);
+				escapeData($DBS['comet'], $_POST['value']), $_SESSION['userID'], $threadID);
 			$updateR = mysqli_query($DBS['comet'], $updateQ);
 			
 			if (!$updateR) printf('Query: %s, Error: %s', $updateQ, mysqli_error($DBS['comet']));

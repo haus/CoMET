@@ -5,11 +5,11 @@ require_once('../includes/config.php');
 require_once('../includes/functions.php');
 
 if (isset($_GET['q'])) {
-	$searchFor = escape_data($DBS['comet'], $_GET['q']);
+	$searchFor = escapeData($DBS['comet'], $_GET['q']);
 }
 
 if (isset($_GET['search'])) {
-	$searchBy = escape_data($DBS['comet'], $_GET['search']);
+	$searchBy = escapeData($DBS['comet'], $_GET['search']);
 }
 
 if (isset($searchBy)) {
