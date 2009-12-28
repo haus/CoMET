@@ -121,6 +121,13 @@ function updateOwner($cardNo, $personNum, $firstName, $lastName, $discount, $mem
 	}	
 }
 
+/**
+* deleteOwner function: Deletes the owner or owners for a record in the database. If no personNum is specified, all owners are deleted.
+* Returns true on success, false on failure.
+* @param integer $cardNo cardNo of the record to be deleted
+* @param integer $personNum Person # of the record to be deleted. If null, all owners are deleted.
+* @return boolean Returns true on success, false on failure.
+*/
 function deleteOwner($cardNo, $personNum = NULL) {
 	global $DBS;
 	
@@ -243,6 +250,12 @@ function updateDetails($cardNo, $address, $phone, $city, $state, $zip, $email, $
 	
 }
 
+/**
+* deleteDetails function: Deletes the details for a record in the database.
+* Returns true on success, false on failure.
+* @param integer $cardNo cardNo of the record to be deleted
+* @return boolean Returns true on success, false on failure.
+*/
 function deleteDetails($cardNo) {
 	global $DBS;
 	
