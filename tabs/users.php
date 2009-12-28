@@ -4,7 +4,7 @@
 	    Copyright (C) 2009  Matthaus Litteken
 		
 		This file is part of CoMET.
-		
+
 	    This program is free software: you can redistribute it and/or modify
 	    it under the terms of the GNU General Public License as published by
 	    the Free Software Foundation, either version 3 of the License, or
@@ -17,24 +17,27 @@
 
 	    You should have received a copy of the GNU General Public License
 	    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+	
 */
 session_start();
 
 /**
- * This page loads the mailer module into the content tab.
+ * This page will load a user management tab when it is ready.
  * @author Matthaus Litteken <matthaus@cecs.pdx.edu>
  * @version 1.0
  * @package CoMET
  */
 
-require_once('./includes/config.php');
-require_once('./includes/functions.php');
+require_once('../includes/config.php');
+?>
+<form id="userForm" method="POST" name="userForm" action="./handlers/userHandler.php">
+
+<?php
+$userQ = "SELECT * FROM users";
+$userR = mysqli_query($DBS['comet'], $userQ);
+
+while (list($name, $password, $level, $userID, $email) = mysqli_fetch_row($userR)) {
+	printf('<p>%s - %s - %s - %s</p>', $name, $level, $userID, $email);
+}
 
 ?>
-<script type="text/javascript">
-$(document).ready(function() {
-	$('#mailSettings').load('./modules/mailerModule.php');
-});
-</script>
-<div id="mailSettings" class="left">
-</div>

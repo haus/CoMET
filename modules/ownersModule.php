@@ -47,7 +47,6 @@ if (isset($_SESSION['level'])) {
 		}
 	}
 	?>
-	<script src="../includes/javascript/jquery.min.js" type="text/javascript"></script>
 
 	<?php
 	echo '<div id="ownerForm">';
@@ -114,6 +113,7 @@ if (isset($_SESSION['level'])) {
 	header('Location: ../index.php');
 }
 ?>
+
 <script type="text/javascript">
 // This script auto populates discount, and disables house charge appropriately for ACG. Insert store-specific values as needed.
 

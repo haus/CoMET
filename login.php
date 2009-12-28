@@ -95,7 +95,6 @@ if (isset($_POST['submitted']) && $_SESSION['authObject']->checkAuth() && isset(
 } elseif ($_SESSION['authObject']->checkAuth() && isset($_SESSION['user'])) {
 	echo '<script type="text/javascript">
 			self.parent.tb_remove();
-			self.parent.getElementById();
 		</script>';
 }
 

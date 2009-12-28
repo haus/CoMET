@@ -28,7 +28,7 @@ session_start();
  * @package CoMET
  */
 
-require_once('./includes/config.php');
+require_once('../includes/config.php');
 
 if (!isset($_SESSION['cardNo'])) {
 	$cardQ = "SELECT MAX(cardNo) FROM details WHERE cardNo < 9999";
@@ -132,13 +132,13 @@ if (!isset($_SESSION['cardNo'])) {
 	        //timeout:   3000 
 	    };
 	
-		$('#firstSearch').autocomplete('handlers/searchHandler.php', { mustMatch: 1, onItemSelect: focusFirst, extraParams: {search: 'first'}});
+		$('#firstSearch').autocomplete('./handlers/searchHandler.php', { mustMatch: 1, onItemSelect: focusFirst, extraParams: {search: 'first'}});
 		
 		$('#firstSearch').focus(function() {
 			$('#lastSearch').val('');
 		});
 		
-		$('#lastSearch').autocomplete('handlers/searchHandler.php', { mustMatch: 1, onItemSelect: focusLast, extraParams: {search: 'last'}});
+		$('#lastSearch').autocomplete('./handlers/searchHandler.php', { mustMatch: 1, onItemSelect: focusLast, extraParams: {search: 'last'}});
 		
 		$('#lastSearch').focus(function() {
 			$('#firstSearch').val('');
@@ -172,7 +172,7 @@ if (!isset($_SESSION['cardNo'])) {
 		$('#navForm :button').click(function() {
 			$('#navButton').val(this.id);
 		});
-	
+
 		$('#owner').load('./modules/ownersModule.php');
 		$('#details').load('./modules/detailsModule.php');
 		$('#summary').load('./modules/summaryModule.php');

@@ -51,6 +51,7 @@ require_once('Auth/Auth.php');
 	<script src="./includes/javascript/jquery.autocomplete.js" type="text/javascript"></script>
 	<script src="./includes/javascript/thickbox.js" type="text/javascript"></script>
 	<script src="./includes/javascript/jquery.form.js" type="text/javascript"></script>
+	<script src="./includes/javascript/jquery.maskedinput.js" type="text/javascript"></script>
 	<script type="text/JavaScript">
 		$(document).ready(function() {
 			$('.ajaxLink a').click(function() {
@@ -72,10 +73,10 @@ require_once('Auth/Auth.php');
 			// Check for DBs...
 			<?php 
 			if ($DBS['is4c_op'] === false || $DBS['is4c_log'] === false):
-			?>$('#content').load('config.php');
+			?>$('#content').load('./tabs/config.php');
 			<?php
 			else:
-			?>$('#content').load('main.php');
+			?>$('#content').load('./tabs/main.php');
 			<?php
 			endif;
 			?>
@@ -111,12 +112,12 @@ if ($_SESSION['authObject']->checkAuth()) {
 <noscript>You need javascript to really enjoy all of this.</noscript>
 <div id="header">
 	<ul class="headList">
-		<li class="ajaxLink"><a href="main.php">Main</a></li>
-		<li class="ajaxLink"><a href="reports.php">Reports</a></li>
-		<li class="ajaxLink"><a href="mailer.php">Mailer</a></li>
-		<li class="ajaxLink"><a id="sync" href="sync.php">Sync To Fannie</a></li>
-		<li class="ajaxLink" id="config"><a href="config.php">Config</a></li>
-		<li class="ajaxLink" id="users"><a href="users.php">Manage Users</a></li>
+		<li class="ajaxLink"><a href="./tabs/main.php">Main</a></li>
+		<li class="ajaxLink"><a href="./tabs/reports.php">Reports</a></li>
+		<li class="ajaxLink"><a href="./tabs/mailer.php">Mailer</a></li>
+		<li class="ajaxLink"><a id="sync" href="./tabs/sync.php">Sync To Fannie</a></li>
+		<li class="ajaxLink" id="config"><a href="./tabs/config.php">Config</a></li>
+		<li class="ajaxLink" id="users"><a href="./tabs/users.php">Manage Users</a></li>
 		<form name="logout" class="headList" action="login.php?act=logout" id="logoutForm" method="post">
 			<li id="logout"><button class="buttonAsLink">Logout</button></li>
 		</form>

@@ -38,8 +38,8 @@ session_start();
 <?php
 
 if (isset($_SESSION['level'])) {
-	require_once('./includes/config.php');
-	require_once('./includes/functions.php');
+	require_once('../includes/config.php');
+	require_once('../includes/functions.php');
 	
 	// Initialize $body variable...
 	$body = '';
@@ -161,7 +161,7 @@ if (isset($_SESSION['level'])) {
 	if (isset($upList))
 		echo $upList;
 	
-	if (!empty($body)) cometMail(array('to' => $to, 'from' => $from, 'subject' => $subject, 'body' => $body, 'system'));
+	if (!empty($body)) cometMail(array('to' => $to, 'from' => $from, 'subject' => $subject, 'body' => $body), 'system');
 	
 	if ($count == 0) echo '<br /><h3>No changes to push to Fannie.</h3><br />';
 	

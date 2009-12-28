@@ -154,7 +154,7 @@ if (isset($delList))
 if (isset($upList))
 	echo $upList;
 
-if (!empty($body)) cometMail(array('to' => $to, 'from' => $from, 'subject' => $subject, 'body' => $body, 'system'));
+if (!empty($body)) cometMail(array('to' => $to, 'from' => $from, 'subject' => $subject, 'body' => $body), 'system');
 
 if ($count == 0) echo "No changes to push to Fannie.\n";
 else echo "$count records updated.\n";

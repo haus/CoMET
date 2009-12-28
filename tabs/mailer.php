@@ -4,7 +4,7 @@
 	    Copyright (C) 2009  Matthaus Litteken
 		
 		This file is part of CoMET.
-
+		
 	    This program is free software: you can redistribute it and/or modify
 	    it under the terms of the GNU General Public License as published by
 	    the Free Software Foundation, either version 3 of the License, or
@@ -21,13 +21,20 @@
 session_start();
 
 /**
- * This page will load a reports tab when it is ready.
+ * This page loads the mailer module into the content tab.
  * @author Matthaus Litteken <matthaus@cecs.pdx.edu>
  * @version 1.0
  * @package CoMET
  */
 
-require_once('./includes/config.php');
-require_once('./includes/functions.php');
+require_once('../includes/config.php');
+require_once('../includes/functions.php');
 
 ?>
+<script type="text/javascript">
+$(document).ready(function() {
+	$('#mailSettings').load('./modules/mailerModule.php');
+});
+</script>
+<div id="mailSettings" class="left">
+</div>

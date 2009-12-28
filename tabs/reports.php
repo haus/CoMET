@@ -17,27 +17,17 @@
 
 	    You should have received a copy of the GNU General Public License
 	    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-	
 */
 session_start();
 
 /**
- * This page will load a user management tab when it is ready.
+ * This page will load a reports tab when it is ready.
  * @author Matthaus Litteken <matthaus@cecs.pdx.edu>
  * @version 1.0
  * @package CoMET
  */
 
-require_once('./includes/config.php');
-?>
-<form id="userForm" method="POST" name="userForm" action="./handlers/userHandler.php">
-
-<?php
-$userQ = "SELECT * FROM users";
-$userR = mysqli_query($DBS['comet'], $userQ);
-
-while (list($name, $password, $level, $userID, $email) = mysqli_fetch_row($userR)) {
-	printf('<p>%s - %s - %s - %s</p>', $name, $level, $userID, $email);
-}
+require_once('../includes/config.php');
+require_once('../includes/functions.php');
 
 ?>
