@@ -55,7 +55,7 @@ session_start();
 				select: 'true',
 				tooltip: 'Click to edit...',
 				callback: function(value, settings) {
-					$('#payments').load('./modules/payments.php');
+					$('#payments').load('./modules/paymentsModule.php');
 				}
 			}
 		);

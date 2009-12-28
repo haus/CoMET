@@ -33,7 +33,7 @@ require_once('./includes/functions.php');
 ?>
 <script type="text/javascript">
 $(document).ready(function() {
-	$('#mailSettings').load('./modules/mailer.php');
+	$('#mailSettings').load('./modules/mailerModule.php');
 });
 </script>
 <div id="mailSettings" class="left">

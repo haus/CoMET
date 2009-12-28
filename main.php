@@ -78,11 +78,11 @@ if (!isset($_SESSION['cardNo'])) {
 		} else if (responseText.errorMsg != undefined) {
 			alert(responseText.errorMsg);
 		} else {
-			$('#owner').load('./modules/owner.php');
-			$('#details').load('./modules/details.php');
-			$('#summary').load('./modules/summary.php');
-			$('#payments').load('./modules/payments.php');
-			$('#notes').load('./modules/notes.php');
+			$('#owner').load('./modules/ownersModule.php');
+			$('#details').load('./modules/detailsModule.php');
+			$('#summary').load('./modules/summaryModule.php');
+			$('#payments').load('./modules/paymentsModule.php');
+			$('#notes').load('./modules/notesModule.php');
 			$('#firstSearch').val('');
 			$('#lastSearch').val('');
 			$('#cardNo').html(responseText.cardNo);
@@ -112,7 +112,7 @@ if (!isset($_SESSION['cardNo'])) {
 	}
 	
 	function reload() {
-		$('#summary').load('./modules/summary.php');
+		$('#summary').load('./modules/summaryModule.php');
 	}
 	
 	$('#navForm').ready(function() {
@@ -157,11 +157,11 @@ if (!isset($_SESSION['cardNo'])) {
 			select: 'true',
 			tooltip: 'Click to browse by number...',
 			callback: function(value, settings) {
-				$('#owner').load('./modules/owner.php');
-				$('#details').load('./modules/details.php');
-				$('#summary').load('./modules/summary.php');
-				$('#payments').load('./modules/payments.php');
-				$('#notes').load('./modules/notes.php');
+				$('#owner').load('./modules/ownersModule.php');
+				$('#details').load('./modules/detailsModule.php');
+				$('#summary').load('./modules/summaryModule.php');
+				$('#payments').load('./modules/paymentsModule.php');
+				$('#notes').load('./modules/notesModule.php');
 				$('#firstSearch').val('');
 				$('#lastSearch').val('');
 				$('#cardNo').html(value);
@@ -173,11 +173,11 @@ if (!isset($_SESSION['cardNo'])) {
 			$('#navButton').val(this.id);
 		});
 	
-		$('#owner').load('./modules/owner.php');
-		$('#details').load('./modules/details.php');
-		$('#summary').load('./modules/summary.php');
-		$('#payments').load('./modules/payments.php');
-		$('#notes').load('./modules/notes.php');
+		$('#owner').load('./modules/ownersModule.php');
+		$('#details').load('./modules/detailsModule.php');
+		$('#summary').load('./modules/summaryModule.php');
+		$('#payments').load('./modules/paymentsModule.php');
+		$('#notes').load('./modules/notesModule.php');
 		
 	});
 	
@@ -211,9 +211,9 @@ if (!isset($_SESSION['cardNo'])) {
 		}
 		
 		if (responseText.success != undefined) {
-			$('#owner').load('./modules/owner.php');
-			$('#summary').load('./modules/summary.php');
-			$('#payments').load('./modules/payments.php');
+			$('#owner').load('./modules/ownersModule.php');
+			$('#summary').load('./modules/summaryModule.php');
+			$('#payments').load('./modules/paymentsModule.php');
 		}
 	}
 	
@@ -262,7 +262,7 @@ if (!isset($_SESSION['cardNo'])) {
 		}
 
 		if (responseText.success != undefined) {
-			$('#notes').load('./modules/notes.php');
+			$('#notes').load('./modules/notesModule.php');
 		}
 	}
 	

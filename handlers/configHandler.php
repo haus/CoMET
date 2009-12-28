@@ -122,7 +122,11 @@ if (isset($_POST['submitted'])) {
 				while (list($name, $value) = mysqli_fetch_row($smtpR)) {
 					$smtp[$name] = $value;
 				}
-			
+				
+				/**
+				 * @todo Add system email information and an admin email here for more dynamic options.
+				 */
+				
 				$from = "CoMET <comet@albertagrocery.coop>";
 				$to = "Matthaus <mlitteken@gmail.com>";
 				$subject = "Testing...";

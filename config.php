@@ -71,7 +71,7 @@ require_once('./includes/config.php');
 	}
 
 	$(document).ready(function() {
-		$('#configSettings').load('./modules/config.php');
+		$('#configSettings').load('./modules/configModule.php');
 	});
 </script>
 <div id="configSettings" class="center">

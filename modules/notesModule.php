@@ -47,7 +47,7 @@ session_start();
 				onblur: 'submit',
 				tooltip: 'Click to edit...',
 				callback: function(value, settings) {
-					$('#notes').load('./modules/notes.php');
+					$('#notes').load('./modules/notesModule.php');
 				}
 			}
 		);
