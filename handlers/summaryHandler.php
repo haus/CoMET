@@ -50,24 +50,10 @@ if (isset($_SESSION['level'])) {
 	
 		if (is_numeric($_POST['value']) && $_POST['value'] != $sharePrice && $_POST['value'] >= 0) {
 			$newPrice = (double)$_POST['value'];
-			$updateQ = "UPDATE raw_details SET endDate=curdate() WHERE cardNo={$_SESSION['cardNo']} AND endDate IS NULL";
-			$updateR = mysqli_query($DBS['comet'], $updateQ);
-	
-			if ($updateR && mysqli_affected_rows($DBS['comet']) == 1) {
-				$insertQ = "INSERT INTO raw_details (
-					SELECT cardNo, address, phone, city, state, zip, email, noMail, nextPayment, paymentPlan, joined, $newPrice, curdate(), 
-						NULL, {$_SESSION['userID']}, NULL 
-						FROM raw_details 
-						WHERE cardNo={$_SESSION['cardNo']} 
-							AND DATE(endDate) = curdate() 
-							AND id=(SELECT MAX(id) FROM raw_details WHERE cardNo={$_SESSION['cardNo']}) 
-						GROUP BY cardNo HAVING MAX(endDate))";
-				$insertR = mysqli_query($DBS['comet'], $insertQ);
-				if ($insertR)
-					echo number_format($newPrice, 2);
-				else
-					echo number_format($sharePrice, 2);
-			}
+			if (updateDetails($_SESSION['cardNo'], NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, $newPrice, $_SESSION['userID']))
+				echo number_format($newPrice, 2);
+			else
+				echo number_format($sharePrice, 2);
 		} else {
 			echo number_format($sharePrice, 2);
 		}
@@ -79,24 +65,10 @@ if (isset($_SESSION['level'])) {
 	
 			if (is_numeric($_POST['value']) && $_POST['value'] != $curPlan) {
 				$newPlan = (int)$_POST['value'];
-				$updateQ = "UPDATE raw_details SET endDate=curdate() WHERE cardNo={$_SESSION['cardNo']} AND endDate IS NULL";
-				$updateR = mysqli_query($DBS['comet'], $updateQ);
-
-				if ($updateR && mysqli_affected_rows($DBS['comet']) == 1) {
-					$insertQ = "INSERT INTO raw_details (
-						SELECT cardNo, address, phone, city, state, zip, email, noMail, nextPayment, $newPlan, joined, sharePrice, curdate(), 
-							NULL, {$_SESSION['userID']}, NULL 
-							FROM raw_details 
-							WHERE cardNo={$_SESSION['cardNo']} 
-								AND DATE(endDate) = curdate() 
-								AND id=(SELECT MAX(id) FROM raw_details WHERE cardNo={$_SESSION['cardNo']}) 
-							GROUP BY cardNo HAVING MAX(endDate))";
-					$insertR = mysqli_query($DBS['comet'], $insertQ);
-					if ($insertR)
-						echo $plan[$newPlan];
-					else
-						echo $plan[$curPlan];
-				}
+				if (updateDetails($_SESSION['cardNo'], NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, $newPlan, NULL, NULL, $_SESSION['userID']))
+					echo $plan[$newPlan];
+				else
+					echo $plan[$curPlan];
 			} else {
 				echo $plan[$curPlan];
 			}
@@ -116,24 +88,10 @@ if (isset($_SESSION['level'])) {
 		$newDate = (checkdate($newMonth,$newDay,$newYear) ? "$newYear-$newMonth-$newDay" : FALSE);
 		
 		if ($newDate) {
-			$updateQ = "UPDATE raw_details SET endDate=curdate() WHERE cardNo={$_SESSION['cardNo']} AND endDate IS NULL";
-			$updateR = mysqli_query($DBS['comet'], $updateQ);
-
-			if ($updateR && mysqli_affected_rows($DBS['comet']) == 1) {
-				$insertQ = "INSERT INTO raw_details (
-					SELECT cardNo, address, phone, city, state, zip, email, noMail, nextPayment, paymentPlan, '$newDate', sharePrice, curdate(), 
-						NULL, {$_SESSION['userID']}, NULL 
-						FROM raw_details 
-						WHERE cardNo={$_SESSION['cardNo']} 
-							AND DATE(endDate) = curdate() 
-							AND id=(SELECT MAX(id) FROM raw_details WHERE cardNo={$_SESSION['cardNo']}) 
-						GROUP BY cardNo HAVING MAX(endDate))";
-				$insertR = mysqli_query($DBS['comet'], $insertQ);
-				if ($insertR)
-					echo date('m/d/Y', strtotime($newDate));
-				else
-					echo date('m/d/Y', strtotime($oldDate));
-			}
+			if (updateDetails($_SESSION['cardNo'], NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, $newDate, NULL, $_SESSION['userID']))
+				echo date('m/d/Y', strtotime($newDate));
+			else
+				echo date('m/d/Y', strtotime($oldDate));
 		}
 	} elseif (isset($_POST['id']) && $_POST['id'] == 'editNext') {
 			$dateQ = "SELECT nextPayment FROM details WHERE cardNo={$_SESSION['cardNo']}";
@@ -148,24 +106,10 @@ if (isset($_SESSION['level'])) {
 			$newDate = (checkdate($newMonth,$newDay,$newYear) ? "$newYear-$newMonth-$newDay" : FALSE);
 
 			if ($newDate) {
-				$updateQ = "UPDATE raw_details SET endDate=curdate() WHERE cardNo={$_SESSION['cardNo']} AND endDate IS NULL";
-				$updateR = mysqli_query($DBS['comet'], $updateQ);
-
-				if ($updateR && mysqli_affected_rows($DBS['comet']) == 1) {
-					$insertQ = "INSERT INTO raw_details (
-						SELECT cardNo, address, phone, city, state, zip, email, noMail, '$newDate', paymentPlan, joined, sharePrice, curdate(), 
-							NULL, {$_SESSION['userID']}, NULL 
-							FROM raw_details 
-							WHERE cardNo={$_SESSION['cardNo']} 
-								AND DATE(endDate) = curdate() 
-								AND id=(SELECT MAX(id) FROM raw_details WHERE cardNo={$_SESSION['cardNo']}) 
-							GROUP BY cardNo HAVING MAX(endDate))";
-					$insertR = mysqli_query($DBS['comet'], $insertQ);
-					if ($insertR)
-						echo date('m/d/Y', strtotime($newDate));
-					else
-						echo date('m/d/Y', strtotime($oldDate));
-				}
+				if (updateDetails($_SESSION['cardNo'], NULL, NULL, NULL, NULL, NULL, NULL, NULL, $newDate, NULL, NULL, NULL, $_SESSION['userID']))
+					echo date('m/d/Y', strtotime($newDate));
+				else
+					echo date('m/d/Y', strtotime($oldDate));
 			}
 		}
 
