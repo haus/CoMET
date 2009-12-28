@@ -43,31 +43,10 @@ echo 'On Hold' . "\n";
 while (list($cardNo, $personNum, $staff) = mysqli_fetch_row($onHoldR)) {
 	$newDisc = ($staff == 1 || $staff == 5 ? 15 : 0);
 	
-	// First update the latest entry...
-	$updateQ = sprintf(
-		"UPDATE raw_owners SET endDate=curdate() WHERE cardNo=%u AND personNum=%u AND endDate IS NULL", 
-		$cardNo, $personNum
-		);
-	$updateR = mysqli_query($DBS['comet'], $updateQ);
-	
-	if ($updateR) {
-		// Then insert the new entries...
-		$insertQ = sprintf(
-			"INSERT INTO raw_owners (
-			SELECT cardNo, personNum, firstName, lastName, %u, %u, staff, chargeOk, writeChecks, curdate(), NULL, %u, NULL
-				FROM raw_owners
-				WHERE cardNo=%u AND DATE(endDate) = curdate() AND personNum = %u GROUP BY cardNo, personNum HAVING MAX(endDate))",
-				$newDisc, 5, $_SESSION['userID'], $cardNo, $personNum
-		);
-		$insertR = mysqli_query($DBS['comet'], $insertQ);
-		
-		if ($insertR)
-			echo "Success: $cardNo - $personNum - $staff - $newDisc Updated\n";
-		else
-			printf("Error: %s, Query: %s\n", mysqli_error($DBS['comet']), $insertQ);
-	} else {
-		printf("Error: %s, Query: %s\n", mysqli_error($DBS['comet']), $updateQ);
-	}
+	if (updateOwner($cardNo, $personNum, NULL, NULL, $newDisc, 5, NULL, NULL, NULL, $_SESSION['userID']))
+		echo "Success: $cardNo - $personNum - $staff - $newDisc Updated\n";
+	else
+		printf("Error: %s\n", mysqli_error($DBS['comet']));
 }
 
 // Then inactives...owners who will be made inactive...
@@ -85,31 +64,11 @@ echo 'Inactive' . "\n";
 while (list($cardNo, $personNum, $staff) = mysqli_fetch_row($inactiveR)) {
 	$newDisc = ($staff == 1 || $staff == 5 ? 15 : 0);
 	
-	// First update the latest entry...
-	$updateQ = sprintf(
-		"UPDATE raw_owners SET endDate=curdate() WHERE cardNo=%u AND personNum=%u AND endDate IS NULL", 
-		$cardNo, $personNum
-		);
-	$updateR = mysqli_query($DBS['comet'], $updateQ);
-	
-	if ($updateR) {
-		// Then insert the new entries...
-		$insertQ = sprintf(
-			"INSERT INTO raw_owners (
-			SELECT cardNo, personNum, firstName, lastName, %u, %u, staff, chargeOk, writeChecks, curdate(), NULL, %u, NULL
-				FROM raw_owners
-				WHERE cardNo=%u AND DATE(endDate) = curdate() AND personNum = %u GROUP BY cardNo, personNum HAVING MAX(endDate))",
-				$newDisc, 3, $_SESSION['userID'], $cardNo, $personNum
-		);
-		$insertR = mysqli_query($DBS['comet'], $insertQ);
-		
-		if ($insertR)
-			echo "Success: $cardNo - $personNum - $staff - $newDisc Updated\n";
-		else
-			printf("Error: %s, Query: %s\n", mysqli_error($DBS['comet']), $insertQ);
-	} else {
-		printf("Error: %s, Query: %s\n", mysqli_error($DBS['comet']), $updateQ);
-	}
+	if (updateOwner($cardNo, $personNum, NULL, NULL, $newDisc, 3, NULL, NULL, NULL, $_SESSION['userID']))
+		echo "Success: $cardNo - $personNum - $staff - $newDisc Updated\n";
+	else
+		printf("Error: %s\n", mysqli_error($DBS['comet']));
+
 }
 
 ?>

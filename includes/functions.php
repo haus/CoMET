@@ -21,30 +21,116 @@
 
 /**
  * Functions repository for CoMET. Holds important and generalized functions.
- *
+ * Abstracts owner and details updates and insertion.
  * @author Matthaus Litteken <matthaus@cecs.pdx.edu>
- * @version 0.1
+ * @version 1.0
  * @package CoMET
  */
 
 /**
- * checkPage function: checks if the current page is the passed string. If not, it redirects
- * to index.php.
- * @param $page a string page name to check the current page against
- * @return none
+ * addOwner function: Inserts a new owner into the database. Returns true on success, false on failure.
+ * @param integer $cardNo cardNo of the record to be inserted
+ * @param integer $personNum personNum of the record to be inserted
+ * @param string $firstName First name of the record to be inserted, is sanitized with escape_data
+ * @param string $lastName Last name of the record to be inserted, is sanitized with escape_data
+ * @param integer $discount Discount of the record to be inserted, is cast to an integer
+ * @param integer $memType Member type of the record to be inserted, is cast to an integer
+ * @param integer $staff Staff level of the record to be inserted, is cast to an integer
+ * @param boolean $chargeOk House charge boolean of the record to be inserted, is cast to an integer
+ * @param boolean $writeChecks Write check boolean of the record to be inserted, is cast to an integer
+ * @param integer $userID User ID of the user who added the record
+ * @return boolean true on success, false on failure
  */
-function checkPage($page) {
-	if (substr($_SERVER['PHP_SELF'], strrpos($_SERVER['PHP_SELF'], '/')+1, 30) !== $page) {
-		header('location:../index.php');
-		exit();
-	}
+function addOwner($cardNo, $personNum, $firstName, $lastName, $discount, $memType, $staff, $chargeOk, $writeChecks, $userID) {
+	global $DBS;
+	
+	// Insert the new record...
+	$insertQ = sprintf(
+		"INSERT INTO raw_owners VALUES (%u, %u, '%s', '%s', %u, %u, %u, %u, %u, curdate(), NULL, %u, NULL)",
+			$cardNo,
+			$personNum,
+			escape_data($firstName),
+			escape_data($lastName),
+			(int) $discount,
+			(int) $memType,
+			(int) $staff,
+			(int) $chargeOk,
+			(int) $writeChecks,
+			$userID
+	);
+	$insertR = mysqli_query($DBS['comet'], $insertQ);
+	
+	if ($insertR)
+		return true;
+	else
+		return false;
+}
+
+/**
+ * updateOwner function: Updates an owner in the database. First updates the old record, then inserts the updated record. 
+ * Returns true on success, false on failure.
+ * @param integer $cardNo cardNo of the record to be inserted
+ * @param integer $personNum personNum of the record to be inserted
+ * @param string $firstName First name of the record to be inserted, is sanitized with escape_data. If null, old value is used.
+ * @param string $lastName Last name of the record to be inserted, is sanitized with escape_data. If null, old value is used.
+ * @param integer $discount Discount of the record to be inserted, is cast to an integer. If null, old value is used.
+ * @param integer $memType Member type of the record to be inserted, is cast to an integer. If null, old value is used.
+ * @param integer $staff Staff level of the record to be inserted, is cast to an integer. If null, old value is used.
+ * @param boolean $chargeOk House charge boolean of the record to be inserted, is cast to an integer. If null, old value is used.
+ * @param boolean $writeChecks Write check boolean of the record to be inserted, is cast to an integer. If null, old value is used.
+ * @param integer $userID User ID of the user who added the record
+ * @return boolean true on success, false on failure
+ */
+function updateOwner($cardNo, $personNum, $firstName, $lastName, $discount, $memType, $staff, $chargeOk, $writeChecks, $userID) {
+	global $DBS;
+	$updateQ = sprintf(
+		"UPDATE raw_owners SET endDate=curdate() WHERE cardNo=%u AND personNum=%u AND endDate IS NULL", 
+		$cardNo, $personNum
+		);
+	$updateR = mysqli_query($DBS['comet'], $updateQ);
+	
+	if ($updateR) {
+		// Then insert the new entries...
+		$insertQ = sprintf(
+			"INSERT INTO raw_owners (
+			SELECT cardNo, personNum, %s, %s, %u, %u, %u, %u, %u, curdate(), NULL, %u, NULL
+				FROM raw_owners
+				WHERE cardNo=%u AND DATE(endDate) = curdate() AND personNum = %u GROUP BY cardNo, personNum HAVING MAX(endDate))",
+				(is_null($firstName) ? 'firstName' : escape_data($firstName)),
+				(is_null($lastName) ? 'lastName' : escape_data($lastName)),
+				(is_null($discount) ? 'discount' : (int) $discount),
+				(is_null($memType) ? 'memType' : (int) $memType),
+				(is_null($staff) ? 'staff' : (int) $staff),
+				(is_null($chargeOk) ? 'chargeOk' : (int) $chargeOk),
+				(is_null($writeChecks) ? 'writeChecks' : (int) $writeChecks),
+				$userID,
+				$cardNo,
+				$personNum
+		);
+		$insertR = mysqli_query($DBS['comet'], $insertQ);
+		
+		if ($insertR)
+			return true;
+		else
+			return false;
+	} else {
+		return false;
+	}	
+}
+
+function addDetails() {
+	
+}
+
+function updateDetails() {
+	
 }
 
 /**
  * escape_data function: sanitizes trimmed input using mysqli_real_escape_string, if it exists.
- * @param &$connection reference to the mysqli connection to use in the escaping
- * @param $data string/data to be escaped for safe insertion into MySQL DB.
- * @return sanitized data ready for insertion into MySQL DB.
+ * @param object &$connection reference to the mysqli connection to use in the escaping
+ * @param string $data string/data to be escaped for safe insertion into MySQL DB.
+ * @return string sanitized data ready for insertion into MySQL DB.
  */
 if (!function_exists('escape_data')) {	
 	function escape_data(&$connection, $data) {
@@ -54,6 +140,7 @@ if (!function_exists('escape_data')) {
 			return trim($data);
 	}
 }
+
 
 function cometMail($mail, $type) {
 	require_once(__DIR__ . '/config.php');
