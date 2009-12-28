@@ -158,54 +158,54 @@ if (isset($_POST['submitted'])) {
 			
 			break;
 			
-			case 'systemTest':
-				require_once('Mail.php');
+		case 'systemTest':
+			require_once('Mail.php');
 
-				$smtpQ = "SELECT name, value FROM options WHERE name IN ('smtpHost', 'systemUser', 'systemPass')";
-				$smtpR = mysqli_query($DBS['comet'], $smtpQ);
+			$smtpQ = "SELECT name, value FROM options WHERE name IN ('smtpHost', 'systemUser', 'systemPass')";
+			$smtpR = mysqli_query($DBS['comet'], $smtpQ);
 
-				if (!$smtpR) {
-					$output['errorMsg'] = sprintf('MySQL Error: %s, Query: %s', mysqli_error($DBS['comet']), $smtpQ);
-				} else {
-					while (list($name, $value) = mysqli_fetch_row($smtpR)) {
-						$smtp[$name] = $value;
-					}
-
-					$from = "CoMET <comet@albertagrocery.coop>";
-					$to = "Matthaus <mlitteken@gmail.com>";
-					$subject = "Testing...";
-					$body = "Testing...";
-
-					$host = $smtp['smtpHost'];
-					$user = $smtp['systemUser'];
-					$pass = $smtp['systemPass'];
-
-					$headers = array ('From' => $from,
-					  'To' => $to,
-					  'Subject' => $subject);
-
-					$smtp = Mail::factory(
-						'smtp',
-						array (
-							'host' => $host,
-					    	'auth' => true,
-						    'username' => $user,
-						    'password' => $pass
-						)
-					);
-
-					$mail = $smtp->send($to, $headers, $body);
-
-					if (PEAR::isError($mail)) {
-						$output['systemResult'] = '<blink>' . $mail->getMessage() . '</blink>';
-					} else {
-						$output['systemResult'] = 'Success. Test email sent.';
-					}
+			if (!$smtpR) {
+				$output['errorMsg'] = sprintf('MySQL Error: %s, Query: %s', mysqli_error($DBS['comet']), $smtpQ);
+			} else {
+				while (list($name, $value) = mysqli_fetch_row($smtpR)) {
+					$smtp[$name] = $value;
 				}
 
-				break;
+				$from = "CoMET <comet@albertagrocery.coop>";
+				$to = "Matthaus <mlitteken@gmail.com>";
+				$subject = "Testing...";
+				$body = "Testing...";
+
+				$host = $smtp['smtpHost'];
+				$user = $smtp['systemUser'];
+				$pass = $smtp['systemPass'];
+
+				$headers = array ('From' => $from,
+				  'To' => $to,
+				  'Subject' => $subject);
+
+				$smtp = Mail::factory(
+					'smtp',
+					array (
+						'host' => $host,
+				    	'auth' => true,
+					    'username' => $user,
+					    'password' => $pass
+					)
+				);
+
+				$mail = $smtp->send($to, $headers, $body);
+
+				if (PEAR::isError($mail)) {
+					$output['systemResult'] = '<blink>' . $mail->getMessage() . '</blink>';
+				} else {
+					$output['systemResult'] = 'Success. Test email sent.';
+				}
+			}
+
+			break;
 				
-			case 'opTest':
+		case 'opTest':
 			$opQ = "SELECT name, value FROM options WHERE name IN ('opHost', 'opUser', 'opPass', 'opDB')";
 			$opR = mysqli_query($DBS['comet'], $opQ);
 	
@@ -310,6 +310,32 @@ if (isset($_POST['submitted'])) {
 			// If empty or non-numeric when supposed to be then load and display the initial value...
 			echo (in_array($id, $passArray) ? '(hidden)' : $oldValue);
 			exit();
+		} elseif ($id == 'discounts') {
+			$discount = explode(',', $value);
+			$errors = false;
+			$newValue = NULL;
+			
+			foreach ($discount AS $disc) {
+				$disc = trim($disc);
+				
+				if (is_numeric($disc) && $disc <= 50)
+					$newValue .= $disc . ',';
+				else
+					$errors = true;
+			}
+			
+			if ($errors) {
+				echo $oldValue;
+			} else {
+				$newValue = substr($newValue, 0, -1);
+				$updateQ = sprintf("UPDATE options SET value='%s' WHERE name='%s'", $newValue, $id);
+				$updateR = mysqli_query($DBS['comet'], $updateQ);
+				
+				if ($updateR)
+					echo $newValue;
+				else
+					echo $oldValue;
+			}
 		} else {
 			$updateQ = sprintf("UPDATE options SET value='%s' WHERE name='%s'", ($id == 'defaultDiscount' ? $_SESSION['discounts'][$value] :$value), $id);
 			$updateR = mysqli_query($DBS['comet'], $updateQ);
