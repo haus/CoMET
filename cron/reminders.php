@@ -34,31 +34,29 @@ require_once($baseDir . '/includes/config.php');
 require_once($baseDir . '/includes/functions.php');
 
 $from = sprintf('"%s" <%s>', $_SESSION['reminderFrom'], $_SESSION['reminderEmail']);
-$from = '"Matthaus Litteken" <matthaus@albertagrocery.coop>';
 $host = $_SESSION['smtpHost'];
 $user = $_SESSION['smtpUser'];
 $pass = $_SESSION['smtpPass'];
-
-$to = ' <mlitteken@gmail.com>';
 
 $search = array('[firstName]', '[lastName]', '[dueDate]', '[balance]', '[paymentPlan]');
 $count = 0;
 
 $reminders = array();
 
+$badEmailList = NULL;
+
 // First inactives...owners who will be made inactive...
 $inactiveQ = sprintf(
-	'SELECT d.email, o.firstName, o.lastName, d.sharePrice, pp.amount, SUM(p.amount), 
-		DATE_FORMAT(nextPayment, \'%%M %%e, %%Y\'), TIMESTAMPDIFF(DAY, nextPayment, curdate()) AS diff, o.cardNo 
+	"SELECT d.cardNo, d.email, o.firstName, o.lastName, d.sharePrice, pp.amount, SUM(p.amount), 
+		DATE_FORMAT(nextPayment, '%%M %%e, %%Y'), TIMESTAMPDIFF(DAY, nextPayment, curdate()) AS diff, o.cardNo 
 	FROM details AS d 
 		INNER JOIN owners AS o ON d.cardNo = o.cardNo 
 		INNER JOIN payments AS p ON p.cardNo = d.cardNo
 		INNER JOIN paymentPlans AS pp ON pp.planID = d.paymentPlan
-	WHERE o.memType IN (2,5)
+	WHERE o.memType IN (1,2,5)
 		AND o.personNum = 1
-		AND d.email IS NOT NULL AND d.email <> \'\'
-	GROUP BY cardNo 
-		HAVING diff >= %u', $_SESSION['inactiveDays']);
+	GROUP BY d.cardNo 
+		HAVING diff >= %u", $_SESSION['inactiveDays']);
 $inactiveR = mysqli_query($DBS['comet'], $inactiveQ);
 
 $inactiveMsg = $_SESSION['inactiveMsg'];
@@ -67,35 +65,39 @@ $inactiveSubject = $_SESSION['inactiveSubject'];
 if (!$inactiveR)
 	printf('Error: %s, Query: %s', mysqli_error($DBS['comet']), $inactiveQ);
 
-while (list($email, $first, $last, $sPrice, $planAmount, $paid, $nextDue, $daysLate) = mysqli_fetch_row($inactiveR)) {
+while (list($cardNo, $email, $first, $last, $sPrice, $planAmount, $paid, $nextDue, $daysLate) = mysqli_fetch_row($inactiveR)) {
 	$replace = array($first, $last, $nextDue, '$' . number_format($sPrice-$paid, 2), '$' . $planAmount);
 	
-	$newTo = '"' . $first . ' ' . $last . '"' . $to;
+	$to = sprintf('"%s %s" <%s>', $first, $last, $email);
 	$body = str_replace($search, $replace, $inactiveMsg);
 	
-	$reminders[] = array(
-		'to' => $newTo, 
-		'from' => $from, 
-		'subject' => $inactiveSubject, 
-		'body' => $body
-		);
+	if (is_null($email) || empty($email) || strpos($email, '@') === false) {
+		$badEmailList .= sprintf("Card No: %u, Email Address: %s, Name: %s\n", 
+			$cardNo, (is_null($email) || empty($email) ? 'No email' : $email), $first . " " . $last);
+	} else {
+		$reminders[] = array(
+			'to' => $to, 
+			'from' => $from, 
+			'subject' => $inactiveSubject, 
+			'body' => $body
+			);
 		
-	$count++;
+		$count++;
+	}
 }
 		
 // Then coming due...reminder that they should make a payment...
 $comingDueQ = sprintf(
-	'SELECT d.email, o.firstName, o.lastName, d.sharePrice, pp.amount, SUM(p.amount), 
-		DATE_FORMAT(nextPayment, \'%%M %%e, %%Y\'), TIMESTAMPDIFF(DAY, nextPayment, curdate()) AS diff, o.cardNo 
+	"SELECT d.cardNo, d.email, o.firstName, o.lastName, d.sharePrice, pp.amount, SUM(p.amount), 
+		DATE_FORMAT(nextPayment, '%%M %%e, %%Y'), TIMESTAMPDIFF(DAY, nextPayment, curdate()) AS diff, o.cardNo 
 	FROM details AS d 
 		INNER JOIN owners AS o ON d.cardNo = o.cardNo 
 		INNER JOIN payments AS p ON p.cardNo = d.cardNo
 		INNER JOIN paymentPlans AS pp ON pp.planID = d.paymentPlan
-	WHERE o.memType = 2
+	WHERE o.memType IN (1,2)
 		AND o.personNum = 1
-		AND d.email IS NOT NULL AND d.email <> \'\'
-	GROUP BY cardNo
-		HAVING diff = -%u', $_SESSION['comingDueDays']);
+	GROUP BY d.cardNo
+		HAVING diff = -%u", $_SESSION['comingDueDays']);
 $comingDueR = mysqli_query($DBS['comet'], $comingDueQ);
 
 $comingDueMsg = $_SESSION['comingDueMsg'];
@@ -104,34 +106,38 @@ $comingDueSubject = $_SESSION['comingDueSubject'];
 if (!$comingDueR)
 	printf('Error: %s, Query: %s', mysqli_error($DBS['comet']), $comingDueQ);
 
-while (list($email, $first, $last, $sPrice, $planAmount, $paid, $nextDue, $daysLate) = mysqli_fetch_row($comingDueR)) {
+while (list($cardNo, $email, $first, $last, $sPrice, $planAmount, $paid, $nextDue, $daysLate) = mysqli_fetch_row($comingDueR)) {
 	$replace = array($first, $last, $nextDue, '$' . number_format($sPrice-$paid, 2), '$' . $planAmount);
-	$newTo = $first . ' ' . $last . $to;
+	$to = sprintf('"%s %s" <%s>', $first, $last, $email);
 	$body = str_replace($search, $replace, $comingDueMsg);
 	
-	$reminders[] = array(
-		'to' => $newTo, 
-		'from' => $from, 
-		'subject' => $comingDueSubject, 
-		'body' => $body
-		);
+	if (is_null($email) || empty($email) || strpos($email, '@') === false) {
+		$badEmailList .= sprintf("Card No: %u, Email Address: %s, Name: %s\n", 
+			$cardNo, (is_null($email) || empty($email) ? 'No email' : $email), $first . " " . $last);
+	} else {
+		$reminders[] = array(
+			'to' => $to, 
+			'from' => $from, 
+			'subject' => $comingDueSubject, 
+			'body' => $body
+			);
 		
-	$count++;
+		$count++;
+	}
 }
 
 // Then past due...reminder that they will be put on hold...
 $pastDueQ = sprintf(
-	'SELECT d.email, o.firstName, o.lastName, d.sharePrice, pp.amount, SUM(p.amount), 
-		DATE_FORMAT(nextPayment, \'%%M %%e, %%Y\'), TIMESTAMPDIFF(DAY, nextPayment, curdate()) AS diff, o.cardNo 
+	"SELECT d.cardNo, d.email, o.firstName, o.lastName, d.sharePrice, pp.amount, SUM(p.amount), 
+		DATE_FORMAT(nextPayment, '%%M %%e, %%Y'), TIMESTAMPDIFF(DAY, nextPayment, curdate()) AS diff, o.cardNo 
 	FROM details AS d 
 		INNER JOIN owners AS o ON d.cardNo = o.cardNo 
 		INNER JOIN payments AS p ON p.cardNo = d.cardNo
 		INNER JOIN paymentPlans AS pp ON pp.planID = d.paymentPlan
-	WHERE o.memType IN (2,5)
+	WHERE o.memType IN (1,2,5)
 		AND o.personNum = 1
-		AND d.email IS NOT NULL AND d.email <> \'\'
-	GROUP BY cardNo
-		HAVING diff = %u', $_SESSION['pastDueDays']);
+	GROUP BY d.cardNo
+		HAVING diff = %u", $_SESSION['pastDueDays']);
 $pastDueR = mysqli_query($DBS['comet'], $pastDueQ);
 
 $pastDueMsg = $_SESSION['pastDueMsg'];
@@ -140,19 +146,35 @@ $pastDueSubject = $_SESSION['pastDueSubject'];
 if (!$pastDueR)
 	printf('Error: %s, Query: %s', mysqli_error($DBS['comet']), $pastDueQ);
 
-while (list($email, $first, $last, $sPrice, $planAmount, $paid, $nextDue, $daysLate) = mysqli_fetch_row($pastDueR)) {
+while (list($cardNo, $email, $first, $last, $sPrice, $planAmount, $paid, $nextDue, $daysLate) = mysqli_fetch_row($pastDueR)) {
 	$replace = array($first, $last, $nextDue, '$' . number_format($sPrice-$paid, 2), '$' . $planAmount);
-	$newTo = $first . ' ' . $last . $to;
+	$to = sprintf('"%s %s" <%s>', $first, $last, $email);
 	$body = str_replace($search, $replace, $pastDueMsg);
 	
-	$reminders[] = array(
-		'to' => $newTo, 
-		'from' => $from, 
-		'subject' => $pastDueSubject, 
-		'body' => $body
-		);
+	if (is_null($email) || empty($email) || strpos($email, '@') === false) {
+		$badEmailList .= sprintf("Card No: %u, Email Address: %s, Name: %s\n", 
+			$cardNo, (is_null($email) || empty($email) ? 'No email' : $email), $first . " " . $last);
+	} else {
+		$reminders[] = array(
+			'to' => $to, 
+			'from' => $from, 
+			'subject' => $pastDueSubject, 
+			'body' => $body
+			);
 		
-	$count++;
+		$count++;
+	}
+}
+
+if (!empty($badEmailList) || !is_null($badEmailList)) {
+	$body = "Here is a list of the invalid or empty emails from the reminders on " . date('m/d/Y') . "\n\n". $badEmailList;
+	$badMail[] = array(
+		'to' => $from,
+		'from' => sprintf('CoMET <%s>', $_SESSION['systemUser']),
+		'subject' => 'List of invalid emails from nightly reminders',
+		'body' => $body);
+		
+	cometMail($badMail, 'system');
 }
 
 $mailed = cometMail($reminders, 'reminder');
