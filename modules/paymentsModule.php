@@ -33,7 +33,7 @@ session_start();
 	}
 
 	$(document).ready(function() {
-		$('#pmtDatepicker').datepicker({ dateFormat: 'mm/dd/yy', maxDate: 0 });
+		$('#pmtDatepicker').datepicker({ dateFormat: 'mm/dd/yy', maxDate: 0, changeYear: 'true', yearRange: '2000:<?php echo date('Y') + 1; ?>' });
 		$("#paymentForm :input").keypress(function (e) {
 			if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
 				if ($('#changed').val() == 'true') {

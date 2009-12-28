@@ -25,6 +25,7 @@ session_start();
  * @author Matthaus Litteken <matthaus@cecs.pdx.edu>
  * @version 1.0
  * @package CoMET
+ * @todo Set On Hold days as an option in the config.
  */
 
 $baseDir = (substr(__DIR__, -1) == '/' ? substr(__DIR__, 0, -1) : __DIR__);
