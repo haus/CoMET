@@ -20,6 +20,13 @@
 */
 session_start();
 
+/**
+ * Main handler. Updates and inserts owners and details and handles navigation between records.
+ * @author Matthaus Litteken <matthaus@cecs.pdx.edu>
+ * @version 1.0
+ * @package CoMET
+ */
+
 if (isset($_SESSION['level'])) {
 	require_once('../includes/config.php');
 	require_once('../includes/functions.php');
@@ -85,7 +92,7 @@ if (isset($_SESSION['level'])) {
 			if (!$details && !$owners) { // Nothing to write.
 				echo ' "message": "' . $_SESSION['userID'] . '",';	
 			} elseif ($details && $owner) { // Something to write, check for bad secondary owner rows
-				checkPost(); // Will kill the script if there are errors.
+				checkPost($_POST); // Will kill the script if there are errors.
 				echo ' "message": "data written", ';
 				$phone = ereg_replace("[^0-9]", "", escapeData($DBS['comet'], $_POST['phone']));
 				$zip = ereg_replace("[^0-9]", "", escapeData($DBS['comet'], $_POST['zip']));
@@ -145,7 +152,7 @@ if (isset($_SESSION['level'])) {
 				echo ' "errorMsg": "Record cannot be empty." }';
 				exit();
 			} elseif ($details && $owner) { // Mostly filled in. Check secondary owner rows.
-				checkPost(); // Will kill the script if there are errors.
+				checkPost($_POST); // Will kill the script if there are errors.
 				$phone = ereg_replace("[^0-9]", "", escapeData($DBS['comet'], $_POST['phone']));
 				$zip = ereg_replace("[^0-9]", "", escapeData($DBS['comet'], $_POST['zip']));
 			
@@ -382,14 +389,5 @@ if (isset($_SESSION['level'])) {
 
 } else {
 	header('Location: ../index.php');
-}
-
-function checkPost() {
-	for ($i = 2; $i <= $_SESSION['houseHoldSize']; $i++) {
-		if ( empty($_POST['first'][$i]) XOR empty($_POST['last'][$i]) ) {
-			echo ' "message": "Partially filled in. Exiting in error." } ';
-			exit();
-		}
-	}
 }
 ?>

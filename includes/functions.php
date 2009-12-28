@@ -189,23 +189,23 @@ function addDetails($cardNo, $address, $phone, $city, $state, $zip, $email, $noM
 }
 
 /**
-* updateDetails function: Updates the details for a record in the database then inserts the updated record. 
-* Returns true on success, false on failure.
-* @param integer $cardNo cardNo of the record to be inserted
-* @param string $address Address of the record to be inserted. Is sanitized by escapeData. If null, old value is used.
-* @param string $phone Phone number of the record to be inserted. If null, old value is used.
-* @param string $city City of the record to be inserted. Is sanitized by escapeData. If null, old value is used.
-* @param string $state State of the record to be inserted. Is sanitized by escapeData. If null, old value is used.
-* @param string $zip Zip code of the record to be inserted. If null, old value is used.
-* @param string $email Email address of the record to be inserted. Is sanitized by escapeData. If null, old value is used.
-* @param boolean $noMail No mail boolean of the record to be inserted. Is cast to an integer. If null, old value is used.
-* @param date $nextDue Next payment due date for the record to be inserted. If null, old value is used.
-* @param integer $plan Payment plan of the record to be inserted. Is cast to an integer. If null, old value is used.
-* @param date $joinDate Join date for the record to be inserted. If null, old value is used.
-* @param decimal $sharePrice Share price for the record to be inserted. If null, old value is used.
-* @param integer $userID User ID of the user who added the record
-* @return boolean true on success, false on failure
-*/
+ * updateDetails function: Updates the details for a record in the database then inserts the updated record. 
+ * Returns true on success, false on failure.
+ * @param integer $cardNo cardNo of the record to be inserted
+ * @param string $address Address of the record to be inserted. Is sanitized by escapeData. If null, old value is used.
+ * @param string $phone Phone number of the record to be inserted. If null, old value is used.
+ * @param string $city City of the record to be inserted. Is sanitized by escapeData. If null, old value is used.
+ * @param string $state State of the record to be inserted. Is sanitized by escapeData. If null, old value is used.
+ * @param string $zip Zip code of the record to be inserted. If null, old value is used.
+ * @param string $email Email address of the record to be inserted. Is sanitized by escapeData. If null, old value is used.
+ * @param boolean $noMail No mail boolean of the record to be inserted. Is cast to an integer. If null, old value is used.
+ * @param date $nextDue Next payment due date for the record to be inserted. If null, old value is used.
+ * @param integer $plan Payment plan of the record to be inserted. Is cast to an integer. If null, old value is used.
+ * @param date $joinDate Join date for the record to be inserted. If null, old value is used.
+ * @param decimal $sharePrice Share price for the record to be inserted. If null, old value is used.
+ * @param integer $userID User ID of the user who added the record
+ * @return boolean true on success, false on failure
+ */
 function updateDetails($cardNo, $address, $phone, $city, $state, $zip, $email, $noMail, $nextDue, $plan, $joinDate, $sharePrice, $userID) {
 	global $DBS;
 	
@@ -289,7 +289,7 @@ function escapeData(&$connection, $data) {
  * @param array $mail An array of mail messages. Each mail has keys for from, to, subject, and body.
  * @param string $type A type for the mail. If it is reminder, the mails are sent to a queue. If it is system, it is sent immediately.
  * @return integer The number of emails successfully sent or queued.
-*/
+ */
 function cometMail($mail, $type) {
 	require_once(__DIR__ . '/config.php');
 	require_once('Mail.php');
@@ -364,5 +364,76 @@ function cometMail($mail, $type) {
 		
 	}
 
+}
+
+/**
+ * printNotes Recursive function to display the notes for a record in a threaded manner.
+ * @param array $parent Array of notes with the same parent thread. 
+ */
+function printNotes($parent) {
+	// Need the main $tasks array:
+		global $notes;
+		global $details;
+
+		// Start an ordered list:
+		echo '<ul>';
+
+		// Loop through each subarray:
+		foreach ($parent as $threadID => $noteText) {
+
+			// Display the item:
+			//echo "<li>$noteText\n";
+			//echo "(written by %s on %s)";
+			printf('<li>
+						<input type="submit" value="Reply" id="%s" name="addChild[]" onclick="%s" />
+						<!--<input type="image" src="includes/images/minus-8.png" name="pmtRemove[]" onclick="%s" />-->
+						<span %s id="%s">%s</span>
+						<small>(written by %s on %s at %s)</small>
+					<br /><p id="%u" style="display:none">
+							<input type="submit" value="Add Reply" name="addNote[]" onclick="%s" />
+							<input type="text" name="note[%u]" size="50" maxlength="100" />
+					</p>',
+					'button' . $threadID,
+					'showRow(' . $threadID . ');	return false;', 
+					'updateRemoveID(' . $threadID . ');',
+					($details[$threadID]['userID'] == $_SESSION['userID'] || $_SESSION['level'] >= 4 ? 'class="editNote"' : ''),
+					'note-' . $threadID, 
+					$noteText . "\n",
+					$details[$threadID]['author'],
+					date('m/d/Y', strtotime($details[$threadID]['date'])), 
+					$details[$threadID]['time'], 
+					$threadID,
+					'addChild(' . $threadID . ');',
+					$threadID
+				);
+	
+			// Check for subtasks:
+			if (isset($notes[$threadID])) { 
+
+				// Call this function:
+				printNotes($notes[$threadID]);
+
+			}
+
+			// Complete the list item:
+			echo '</li>';
+
+		} // End of FOREACH loop.
+
+		// Close the ordered list:
+		echo '</ul>';
+}
+
+/**
+ * checkPost Checks the first and last names of each non-primary owner. If they aren't both filled in it quits the update script.
+ * @param array $post The $_POST array from the main form.
+ */
+function checkPost($post) {
+	for ($i = 2; $i <= $_SESSION['houseHoldSize']; $i++) {
+		if ( empty($post['first'][$i]) XOR empty($post['last'][$i]) ) {
+			echo ' "message": "Partially filled in. Exiting in error." } ';
+			exit();
+		}
+	}
 }
 ?>

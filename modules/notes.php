@@ -50,6 +50,7 @@ session_start();
 
 if (isset($_SESSION['level'])) {
 	require_once('../includes/config.php');
+	require_once('../includes/functions.php');
 
 	$notesQ = "SELECT note, threadID, parentID, DATE(modified), DATE_FORMAT(modified, '%r'), notes.userID, u.user
 		FROM notes INNER JOIN users AS u ON (notes.userID = u.userID) WHERE cardNo={$_SESSION['cardNo']}";
@@ -89,60 +90,4 @@ if (isset($_SESSION['level'])) {
 } else {
 	header('Location: ../index.php');
 }
-	
-function printNotes($parent) {
-	// Need the main $tasks array:
-		global $notes;
-		global $details;
-
-		// Start an ordered list:
-		echo '<ul>';
-
-		// Loop through each subarray:
-		foreach ($parent as $threadID => $noteText) {
-
-			// Display the item:
-			//echo "<li>$noteText\n";
-			//echo "(written by %s on %s)";
-			printf('<li>
-						<input type="submit" value="Reply" id="%s" name="addChild[]" onclick="%s" />
-						<!--<input type="image" src="includes/images/minus-8.png" name="pmtRemove[]" onclick="%s" />-->
-						<span %s id="%s">%s</span>
-						<small>(written by %s on %s at %s)</small>
-					<br /><p id="%u" style="display:none">
-							<input type="submit" value="Add Reply" name="addNote[]" onclick="%s" />
-							<input type="text" name="note[%u]" size="50" maxlength="100" />
-					</p>',
-					'button' . $threadID,
-					'showRow(' . $threadID . ');	return false;', 
-					'updateRemoveID(' . $threadID . ');',
-					($details[$threadID]['userID'] == $_SESSION['userID'] || $_SESSION['level'] >= 4 ? 'class="editNote"' : ''),
-					'note-' . $threadID, 
-					$noteText . "\n",
-					$details[$threadID]['author'],
-					date('m/d/Y', strtotime($details[$threadID]['date'])), 
-					$details[$threadID]['time'], 
-					$threadID,
-					'addChild(' . $threadID . ');',
-					$threadID
-				);
-	
-			// Check for subtasks:
-			if (isset($notes[$threadID])) { 
-
-				// Call this function:
-				printNotes($notes[$threadID]);
-
-			}
-
-			// Complete the list item:
-			echo '</li>';
-
-		} // End of FOREACH loop.
-
-		// Close the ordered list:
-		echo '</ul>';
-}
-
-
 ?>
