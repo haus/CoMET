@@ -25,6 +25,7 @@ session_start();
  * @author Matthaus Litteken <matthaus@cecs.pdx.edu>
  * @version 1.0
  * @package CoMET
+ * @todo Add system email information and an admin email in testing area for more dynamic options.
  */
 
 require_once('../includes/config.php');
@@ -122,10 +123,6 @@ if (isset($_POST['submitted'])) {
 				while (list($name, $value) = mysqli_fetch_row($smtpR)) {
 					$smtp[$name] = $value;
 				}
-				
-				/**
-				 * @todo Add system email information and an admin email here for more dynamic options.
-				 */
 				
 				$from = "CoMET <comet@albertagrocery.coop>";
 				$to = "Matthaus <mlitteken@gmail.com>";

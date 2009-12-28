@@ -94,7 +94,7 @@ function updateOwner($cardNo, $personNum, $firstName, $lastName, $discount, $mem
 		// Then insert the new entries...
 		$insertQ = sprintf(
 			"INSERT INTO raw_owners (
-			SELECT cardNo, personNum, %s, %s, %u, %u, %u, %u, %u, curdate(), NULL, %u, NULL
+			SELECT cardNo, personNum, %s, %s, %s, %s, %s, %s, %s, curdate(), NULL, %u, NULL
 				FROM raw_owners
 					WHERE cardNo=%u AND personNum = %u
 				ORDER BY id DESC
