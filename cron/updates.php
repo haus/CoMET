@@ -19,6 +19,14 @@
 	    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 session_start();
+
+/**
+ * This cron script sets members to 'On Hold' and 'Inactive' based upon nextPayment information.
+ * @author Matthaus Litteken <matthaus@cecs.pdx.edu>
+ * @version 1.0
+ * @package CoMET
+ */
+
 $baseDir = (substr(__DIR__, -1) == '/' ? substr(__DIR__, 0, -1) : __DIR__);
 $baseDir = substr(__DIR__, 0, strrpos($baseDir, '/'));
 

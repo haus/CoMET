@@ -20,6 +20,14 @@
 	
 */
 session_start();
+
+/**
+ * This page will load a user management tab when it is ready.
+ * @author Matthaus Litteken <matthaus@cecs.pdx.edu>
+ * @version 1.0
+ * @package CoMET
+ */
+
 require_once('./includes/config.php');
 ?>
 <form id="userForm" method="POST" name="userForm" action="./handlers/userHandler.php">

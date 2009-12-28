@@ -20,6 +20,13 @@
 */
 session_start();
 
+/**
+ * This page loads the current details for the current record in the details div in the main tab.
+ * @author Matthaus Litteken <matthaus@cecs.pdx.edu>
+ * @version 1.0
+ * @package CoMET
+ */
+
 if (isset($_SESSION['level'])) {
 	require_once('../includes/config.php');
 

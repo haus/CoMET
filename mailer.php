@@ -19,6 +19,14 @@
 	    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 session_start();
+
+/**
+ * This page loads the mailer module into the content tab.
+ * @author Matthaus Litteken <matthaus@cecs.pdx.edu>
+ * @version 1.0
+ * @package CoMET
+ */
+
 require_once('./includes/config.php');
 require_once('./includes/functions.php');
 

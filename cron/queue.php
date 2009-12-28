@@ -20,6 +20,13 @@
 */
 session_start();
 
+/**
+ * This cron script sends out 50 emails from the mail queue at a time.
+ * @author Matthaus Litteken <matthaus@cecs.pdx.edu>
+ * @version 1.0
+ * @package CoMET
+ */
+
 $baseDir = (substr(__DIR__, -1) == '/' ? substr(__DIR__, 0, -1) : __DIR__);
 $baseDir = substr(__DIR__, 0, strrpos($baseDir, '/'));
 

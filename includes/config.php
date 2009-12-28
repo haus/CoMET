@@ -19,6 +19,14 @@
 	    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/**
+ * This page uses the comet DB config information to pull the other configurable 
+ * options from the options table and load them into the $_SESSION array.
+ * @author Matthaus Litteken <matthaus@cecs.pdx.edu>
+ * @version 1.0
+ * @package CoMET
+ */
+
 // CoMET DB Connection details.
 $_SESSION['DB'] = array('host'=>'localhost', 'user'=>'comet', 'password'=>'c0m3t', 'database'=>'comet');
 

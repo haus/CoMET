@@ -20,6 +20,13 @@
 */
 session_start();
 
+/**
+ * This page handles adding and updating payments.
+ * @author Matthaus Litteken <matthaus@cecs.pdx.edu>
+ * @version 1.0
+ * @package CoMET
+ */
+
 if (isset($_SESSION['level'])) {
 	require_once('../includes/config.php');
 	require_once('../includes/functions.php');

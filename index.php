@@ -19,6 +19,12 @@
 	    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/**
+ * Very simply, this file calls the header, and the footer.
+ * @author Matthaus Litteken <matthaus@cecs.pdx.edu>
+ * @version 1.0
+ * @package CoMET
+ */
 require_once('./includes/header.html');
 
 require_once('./includes/footer.html');

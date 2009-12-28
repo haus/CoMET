@@ -1,6 +1,13 @@
 <?php
 session_start();
 
+/**
+ * This page feeds the autocomplete for the search fields in the main tab.
+ * @author Matthaus Litteken <matthaus@cecs.pdx.edu>
+ * @version 1.0
+ * @package CoMET
+ */
+
 require_once('../includes/config.php');
 require_once('../includes/functions.php');
 

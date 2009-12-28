@@ -21,6 +21,14 @@
 
 session_start();
 
+/**
+ * This page syncs the records in comet to fannie and then pushes them to the lanes, 
+ * if there is a valid fannie sync script address.
+ * @author Matthaus Litteken <matthaus@cecs.pdx.edu>
+ * @version 1.0
+ * @package CoMET
+ */
+
 ?>
 <script type="text/javascript">
 	$(document).ready(function() {

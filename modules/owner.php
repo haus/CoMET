@@ -21,6 +21,13 @@
 
 session_start();
 
+/**
+ * Loads the current owners on the current record into the owners div in the main tab.
+ * @author Matthaus Litteken <matthaus@cecs.pdx.edu>
+ * @version 1.0
+ * @package CoMET
+ */
+
 if (isset($_SESSION['level'])) {
 	require_once('../includes/config.php');
 
@@ -39,15 +46,6 @@ if (isset($_SESSION['level'])) {
 			$staffList[$num] = $desc;
 		}
 	}
-	
-	/**
-	 * Owner module for CoMET. Will interface with IS4C/Fannie database to retrieve
-	 * data and update members.
-	 *
-	 * @author Matthaus Litteken <matthaus@cecs.pdx.edu>
-	 * @version 0.1
-	 * @package CoMET
-	 */
 	?>
 	<script src="../includes/javascript/jquery.min.js" type="text/javascript"></script>
 

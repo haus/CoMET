@@ -17,6 +17,14 @@
 	    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 session_start();
+
+/**
+ * This page loads a summary for the current record in the summary div in the main tab.
+ * @author Matthaus Litteken <matthaus@cecs.pdx.edu>
+ * @version 1.0
+ * @package CoMET
+ */
+
 ?>
 <script type="text/javascript">
 	$.editable.addInputType("datepicker", {

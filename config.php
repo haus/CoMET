@@ -21,6 +21,13 @@
 session_start();
 require_once('./includes/config.php');
 
+/**
+ * This page loads the config module to allow dynamic updates of the configuration.
+ * @author Matthaus Litteken <matthaus@cecs.pdx.edu>
+ * @version 1.0
+ * @package CoMET
+ */
+
 ?>
 <script type="text/javascript">
 	function validateConfig(formData, jqForm, options) {

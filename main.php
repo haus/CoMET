@@ -20,6 +20,14 @@
 	
 */
 session_start();
+
+/**
+ * This page loads the owner, details, summary, notes, and payments modules into their respective divs.
+ * @author Matthaus Litteken <matthaus@cecs.pdx.edu>
+ * @version 1.0
+ * @package CoMET
+ */
+
 require_once('./includes/config.php');
 
 if (!isset($_SESSION['cardNo'])) {
