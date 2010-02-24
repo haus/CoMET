@@ -128,7 +128,7 @@ if (isset($_SESSION['level'])) {
 				
 				for ($i = 1; $i <= $_SESSION['houseHoldSize']; $i++) {
 					if ( !empty($_POST['first'][$i]) && !empty($_POST['last'][$i]) ) {
-						updateOwner(
+						addOwner(
 								$_SESSION['cardNo'], 
 								$i,
 								$_POST['first'][$i],
