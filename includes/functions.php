@@ -230,7 +230,8 @@ function updateDetails($cardNo, $address, $phone, $city, $state, $zip, $email, $
 				(is_null($zip) ? 'zip' : "'" . $zip . "'"),
 				(is_null($email) ? 'email' : "'" . escapeData($DBS['comet'], $email) . "'"),
 				(is_null($noMail) ? 'noMail' : (int) $noMail),
-				(is_null($nextDue) ? 'nextPayment' : "'" . $nextDue . "'"),
+				(is_null($nextDue) ? 'nextPayment' : 
+					($nextDue == 'NULL' ? 'NULL' : "'" . $nextDue . "'")),
 				(is_null($plan) ? 'paymentPlan' : (int) $plan),
 				(is_null($joinDate) ? 'joined' : "'" . $joinDate . "'"),
 				(is_null($sharePrice) ? 'sharePrice' : "'" . $sharePrice . "'"),
