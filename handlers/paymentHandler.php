@@ -49,19 +49,28 @@ if (isset($_SESSION['level'])) {
 		if (!$paymentR) printf('Query: %s, Error: %s', $paymentQ, mysqli_error($DBS['comet']));
 	
 		list($oldValue) = mysqli_fetch_row($paymentR);
+		
+		if ($type[0] == 'date') {
+			$newYear = (int) substr($_POST['value'], 6, 4);
+			$newMonth = str_pad((int) substr($_POST['value'], 0, 2), 2, 0, STR_PAD_LEFT);
+			$newDay = str_pad((int) substr($_POST['value'], 3, 2), 2, 0, STR_PAD_LEFT);
+			$newDate = (checkdate($newMonth,$newDay,$newYear) ? "$newYear-$newMonth-$newDay" : FALSE);
+			$_POST['value'] = $newDate;
+		} elseif ($type[0] == 'amount') {
+			$_POST['value'] = (is_numeric($_POST['value']) ? number_format($_POST['value'], 2) : FALSE);
+		}
 	
-		// Check the level of the current user. If the user wrote the note or is of level 4 or greater, edit the note.
-		if ($oldValue != $_POST['value']) {
+		if (($oldValue != $_POST['value']) && ($_POST['value'] !== FALSE)) {
 			$updateQ = sprintf("UPDATE payments SET %s = '%s', userID=%u WHERE paymentID = %u",
 				$type[0], escapeData($DBS['comet'], $_POST['value']), $_SESSION['userID'], $paymentID);
 			$updateR = mysqli_query($DBS['comet'], $updateQ);
 		
 			if (!$updateR) printf('Query: %s, Error: %s', $updateQ, mysqli_error($DBS['comet']));
 			else {
-				echo $_POST['value'];
+				echo ($type[0] == 'date' ? date('m/d/Y', strtotime($_POST['value'])) : $_POST['value']);
 			}
 		} else {
-			echo $oldValue;
+				echo ($type[0] == 'date' ? date('m/d/Y', strtotime($oldValue)) : $oldValue);
 		}
 	} elseif (isset($_POST['removeID']) && is_numeric($_POST['removeID'])) {
 		$paymentQ = sprintf("DELETE FROM payments WHERE paymentID=%u LIMIT 1",
@@ -127,14 +136,12 @@ if (isset($_SESSION['level'])) {
 				$selectR = mysqli_query($DBS['comet'], $selectQ);
 
 				while (list($personNum, $memType, $staff) = mysqli_fetch_row($selectR)) {
-					if ($memType == 1 || $memType == 2) {
-						if ($staff == 0 || $staff == 2 || $staff == 3 || $staff == 6) {
-							$newDisc = 2;
-						} elseif ($staff == 1 || $staff == 4 || $staff == 5) {
-							$newDisc = 15;
-						} else {
-							$newDisc = 0;
-						}
+					if ($staff == 0 || $staff == 2 || $staff == 3 || $staff == 6) {
+						$newDisc = 2;
+					} elseif ($staff == 1 || $staff == 4 || $staff == 5) {
+						$newDisc = 15;
+					} else {
+						$newDisc = 0;
 					}
 					if ($memType != 6 && $memType != 7) {
 						if (!updateOwner($_SESSION['cardNo'], $personNum, NULL, NULL, $newDisc, $newMemType, NULL, NULL, NULL, $_SESSION['userID']))

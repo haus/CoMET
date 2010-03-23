@@ -28,6 +28,22 @@ session_start();
 ?>
 
 <script type="text/JavaScript">
+	$.editable.addInputType("datepicker", {
+		element:  function(settings, original) {
+			var input = $("<input type=\"text\" name=\"value\" />");
+			$(this).append(input);
+			return(input);
+		},
+		plugin:  function(settings, original) {
+			var form = this;
+			$("input", this).filter(":text").datepicker({
+				onSelect: function(dateText) { $(this).hide(); $(form).trigger("submit"); },
+				changeYear: 'true',
+				yearRange: '2000:<?php echo date('Y') + 1; ?>'
+			});
+		}
+	});
+	
 	function updateRemoveID(id) {
 		$('#removeID').val(id);
 	}
@@ -48,6 +64,7 @@ session_start();
 				return true;
 			}
 	    });
+	
 		$('.editText').editable('./handlers/paymentHandler.php',
 			{
 				style: 'display: inline',
@@ -56,6 +73,21 @@ session_start();
 				tooltip: 'Click to edit...',
 				callback: function(value, settings) {
 					$('#payments').load('./modules/paymentsModule.php');
+					$('#summary').load('./modules/summaryModule.php');
+				}
+			}
+		);
+		
+		$('.editDate').editable('./handlers/paymentHandler.php',
+			{
+				type: 'datepicker',
+				tooltip: 'Click to edit...',
+				cancel: 'Cancel',
+				width: '100px',
+				onblur: 'ignore',
+				callback: function(value, settings) {
+					$('#payments').load('./modules/paymentsModule.php');
+					$('#summary').load('./modules/summaryModule.php');
 				}
 			}
 		);
@@ -95,14 +127,16 @@ if (isset($_SESSION['level'])) {
 
 			printf('<tr class="center">
 					<td><input type="image" name="pmtRemove[]" src="includes/images/minus-8.png" onclick="%s" /></td>
-					<td>%s</td>
-					<td>$%s</td>
+					<td><span class="editDate" id="date-%u">%s</span></td>
+					<td>$<span class="editText" id="amount-%u">%s</span></td>
 					<td><span class="editText" id="memo-%u">%s</span></td>
 					<td><span class="editText" id="reference-%u">%s</span></td>
 					</tr>', 
 					'updateRemoveID(' . $id . ');', 
+					$id,
 					date('m/d/Y', 
 					strtotime($date)), 
+					$id,
 					number_format($amount, 2), 
 					$id,
 					(empty($memo) ? '(No Memo)' : $memo), 
@@ -112,18 +146,14 @@ if (isset($_SESSION['level'])) {
 		}
 	}
 
-	if (($total != $sPrice) || (is_null($total) || is_null($sPrice))) {
-		echo '<tr class="center">
-				<td><input type="image" src="includes/images/plus-8.png" name="pmtSubmit" id="pmtSubmit" /></td>
-				<td><input type="text" name="date" id="pmtDatepicker" size="10" maxlength="10" /></td>
-				<td>$<input type="text" name="amount" id="pmtAmount" size="5" maxlength="7" value="' . number_format($defaultAmount, 2) . '" /></td>
-				<td><input type="text" name="memo" id="pmtMemo" size="35" maxlength="50" /></td>
-				<td><input type="text" name="ref" id="pmtReference" size="10" maxlength="20" /></td>
-			</tr>
-			</table><br />';
-	} else {
-		echo '</table><br /><input type="hidden" id="pmtDatepicker" value="" name="date" />';
-	}
+	echo '<tr class="center">
+			<td><input type="image" src="includes/images/plus-8.png" name="pmtSubmit" id="pmtSubmit" /></td>
+			<td><input type="text" name="date" id="pmtDatepicker" size="10" maxlength="10" /></td>
+			<td>$<input type="text" name="amount" id="pmtAmount" size="5" maxlength="7" value="' . number_format($defaultAmount, 2) . '" /></td>
+			<td><input type="text" name="memo" id="pmtMemo" size="35" maxlength="50" /></td>
+			<td><input type="text" name="ref" id="pmtReference" size="10" maxlength="20" /></td>
+		</tr>
+		</table><br />';
 } else {
 	header('Location: ../index.php');
 }
