@@ -34,7 +34,7 @@ if (isset($_SESSION['level'])) {
 	// Sanitize the data.
 	if (isset($_POST['date'])) $date = escapeData($DBS['comet'], $_POST['date']);
 	if (isset($_POST['memo'])) $memo = escapeData($DBS['comet'], $_POST['memo']);
-	if (isset($_POST['reference'])) $reference = escapeData($DBS['comet'], $_POST['reference']);
+	if (isset($_POST['ref'])) $reference = escapeData($DBS['comet'], $_POST['ref']);
 	if (isset($_POST['amount'])) $amount = escapeData($DBS['comet'], $_POST['amount']);
 
 	// Validate the data a bit.

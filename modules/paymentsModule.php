@@ -98,7 +98,7 @@ if (isset($_SESSION['level'])) {
 					<td>%s</td>
 					<td>$%s</td>
 					<td><span class="editText" id="%s">%s</span></td>
-					<td>%s (Thickbox receipt link)</td>
+					<td>%s</td>
 					</tr>', 
 					'updateRemoveID(' . $id . ');', 
 					date('m/d/Y', 
