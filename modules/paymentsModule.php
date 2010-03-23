@@ -97,16 +97,17 @@ if (isset($_SESSION['level'])) {
 					<td><input type="image" name="pmtRemove[]" src="includes/images/minus-8.png" onclick="%s" /></td>
 					<td>%s</td>
 					<td>$%s</td>
-					<td><span class="editText" id="%s">%s</span></td>
-					<td>%s</td>
+					<td><span class="editText" id="memo-%u">%s</span></td>
+					<td><span class="editText" id="reference-%u">%s</span></td>
 					</tr>', 
 					'updateRemoveID(' . $id . ');', 
 					date('m/d/Y', 
 					strtotime($date)), 
 					number_format($amount, 2), 
 					$id,
-					(empty($memo) ? 'No Memo' : $memo), 
-					$ref
+					(empty($memo) ? '(No Memo)' : $memo), 
+					$id,
+					(empty($ref) ? '(No Reference)' : $ref)
 				);
 		}
 	}

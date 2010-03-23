@@ -39,21 +39,23 @@ if (isset($_SESSION['level'])) {
 
 	// Validate the data a bit.
 	if (isset($_POST['value']) && isset($_POST['id'])) {
-		$paymentID = (int) $_POST['id'];
+		$type = explode('-', $_POST['id']);
+		
+		$paymentID = (int) $type[1];
 		// Get information about the payment to be edited
-		$paymentQ = sprintf("SELECT memo FROM payments WHERE paymentID=%u", $paymentID);
+		$paymentQ = sprintf("SELECT %s FROM payments WHERE paymentID=%u", $type[0], $paymentID);
 		$paymentR = mysqli_query($DBS['comet'], $paymentQ);
-		
+	
 		if (!$paymentR) printf('Query: %s, Error: %s', $paymentQ, mysqli_error($DBS['comet']));
-		
+	
 		list($oldValue) = mysqli_fetch_row($paymentR);
-		
+	
 		// Check the level of the current user. If the user wrote the note or is of level 4 or greater, edit the note.
 		if ($oldValue != $_POST['value']) {
-			$updateQ = sprintf("UPDATE payments SET memo = '%s', userID=%u WHERE paymentID = %u",
-				escapeData($DBS['comet'], $_POST['value']), $_SESSION['userID'], $paymentID);
+			$updateQ = sprintf("UPDATE payments SET %s = '%s', userID=%u WHERE paymentID = %u",
+				$type[0], escapeData($DBS['comet'], $_POST['value']), $_SESSION['userID'], $paymentID);
 			$updateR = mysqli_query($DBS['comet'], $updateQ);
-			
+		
 			if (!$updateR) printf('Query: %s, Error: %s', $updateQ, mysqli_error($DBS['comet']));
 			else {
 				echo $_POST['value'];
