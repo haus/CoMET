@@ -305,9 +305,10 @@ function cometMail($mail, $type) {
 			'smtp',
 			array (
 				'host' => $host,
-		    	'auth' => true,
-			    'username' => $user,
-			    'password' => $pass
+				'auth' => true,
+				'username' => $user,
+				'password' => $pass,
+				'port' => 587
 			)
 		);
 
